@@ -71,6 +71,14 @@ Save the answers as `results/llm_run1.txt`. Repeat in a new chat, save the secon
 python evaluate.py --llm results/llm_run1.txt results/llm_run2.txt
 ```
 
+## Tests
+
+```powershell
+python -m pytest tests
+```
+
+These check the measuring tools (tokeniser, word map, meaning guard, bootstrap) that the experiments rely on.
+
 ## Web app
 
 Run these in two terminals:
