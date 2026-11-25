@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shakespearean Language Lab</title>
+  </head>
+  <body>
+    <header>
+      <h1>📜 Shakespearean Language Lab</h1>
+      <p class="subtitle">Inside the LSTM: generating and transforming Shakespearean English with small recurrent networks.</p>
+      <p id="model-status" class="status"></p>
+      <nav class="tabs">
+        <button id="tab-generator" class="active">Text generator</button>
+        <button id="tab-translator">Translator</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ============ GENERATOR ============ -->
+      <section id="panel-generator">
+        <div class="controls">
+          <label>Prompt <input id="gen-prompt" value="ROMEO:" /></label>
+          <label>Model <select id="gen-cell"></select></label>
+          <label>Temperature
+            <input id="gen-temperature" type="range" min="0.2" max="1.5" step="0.1" value="0.8" />
+            <span id="gen-temperature-value">0.8</span>
+          </label>
+          <label>Length <input id="gen-length" type="number" min="50" max="1000" step="50" value="400" /></label>
+          <button id="generate-btn">Generate</button>
+        </div>
+        <div class="controls">
+          <label>Neuron viewer: colour the text by
+            <select id="neuron-select"><option value="">no colouring</option></select>
+          </label>
+          <span class="hint">red = cell positive · blue = negative · orange = forgetting</span>
+        </div>
+        <p id="gen-style" class="counts"></p>
+        <div id="gen-output" class="gen-output">Press Generate to write some Shakespeare.</div>
+      </section>
+
+      <!-- ============ TRANSLATOR ============ -->
+      <section id="panel-translator" hidden>
+        <label for="passage">Paste a passage (one line per sentence):</label>
+        <textarea id="passage" rows="6"></textarea>
+        <div class="controls">
+          <select id="direction">
+            <option value="to_modern">Shakespeare → Modern</option>
+            <option value="to_shakes">Modern → Shakespeare</option>
+          </select>
+          <label><input type="checkbox" id="show-inside" /> Look inside the LSTM</label>
+          <button id="translate-btn">Translate</button>
+        </div>
+        <div class="legend">
+          <span class="w kept">kept</span>
+          <span class="w swapped">archaic ↔ modern swap</span>
+          <span class="w reworded">reworded</span>
+          <span class="w added">added</span>
+          <span class="w removed">removed</span>
+          <span class="w unsure">unsure</span>
+        </div>
+        <div class="layout">
+          <section id="results"></section>
+          <aside id="sidebar"></aside>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
