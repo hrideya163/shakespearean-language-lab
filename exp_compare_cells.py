@@ -7,6 +7,10 @@ First train the models (same number of steps for all):
     # optional fair comparison with (almost) the same number of recurrent weights as the LSTM:
     python train_generator.py --cell gru --hidden 300 --name gru_matched
     python train_generator.py --cell rnn --hidden 542 --name rnn_matched
+    # optional LONG training budget (9000 steps), to see which models keep improving:
+    python train_generator.py --cell lstm --steps 9000 --name lstm_long
+    python train_generator.py --cell rnn --hidden 542 --steps 9000 --name rnn_matched_long
+    python train_generator.py --cell gru --hidden 300 --steps 9000 --name gru_matched_long
 Then run:
     python exp_compare_cells.py
 
@@ -27,7 +31,9 @@ Outputs (in results/):
     rq1_learning_curves.png  validation bpc during training
     rq1_memory_curve.png     loss vs. context length
     rq1_gradient_flow.png    gradient size vs. distance into the past
+    rq1_long_budget.png      learning curves of the 9000-step models
 """
+import csv
 import math
 import os
 
@@ -41,7 +47,8 @@ import config
 from char_lm import load_generator, load_shakespeare_text
 from generate import generate
 
-MODELS = ["rnn", "gru", "lstm", "rnn_matched", "gru_matched"]
+MODELS = ["rnn", "gru", "lstm", "rnn_matched", "gru_matched",
+          "lstm_long", "rnn_matched_long", "gru_matched_long"]
 WINDOW = 200
 GRAD_WINDOW = 100
 
@@ -86,6 +93,13 @@ def gradient_flow(model, vocab, text, n_windows=64):
     return list(reversed(size.tolist()))                          # index = distance from the end
 
 
+def read_log(name):
+    """Full training log from results/generator_<name>_log.csv (one row per evaluation)."""
+    path = os.path.join(config.RESULTS_DIR, f"generator_{name}_log.csv")
+    with open(path) as f:
+        return [{k: float(v) for k, v in row.items()} for row in csv.DictReader(f)]
+
+
 def smooth(values, k=5):
     return [sum(values[max(0, i - k):i + k + 1]) / len(values[max(0, i - k):i + k + 1])
             for i in range(len(values))]
@@ -101,7 +115,10 @@ def main():
         except FileNotFoundError:
             print("skipping", name, "(not trained)")
             continue
-        log = torch.load(config.generator_path(name), map_location="cpu")["log"]
+        if not os.path.exists(os.path.join(config.RESULTS_DIR, f"generator_{name}_log.csv")):
+            print("skipping", name, "(still training)")
+            continue
+        log = read_log(name)
         logs[name], curves[name] = log, memory_curve(model, vocab, valid_text)
         grads[name] = gradient_flow(model, vocab, valid_text)
         g = grads[name]
@@ -114,6 +131,7 @@ def main():
             "memory gain (bpc)": sum(curves[name][:10]) / 10 - sum(curves[name][150:]) / 50,
             "gradient 10 back (%)": 100 * g[10] / g[0],
             "gradient 50 back (%)": 100 * g[50] / g[0],
+            "steps": int(log[-1]["step"]),
             "train minutes": log[-1]["minutes"],
         })
         samples[name], _ = generate(model, vocab, "\n", 300, 0.8, seed=1)
@@ -143,12 +161,23 @@ def main():
         f.write("\n".join(report))
 
     # plots
+    short = {n: log for n, log in logs.items() if not n.endswith("_long")}
+    long_ = {n: log for n, log in logs.items() if n.endswith("_long")}
     plt.figure(figsize=(6, 4))
-    for name, log in logs.items():
+    for name, log in short.items():
         plt.plot([e["step"] for e in log], [e["valid_bpc"] for e in log], marker="o", label=name.upper())
     plt.xlabel("training step"); plt.ylabel("validation bits per character")
     plt.title("Learning curves"); plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(config.RESULTS_DIR, "rq1_learning_curves.png"), dpi=120)
+
+    if long_:
+        plt.figure(figsize=(6, 4))
+        for name, log in long_.items():
+            plt.plot([e["step"] for e in log], [e["valid_bpc"] for e in log], label=name.upper())
+        plt.xlabel("training step"); plt.ylabel("validation bits per character")
+        plt.title("Long training budget (same number of weights)"); plt.legend(); plt.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(os.path.join(config.RESULTS_DIR, "rq1_long_budget.png"), dpi=120)
 
     plt.figure(figsize=(6, 4))
     for name, curve in curves.items():
