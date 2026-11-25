@@ -26,6 +26,8 @@ python download_data.py
 python train_generator.py --cell lstm      # ~8 min on a laptop CPU
 python train_generator.py --cell gru       # needed for RQ1
 python train_generator.py --cell rnn       # needed for RQ1
+python train_generator.py --cell gru --hidden 300 --name gru_matched   # same #weights as LSTM
+python train_generator.py --cell rnn --hidden 542 --name rnn_matched   # same #weights as LSTM
 python style_classifier.py                 # Shakespeare-vs-modern classifier (seconds)
 python train_translator.py                 # translator with copy gate
 python train_translator.py --no_copy       # ablation for RQ4
@@ -39,6 +41,9 @@ python translate.py "Wherefore art thou Romeo?"
 ```
 
 ## Run the experiments
+
+Everything (training + experiments) in one go: `python run_all.py`
+(or `python run_all.py --skip_train` to only redo the analyses).
 
 | Script | Research question | Output in `results/` |
 |---|---|---|
@@ -99,6 +104,8 @@ Open http://localhost:5173. The app has two tabs:
 | `translator_model.py` | encoder–decoder with attention and copy gate |
 | `train_translator.py` / `translate.py` | train / run the translator (+ likelihood scoring) |
 | `style_classifier.py` | logistic-regression style classifier |
+| `stats.py` | bootstrap confidence intervals |
+| `run_all.py` | runs the whole study in order |
 | `evaluate.py` | baseline vs LSTM vs LLM |
 | `exp_*.py` | the five experiments |
 | `server.py` | FastAPI backend |

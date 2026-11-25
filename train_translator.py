@@ -55,7 +55,7 @@ def run_epoch(model, loader, device, optimizer=None):
     model.train(training)
     total = 0.0
     with torch.set_grad_enabled(training):
-        for src, src_lens, tgt in loader:
+        for batch_i, (src, src_lens, tgt) in enumerate(loader, start=1):
             src, tgt = src.to(device), tgt.to(device)
             probs = model(src, src_lens, tgt)
             loss = loss_fn(probs, tgt)
@@ -64,6 +64,9 @@ def run_epoch(model, loader, device, optimizer=None):
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), config.CLIP)
                 optimizer.step()
+                if batch_i % 100 == 0:
+                    print(f"    batch {batch_i}/{len(loader)} | loss {total / (batch_i - 1 or 1):.3f}",
+                          flush=True)
             total += loss.item()
     return total / len(loader)
 

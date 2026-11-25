@@ -62,11 +62,11 @@ colours generated text by the activation of a chosen LSTM cell.
 
 | # | Question | Experiment (script) | Measured by |
 |---|---|---|---|
-| RQ1 | **Why LSTM?** Does the gated cell beat a vanilla RNN and match a GRU? | Train RNN, GRU and LSTM generators with the same size and steps (`exp_compare_cells.py`) | Validation bits-per-character, learning curves, **memory curve** (loss vs. how much context the model has seen) |
-| RQ2 | **What does the LSTM learn?** Are there cells that track line position, word boundaries, capital letters or sentence ends? When does it "forget"? | Record gates and cells over validation text and correlate each cell with simple text features (`exp_inside_lstm.py`) | Top cell per feature + correlation, average forget gate per character type, coloured-text visualisations |
+| RQ1 | **Why LSTM?** Does the gated cell beat a vanilla RNN and match a GRU? | Train RNN, GRU and LSTM generators with the same hidden size **and** with the same number of weights (`exp_compare_cells.py`) | Validation and **test** bits-per-character, learning curves, **memory curve** (loss vs. context seen), **gradient flow** (the vanishing gradient problem measured directly) |
+| RQ2 | **What does the LSTM learn?** Are there cells that track line position, word boundaries, capital letters or sentence ends? When does it "forget"? | Record gates and cells over validation text and correlate each cell with simple text features (`exp_inside_lstm.py`) | Top cell per feature, forget gate per character type, **gate saturation**, **causal ablation** (switch a cell off and compare with random cells), **2-D map of learned character embeddings** |
 | RQ3 | **How controllable is generation?** What does temperature do to quality and style? | Generate samples at 5 temperatures (`exp_temperature.py`) | % real words, diversity (distinct bigrams), repetition, **Shakespeare-style score** from a style classifier |
-| RQ4 | **Does the copy gate help translation, and is it a faithful trace?** | Train the translator with and without the copy gate (`exp_copy_gate.py`) | BLEU, kept-word rate, anchors kept; average copy probability for kept words vs. changed words |
-| RQ5 | **Can meaning drift be detected automatically?** | New **drift benchmark**: corrupt correct translations (flip a negation, swap a name, change a number) and test two detectors (`exp_drift.py`) | Detection rate / false alarms of the meaning guard; AUROC of the translator's own likelihood score |
+| RQ4 | **Does the copy gate help translation, and is it a faithful trace?** | Train the translator with and without the copy gate (`exp_copy_gate.py`) | BLEU with **95% bootstrap confidence intervals**, kept-word rate, anchors kept, **archaic-word accuracy** per word; copy probability for kept vs. changed words; **attention-as-alignment accuracy** |
+| RQ5 | **Can meaning drift be detected automatically?** | New **drift benchmark**: corrupt correct translations (flip a negation, swap a name, change a number) and test two detectors (`exp_drift.py`) | Guard detection / false alarms; likelihood AUROC with confidence interval; **paired test** ("did the model prefer the correct version?"); failure examples |
 
 Plus the **LLM baseline** (`evaluate.py`): the same 200 test lines are translated by an LLM (twice), then
 compared on BLEU, anchors kept, kept-word rate, consistency, speed and model size.
@@ -93,7 +93,10 @@ compared on BLEU, anchors kept, kept-word rate, consistency, speed and model siz
 | Teacher forcing, greedy decoding, early stopping, gradient clipping | `train_translator.py`, `translate.py` |
 | Logistic regression on character n-grams (style classifier) | `style_classifier.py` |
 | Evaluation: BLEU, AUROC, ablation studies, baselines | `evaluate.py`, `exp_*.py` |
-| Interpretability: correlating hidden units with features | `exp_inside_lstm.py` |
+| Statistical confidence: bootstrap confidence intervals, held-out test set | `stats.py`, `exp_copy_gate.py`, `exp_drift.py` |
+| Vanishing gradients measured with backpropagation | `exp_compare_cells.py` |
+| Interpretability: correlation, causal ablation, PCA of embeddings | `exp_inside_lstm.py` |
+| Reproducibility: fixed seeds, one-command pipeline | `config.py`, `run_all.py` |
 
 ## 6. Data
 
@@ -123,6 +126,8 @@ translate.py            greedy translation + likelihood scoring
 evaluate.py             baseline vs LSTM vs LLM table
 
 style_classifier.py     Shakespeare-vs-modern logistic regression
+stats.py                bootstrap confidence intervals
+run_all.py              reproduces the whole study with one command
 exp_compare_cells.py    RQ1
 exp_inside_lstm.py      RQ2
 exp_temperature.py      RQ3

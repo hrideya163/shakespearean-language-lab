@@ -11,9 +11,9 @@ RESULTS_DIR = "results"
 SEED = 42
 
 
-def generator_path(cell):
-    """checkpoints/generator_lstm.pt, generator_gru.pt, generator_rnn.pt"""
-    return f"{CHECKPOINT_DIR}/generator_{cell}.pt"
+def generator_path(name):
+    """checkpoints/generator_lstm.pt, generator_gru.pt, generator_rnn.pt, generator_rnn_matched.pt ..."""
+    return f"{CHECKPOINT_DIR}/generator_{name}.pt"
 
 
 # ---------- text generator (character-level language model) ----------

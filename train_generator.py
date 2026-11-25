@@ -3,6 +3,8 @@
   python train_generator.py                 # LSTM (default)
   python train_generator.py --cell gru      # or rnn, for the comparison experiment (RQ1)
   python train_generator.py --steps 500     # shorter run
+  python train_generator.py --cell rnn --hidden 540 --name rnn_matched
+                                            # bigger RNN with as many weights as the LSTM (fair comparison)
 """
 import argparse
 import csv
@@ -39,8 +41,11 @@ def validation_loss(model, data, seq_len, max_chars=50_000):
     return F.cross_entropy(logits.reshape(-1, logits.size(-1)), y.reshape(-1)).item()
 
 
-def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbose=True):
-    """Train one generator and save it. Returns the training log (list of dicts)."""
+def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbose=True,
+          hidden=config.GEN_HID_DIM, name=None):
+    """Train one generator and save it as checkpoints/generator_<name>.pt.
+    Returns the training log (list of dicts)."""
+    name = name or cell
     random.seed(config.SEED)
     torch.manual_seed(config.SEED)
 
@@ -51,12 +56,12 @@ def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbo
     valid_data = torch.tensor(vocab.encode(valid_text))
 
     model_args = dict(vocab_size=len(vocab), emb_dim=config.GEN_EMB_DIM,
-                      hid_dim=config.GEN_HID_DIM, cell_type=cell, dropout=config.GEN_DROPOUT)
+                      hid_dim=hidden, cell_type=cell, dropout=config.GEN_DROPOUT)
     model = CharLM(**model_args)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.GEN_LEARNING_RATE)
     n_params = sum(p.numel() for p in model.parameters())
     if verbose:
-        print(f"[{cell}] {len(train_text):,} training characters, vocab {len(vocab)}, "
+        print(f"[{name}] {len(train_text):,} training characters, vocab {len(vocab)}, "
               f"{n_params / 1e6:.2f} M parameters")
 
     os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
@@ -83,14 +88,14 @@ def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbo
             if valid < best:
                 best = valid
                 torch.save({"model_state": model.state_dict(), "model_args": model_args,
-                            "chars": vocab.chars, "log": log}, config.generator_path(cell))
+                            "chars": vocab.chars, "log": log}, config.generator_path(name))
                 saved = "  (saved)"
             if verbose:
-                print(f"[{cell}] step {step:5d} | train loss {train_loss:.3f} | "
+                print(f"[{name}] step {step:5d} | train loss {train_loss:.3f} | "
                       f"valid bpc {entry['valid_bpc']:.3f} | {entry['minutes']:.1f} min{saved}")
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
-    with open(os.path.join(config.RESULTS_DIR, f"generator_{cell}_log.csv"), "w", newline="") as f:
+    with open(os.path.join(config.RESULTS_DIR, f"generator_{name}_log.csv"), "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(log[0].keys()))
         writer.writeheader()
         writer.writerows(log)
@@ -101,10 +106,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cell", choices=["lstm", "gru", "rnn"], default="lstm")
     parser.add_argument("--steps", type=int, default=config.GEN_STEPS)
+    parser.add_argument("--hidden", type=int, default=config.GEN_HID_DIM, help="hidden state size")
+    parser.add_argument("--name", default=None, help="checkpoint name (default: the cell type)")
     parser.add_argument("--sample", action="store_true", help="use the tiny sample dataset")
     args = parser.parse_args()
     data_dir = config.SAMPLE_DIR if args.sample else config.CORPUS_DIR
-    train(args.cell, args.steps, data_dir)
+    train(args.cell, args.steps, data_dir, hidden=args.hidden, name=args.name)
 
 
 if __name__ == "__main__":

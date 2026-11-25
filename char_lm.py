@@ -59,10 +59,12 @@ class CharLM(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.out = nn.Linear(hid_dim, vocab_size)
 
-    def forward(self, x, state=None, record=False):
+    def forward(self, x, state=None, record=False, ablate=None):
         """x: (B, T) character ids.
         Returns logits (B, T, V), the final state, and (if record=True) a list with
-        the gate values of every time step."""
+        the gate values of every time step.
+        ablate: optional list of hidden units to switch off (set to 0) at every step.
+                Used in exp_inside_lstm.py to test what a unit is responsible for."""
         batch, steps = x.shape
         if state is None:
             state = self.cell.init_state(batch, x.device)
@@ -70,6 +72,9 @@ class CharLM(nn.Module):
         outputs, recorded = [], []
         for t in range(steps):                       # one character at a time
             h, state, gates = self.cell(emb[:, t], state)
+            if ablate:
+                state = tuple(s.index_fill(1, torch.tensor(ablate), 0.0) for s in state)
+                h = state[0]                         # h is always the first part of the state
             outputs.append(h)
             if record:
                 recorded.append({name: value.detach() for name, value in gates.items()})
@@ -77,11 +82,11 @@ class CharLM(nn.Module):
         return logits, state, recorded
 
 
-def load_generator(cell="lstm", device="cpu"):
-    """Load a trained generator. Returns (model, vocab)."""
-    path = config.generator_path(cell)
+def load_generator(name="lstm", device="cpu"):
+    """Load a trained generator by name (lstm, gru, rnn, rnn_matched, ...). Returns (model, vocab)."""
+    path = config.generator_path(name)
     if not os.path.exists(path):
-        raise FileNotFoundError(f"{path} not found. Run: python train_generator.py --cell {cell}")
+        raise FileNotFoundError(f"{path} not found. Run: python train_generator.py --cell {name}")
     ckpt = torch.load(path, map_location=device)
     model = CharLM(**ckpt["model_args"]).to(device)
     model.load_state_dict(ckpt["model_state"])

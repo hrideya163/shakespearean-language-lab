@@ -11,8 +11,14 @@
      meaning guard   rule-based check from explain.py (flag = any warning)
      LSTM likelihood how probable our translator finds the candidate
                      (a drifted candidate should look less likely)
-3. REPORT detection rate / false alarms for the guard and AUROC for the
-   likelihood (0.5 = random guessing, 1.0 = perfect).
+3. REPORT
+     - detection rate / false alarms of the guard
+     - AUROC of the likelihood (0.5 = random guessing, 1.0 = perfect), with a
+       95% bootstrap confidence interval
+     - PAIRED TEST: for each line, did the model give the correct translation a higher
+       likelihood than its corrupted copy? (easy to explain: "the model preferred the
+       right answer X% of the time")
+     - examples where the likelihood was fooled
 
 Outputs: results/rq5_drift.md, results/drift_benchmark.tsv
 """
@@ -25,6 +31,7 @@ from sklearn.metrics import roc_auc_score
 import config
 from data import detokenize, read_split, tokenize
 from explain import find_anchors, meaning_guard
+from stats import bootstrap_ci
 from translate import Translator
 
 AUXILIARIES = {"is", "are", "am", "was", "were", "will", "would", "can", "could", "shall",
@@ -71,14 +78,14 @@ def change_number(tokens, rng):
 def build_benchmark(pairs, rng):
     name_pool = sorted({n for _, m in pairs for n in find_anchors(tokenize(m, lower=False))["names"]})
     rows = []
-    for shakes, modern in pairs:
+    for pair_id, (shakes, modern) in enumerate(pairs):
         ref = tokenize(modern, lower=False)
-        rows.append((shakes, detokenize(ref), "clean"))
+        rows.append((pair_id, shakes, detokenize(ref), "clean"))
         for kind, corrupted in [("negation", flip_negation(ref)),
                                 ("name", swap_name(ref, name_pool, rng) if len(name_pool) > 1 else None),
                                 ("number", change_number(ref, rng))]:
             if corrupted:
-                rows.append((shakes, detokenize(corrupted), kind))
+                rows.append((pair_id, shakes, detokenize(corrupted), kind))
     return rows
 
 
@@ -93,10 +100,10 @@ def main():
     translator = Translator()
 
     scored = []
-    for shakes, candidate, kind in benchmark:
+    for pair_id, shakes, candidate, kind in benchmark:
         _, _, warnings = meaning_guard(tokenize(shakes, lower=False), tokenize(candidate))
         avg_lp, min_lp = translator.score(shakes, candidate)
-        scored.append({"kind": kind, "guard": bool(warnings), "avg": avg_lp, "min": min_lp,
+        scored.append({"pair": pair_id, "kind": kind, "guard": bool(warnings), "avg": avg_lp, "min": min_lp,
                        "shakes": shakes, "candidate": candidate})
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
@@ -106,22 +113,44 @@ def main():
             f.write(f"{s['kind']}\t{s['shakes']}\t{s['candidate']}\n")
 
     clean = [s for s in scored if s["kind"] == "clean"]
+    clean_by_pair = {s["pair"]: s for s in clean}
     lines = ["# RQ5: Meaning drift detection", "",
-             f"Benchmark built from {len(pairs)} test pairs: {len(scored)} candidates.", "",
+             f"Benchmark built from {len(pairs)} test pairs: {len(scored)} candidates "
+             f"({len(clean)} clean, {len(scored) - len(clean)} drifted).", "",
              f"Meaning guard false alarms on clean translations: "
-             f"{100 * sum(s['guard'] for s in clean) / len(clean):.1f}%", "",
-             "| drift type | examples | guard detection % | AUROC avg log-prob | AUROC min log-prob |",
-             "|---|---|---|---|---|"]
+             f"**{100 * sum(s['guard'] for s in clean) / len(clean):.1f}%**", "",
+             "| drift type | examples | guard detection % | AUROC (avg log-prob) | 95% CI | "
+             "AUROC (min log-prob) | model prefers correct version % |",
+             "|---|---|---|---|---|---|---|"]
+    fooled = []
     for kind in ["negation", "name", "number"]:
         drifted = [s for s in scored if s["kind"] == kind]
         if not drifted:
             continue
+        both = clean + drifted
         labels = [0] * len(clean) + [1] * len(drifted)
         # lower likelihood = more suspicious, so the drift score is the NEGATIVE log-prob
-        auc_avg = roc_auc_score(labels, [-s["avg"] for s in clean + drifted])
-        auc_min = roc_auc_score(labels, [-s["min"] for s in clean + drifted])
+        auc_avg = roc_auc_score(labels, [-s["avg"] for s in both])
+        auc_min = roc_auc_score(labels, [-s["min"] for s in both])
+
+        def auc_of(idx):
+            sample_labels = [labels[i] for i in idx]
+            if len(set(sample_labels)) < 2:
+                return 0.5
+            return roc_auc_score(sample_labels, [-both[i]["avg"] for i in idx])
+        low, high = bootstrap_ci(auc_of, len(both), n_resamples=300)
+
+        prefers = [clean_by_pair[s["pair"]]["avg"] > s["avg"] for s in drifted]
         detected = 100 * sum(s["guard"] for s in drifted) / len(drifted)
-        lines.append(f"| {kind} | {len(drifted)} | {detected:.1f} | {auc_avg:.3f} | {auc_min:.3f} |")
+        lines.append(f"| {kind} | {len(drifted)} | {detected:.1f} | {auc_avg:.3f} | "
+                     f"{low:.2f} - {high:.2f} | {auc_min:.3f} | {100 * sum(prefers) / len(prefers):.1f} |")
+        fooled += [(s, clean_by_pair[s["pair"]]) for s, ok in zip(drifted, prefers) if not ok][:3]
+
+    lines += ["", "## Where the likelihood was fooled (it preferred the corrupted version)", ""]
+    for bad, good in fooled:
+        lines += [f"- **{bad['kind']}**: *{bad['shakes']}*  ",
+                  f"  correct: {good['candidate']} (avg log-prob {good['avg']:.2f})  ",
+                  f"  corrupted: {bad['candidate']} (avg log-prob {bad['avg']:.2f})"]
 
     with open(os.path.join(config.RESULTS_DIR, "rq5_drift.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
