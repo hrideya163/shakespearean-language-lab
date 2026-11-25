@@ -7,6 +7,10 @@ For each temperature we generate several samples and measure:
     distinct-2 %     share of different word pairs (higher = more varied)
     repetition %     share of words that repeat the word 1-3 positions earlier
     style score      Shakespeare probability from the style classifier (0..1)
+    archaic words %  share of words in the archaic dictionary (thou, hath, 'tis ...)
+    line length      average characters per line
+The same numbers are computed on REAL validation text, so we can see which
+temperature produces text that is statistically closest to real Shakespeare.
 
 Outputs: results/rq3_temperature.md and results/rq3_temperature.png
 """
@@ -20,6 +24,7 @@ import matplotlib.pyplot as plt
 import config
 from char_lm import load_generator, load_shakespeare_text
 from generate import generate
+from lexicon import is_archaic
 from style_classifier import shakespeare_score
 
 TEMPERATURES = [0.2, 0.5, 0.8, 1.0, 1.3]
@@ -43,6 +48,8 @@ def measure(texts, known_words):
         "distinct-2 %": 100 * len(set(bigrams)) / max(len(bigrams), 1),
         "repetition %": 100 * repeats / max(len(all_words), 1),
         "style score": sum(shakespeare_score(lines)) / max(len(lines), 1),
+        "archaic words %": 100 * sum(is_archaic(w) for w in all_words) / max(len(all_words), 1),
+        "line length": sum(len(line) for line in lines) / max(len(lines), 1),
     }
 
 
@@ -50,6 +57,9 @@ def main():
     model, vocab = load_generator("lstm")
     known_words = set(words(load_shakespeare_text("train")))
     results, examples = {}, {}
+    valid_text = load_shakespeare_text("valid")
+    n_texts = len(PROMPTS) * SAMPLES_PER_PROMPT
+    real = measure([valid_text[i * LENGTH:(i + 1) * LENGTH] for i in range(n_texts)], known_words)
     for temp in TEMPERATURES:
         texts = []
         for p_i, prompt in enumerate(PROMPTS):
@@ -67,16 +77,19 @@ def main():
              "| temperature | " + " | ".join(cols) + " |", "|---" * (len(cols) + 1) + "|"]
     for temp, m in results.items():
         lines.append(f"| {temp} | " + " | ".join(f"{m[c]:.2f}" for c in cols) + " |")
+    lines.append("| **real Shakespeare** | " + " | ".join(f"**{real[c]:.2f}**" for c in cols) + " |")
     lines += ["", "## Examples", ""]
     for temp, text in examples.items():
         lines += [f"### T = {temp}", "```", text.strip(), "```", ""]
     with open(os.path.join(config.RESULTS_DIR, "rq3_temperature.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    fig, axes = plt.subplots(1, 4, figsize=(14, 3.2))
-    for ax, col in zip(axes, cols):
-        ax.plot(TEMPERATURES, [results[t][col] for t in TEMPERATURES], marker="o")
+    fig, axes = plt.subplots(2, 3, figsize=(13, 6.5))
+    for ax, col in zip(axes.flat, cols):
+        ax.plot(TEMPERATURES, [results[t][col] for t in TEMPERATURES], marker="o", label="generated")
+        ax.axhline(real[col], color="tab:red", linestyle="--", label="real Shakespeare")
         ax.set_title(col); ax.set_xlabel("temperature"); ax.grid(alpha=0.3)
+    axes.flat[0].legend()
     plt.tight_layout()
     plt.savefig(os.path.join(config.RESULTS_DIR, "rq3_temperature.png"), dpi=120)
     print("Written: results/rq3_temperature.md, rq3_temperature.png")

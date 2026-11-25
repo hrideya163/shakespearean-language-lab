@@ -15,13 +15,18 @@ Part C  TRACE         for the copy model:
                       - average copy probability per word-map label (kept vs changed)
                       - attention as alignment: for each changed word, does the model's
                         attention point at the input word it replaced?
+                      - calibration: is the model right as often as its confidence says?
+Part D  LENGTH        BLEU for short vs long sentences
 
-Output: results/rq4_copy_gate.md
+Output: results/rq4_copy_gate.md, results/rq4_calibration.png
 """
 import argparse
 import os
 from collections import Counter
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import sacrebleu
 
 import config
@@ -73,6 +78,32 @@ def attention_alignment(results):
     return correct, total
 
 
+def calibration(results, references, n_bins=5):
+    """Group output words by confidence and measure how often they are correct."""
+    edges = [i / n_bins for i in range(n_bins + 1)]
+    counts = {(edges[i], edges[i + 1]): [0, 0] for i in range(n_bins)}
+    for r, ref in zip(results, references):
+        ref_set = set(ref)
+        for word, conf in zip(r["output_tokens"], r["confidences"]):
+            for (low, high), c in counts.items():
+                if low <= conf < high or (high == 1.0 and conf == 1.0):
+                    c[0] += 1
+                    c[1] += word.lower() in ref_set
+                    break
+    return {k: (n, 100 * ok / n if n else 0.0) for k, (n, ok) in counts.items()}
+
+
+def plot_calibration(bins, path):
+    centres = [(low + high) / 2 for (low, high), (n, _) in bins.items() if n]
+    accuracy = [pct / 100 for (n, pct) in bins.values() if n]
+    plt.figure(figsize=(4.5, 4.5))
+    plt.plot([0, 1], [0, 1], "k--", linewidth=1, label="perfect calibration")
+    plt.plot(centres, accuracy, marker="o", label="LSTM translator")
+    plt.xlabel("model confidence"); plt.ylabel("fraction actually correct")
+    plt.title("Confidence calibration"); plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
+    plt.savefig(path, dpi=120)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", type=int, default=500, help="number of test sentences")
@@ -84,7 +115,11 @@ def main():
     sources = [[t.lower() for t in s] for s in sources_cased]
     references = [tokenize(m) for _, m in pairs]
 
-    systems = {"Dictionary baseline": [baseline_translate(s) for s in sources]}
+    # Two simple baselines. "Copy input" outputs the Shakespeare line unchanged: because old and
+    # modern lines share many words, this already gets a surprisingly high BLEU, which tells us
+    # how much of any system's BLEU comes from mere word overlap.
+    systems = {"Copy input (no change)": [list(s) for s in sources],
+               "Dictionary baseline": [baseline_translate(s) for s in sources]}
     results_by_model = {}
     for name, path in [("LSTM without copy gate", config.TRANSLATOR_NOCOPY_PATH),
                        ("LSTM with copy gate", config.TRANSLATOR_PATH)]:
@@ -124,7 +159,7 @@ def main():
     # ---------------- Part B: archaic word accuracy
     hits = {name: archaic_hits(sources, outputs) for name, outputs in systems.items()}
     freq = Counter({w: c[1] for w, c in hits["Dictionary baseline"].items()})
-    names = list(systems.keys())
+    names = [n for n in systems if n != "Copy input (no change)"]
     lines += ["", "## B. Were archaic words modernised?", "",
               "A hit = the dictionary meaning of the archaic word appears in the output "
               "(thou -> you). The dictionary baseline is 100% by construction, but it ignores context "
@@ -163,6 +198,34 @@ def main():
                   f"pointed at the input word they replaced **{100 * correct / max(total, 1):.1f}%** "
                   f"of the time (a random guess over the input words would be about "
                   f"{100 / (sum(len(s) for s in sources) / len(sources)):.0f}%)."]
+
+        # C3. calibration: are the confidence values honest?
+        bins = calibration(results, references)
+        lines += ["", "## C3. Confidence calibration", "",
+                  "Each output word has a confidence (its softmax probability). We call a word "
+                  "*correct* if it appears in the human reference. A well-calibrated model is right "
+                  "about 80% of the time when it says 80%. This tells us whether the app's "
+                  "'unsure' underline can be trusted.", "",
+                  "| confidence range | words | actually correct % |", "|---|---|---|"]
+        for (low, high), (n, correct_pct) in bins.items():
+            if n:
+                lines.append(f"| {low:.1f} - {high:.1f} | {n} | {correct_pct:.1f} |")
+        plot_calibration(bins, os.path.join(config.RESULTS_DIR, "rq4_calibration.png"))
+
+    # ---------------- Part D: does quality drop for long sentences?
+    buckets = [(1, 5), (6, 10), (11, 20), (21, 1000)]
+    lines += ["", "## D. BLEU by source sentence length (tokens)", "",
+              "| system | " + " | ".join(f"{a}-{b}" if b < 1000 else f"{a}+" for a, b in buckets) + " |",
+              "|---" * (len(buckets) + 1) + "|"]
+    for name, outputs in systems.items():
+        cells = []
+        for a, b in buckets:
+            idx = [i for i, s in enumerate(sources) if a <= len(s) <= b]
+            bleu = sacrebleu.corpus_bleu([" ".join(outputs[i]) for i in idx],
+                                         [[" ".join(references[i]) for i in idx]],
+                                         tokenize="none").score if idx else 0.0
+            cells.append(f"{bleu:.1f} (n={len(idx)})")
+        lines.append(f"| {name} | " + " | ".join(cells) + " |")
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(os.path.join(config.RESULTS_DIR, "rq4_copy_gate.md"), "w", encoding="utf-8") as f:

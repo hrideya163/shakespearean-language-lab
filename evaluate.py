@@ -85,6 +85,10 @@ def main():
 
     rows = {}
 
+    # 0. "copy input": output the Shakespeare line unchanged (shows how much BLEU comes from overlap)
+    rows["Copy input (no change)"] = score(sources_cased, references,
+                                           [[t.lower() for t in s] for s in sources_cased])
+
     # 1. dictionary baseline
     baseline = [baseline_translate([t.lower() for t in s]) for s in sources_cased]
     rows["Dictionary baseline"] = score(sources_cased, references, baseline)
