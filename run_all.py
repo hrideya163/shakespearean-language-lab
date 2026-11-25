@@ -22,6 +22,7 @@ TRAINING = [
     ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--name", "rnn_matched"],
     ["train_translator.py"],
     ["train_translator.py", "--no_copy"],
+    ["train_translator.py", "--dropout", "0"],   # no regularisation, to show overfitting (RQ4 part E)
 ]
 
 EXPERIMENTS = [

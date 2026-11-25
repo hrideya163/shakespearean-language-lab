@@ -31,6 +31,7 @@ python train_generator.py --cell rnn --hidden 542 --name rnn_matched   # same #w
 python style_classifier.py                 # Shakespeare-vs-modern classifier (seconds)
 python train_translator.py                 # translator with copy gate
 python train_translator.py --no_copy       # ablation for RQ4
+python train_translator.py --dropout 0     # no regularisation, to show overfitting (RQ4)
 ```
 
 Quick checks:

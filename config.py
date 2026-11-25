@@ -6,6 +6,7 @@ SAMPLE_DIR = "data/sample"        # tiny hand-made dataset for a quick smoke tes
 CHECKPOINT_DIR = "checkpoints"
 TRANSLATOR_PATH = "checkpoints/translator.pt"
 TRANSLATOR_NOCOPY_PATH = "checkpoints/translator_nocopy.pt"
+TRANSLATOR_NODROPOUT_PATH = "checkpoints/translator_nodropout.pt"   # first run, kept for comparison
 STYLE_CLASSIFIER_PATH = "checkpoints/style_classifier.joblib"
 RESULTS_DIR = "results"
 SEED = 42
@@ -31,6 +32,7 @@ MAX_LEN = 30          # skip sentences longer than this many tokens
 MIN_FREQ = 2          # a word must appear this many times to enter the vocabulary
 EMB_DIM = 128         # size of each word vector
 HID_DIM = 256         # size of the LSTM hidden state
+DROPOUT = 0.3         # regularisation against overfitting (0 = off)
 BATCH_SIZE = 64
 EPOCHS = 10
 LEARNING_RATE = 1e-3

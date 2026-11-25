@@ -20,16 +20,17 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 
 class Encoder(nn.Module):
-    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx):
+    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, dropout=0.0):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=pad_idx)
+        self.dropout = nn.Dropout(dropout)   # randomly zeroes values during training (regularisation)
         self.lstm = nn.LSTM(emb_dim, hid_dim, batch_first=True, bidirectional=True)
         # The decoder is one-directional, so we squash forward+backward states into one.
         self.bridge_h = nn.Linear(2 * hid_dim, hid_dim)
         self.bridge_c = nn.Linear(2 * hid_dim, hid_dim)
 
     def forward(self, src, src_lens):
-        emb = self.embedding(src)                                   # (B, S, E)
+        emb = self.dropout(self.embedding(src))                     # (B, S, E)
         # "Packing" tells the LSTM to ignore the padding at the end of short sentences.
         packed = pack_padded_sequence(emb, src_lens.cpu(), batch_first=True, enforce_sorted=False)
         packed_out, (h, c) = self.lstm(packed)
@@ -41,10 +42,11 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, use_copy=True):
+    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, use_copy=True, dropout=0.0):
         super().__init__()
         self.use_copy = use_copy       # False = ablation without the copy gate (experiment RQ4)
         self.embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=pad_idx)
+        self.dropout = nn.Dropout(dropout)
         self.lstm_cell = nn.LSTMCell(emb_dim, hid_dim)
         self.attn_proj = nn.Linear(2 * hid_dim, hid_dim, bias=False)   # makes encoder states comparable to h
         self.combine = nn.Linear(hid_dim + 2 * hid_dim, hid_dim)
@@ -60,7 +62,7 @@ class Decoder(nn.Module):
           attn    (B, S) attention weights over the input words
           p_copy  (B,)   probability of copying instead of generating
         """
-        emb = self.embedding(prev_token)                            # (B, E)
+        emb = self.dropout(self.embedding(prev_token))              # (B, E)
         h, c = self.lstm_cell(emb, (h, c))                          # (B, H)
 
         # --- attention: score every input word against the decoder state ---
@@ -71,7 +73,7 @@ class Decoder(nn.Module):
 
         # --- option 1: GENERATE a word from the whole vocabulary ---
         hidden = torch.tanh(self.combine(torch.cat([h, context], dim=1)))
-        generate_probs = F.softmax(self.out(hidden), dim=1)         # (B, V)
+        generate_probs = F.softmax(self.out(self.dropout(hidden)), dim=1)  # (B, V)
 
         # --- option 2: COPY an input word (use attention weights as probabilities) ---
         copy_probs = torch.zeros_like(generate_probs).scatter_add(1, src, attn)  # (B, V)
@@ -85,11 +87,11 @@ class Decoder(nn.Module):
 
 
 class Seq2Seq(nn.Module):
-    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, use_copy=True):
+    def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, use_copy=True, dropout=0.0):
         super().__init__()
         self.pad_idx = pad_idx
-        self.encoder = Encoder(vocab_size, emb_dim, hid_dim, pad_idx)
-        self.decoder = Decoder(vocab_size, emb_dim, hid_dim, pad_idx, use_copy)
+        self.encoder = Encoder(vocab_size, emb_dim, hid_dim, pad_idx, dropout)
+        self.decoder = Decoder(vocab_size, emb_dim, hid_dim, pad_idx, use_copy, dropout)
 
     def encode(self, src, src_lens):
         enc_outputs, h, c = self.encoder(src, src_lens)

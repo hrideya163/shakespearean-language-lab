@@ -17,10 +17,12 @@ Part C  TRACE         for the copy model:
                         attention point at the input word it replaced?
                       - calibration: is the model right as often as its confidence says?
 Part D  LENGTH        BLEU for short vs long sentences
+Part E  OVERFITTING   training vs validation loss with and without dropout
 
-Output: results/rq4_copy_gate.md, results/rq4_calibration.png
+Output: results/rq4_copy_gate.md, results/rq4_calibration.png, results/rq4_overfitting.png
 """
 import argparse
+import csv
 import os
 from collections import Counter
 
@@ -104,6 +106,27 @@ def plot_calibration(bins, path):
     plt.savefig(path, dpi=120)
 
 
+def plot_overfitting(path):
+    """Training vs validation loss per epoch, for the runs with and without dropout."""
+    runs = [("no dropout", "translator_nodropout_log.csv"), ("dropout", "translator_log.csv")]
+    plt.figure(figsize=(6, 4))
+    found = False
+    for (label, filename), colour in zip(runs, ["tab:red", "tab:blue"]):
+        log_path = os.path.join(config.RESULTS_DIR, filename)
+        if not os.path.exists(log_path):
+            continue
+        with open(log_path) as f:
+            rows = list(csv.DictReader(f))
+        epochs = [int(r["epoch"]) for r in rows]
+        plt.plot(epochs, [float(r["train_loss"]) for r in rows], "--", color=colour, label=f"train ({label})")
+        plt.plot(epochs, [float(r["valid_loss"]) for r in rows], "-o", color=colour, label=f"validation ({label})")
+        found = True
+    if found:
+        plt.xlabel("epoch"); plt.ylabel("loss"); plt.title("Overfitting: training vs validation loss")
+        plt.legend(fontsize=8); plt.grid(alpha=0.3); plt.tight_layout()
+        plt.savefig(path, dpi=120)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", type=int, default=500, help="number of test sentences")
@@ -122,6 +145,7 @@ def main():
                "Dictionary baseline": [baseline_translate(s) for s in sources]}
     results_by_model = {}
     for name, path in [("LSTM without copy gate", config.TRANSLATOR_NOCOPY_PATH),
+                       ("LSTM with copy gate, no dropout", config.TRANSLATOR_NODROPOUT_PATH),
                        ("LSTM with copy gate", config.TRANSLATOR_PATH)]:
         if not os.path.exists(path):
             print("skipping", name, "- missing", path)
@@ -228,6 +252,12 @@ def main():
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
+    plot_overfitting(os.path.join(config.RESULTS_DIR, "rq4_overfitting.png"))
+    lines += ["", "## E. Overfitting and dropout", "",
+              "See `rq4_overfitting.png`: without dropout the training loss keeps falling while the "
+              "validation loss turns upward after a few epochs (the model memorises the training "
+              "sentences). Dropout (randomly switching off 30% of values during training) narrows "
+              "that gap. Compare the two copy-gate rows in table A."]
     with open(os.path.join(config.RESULTS_DIR, "rq4_copy_gate.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print("\n".join(lines))

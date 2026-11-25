@@ -2,6 +2,7 @@
 
   python train_translator.py              # full corpus (run download_data.py first)
   python train_translator.py --no_copy    # ablation: same model without the copy gate (RQ4)
+  python train_translator.py --dropout 0  # turn regularisation off (to see overfitting)
   python train_translator.py --sample     # tiny built-in dataset, just to check everything runs
 """
 import argparse
@@ -76,6 +77,7 @@ def main():
     parser.add_argument("--sample", action="store_true", help="use the tiny sample dataset")
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--no_copy", action="store_true", help="turn the copy gate off (ablation)")
+    parser.add_argument("--dropout", type=float, default=config.DROPOUT)
     args = parser.parse_args()
 
     random.seed(config.SEED)
@@ -104,14 +106,19 @@ def main():
     # 2. model
     model_args = dict(vocab_size=len(vocab), emb_dim=config.EMB_DIM,
                       hid_dim=config.HID_DIM, pad_idx=PAD_IDX,
-                      use_copy=not args.no_copy)
+                      use_copy=not args.no_copy, dropout=args.dropout)
     model = Seq2Seq(**model_args).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     n_params = sum(p.numel() for p in model.parameters())
     print(f"model parameters: {n_params / 1e6:.2f} M")
 
     # 3. training loop with early stopping
-    checkpoint_path = config.TRANSLATOR_NOCOPY_PATH if args.no_copy else config.TRANSLATOR_PATH
+    if args.no_copy:
+        checkpoint_path, run_name = config.TRANSLATOR_NOCOPY_PATH, "translator_nocopy"
+    elif args.dropout == 0:
+        checkpoint_path, run_name = config.TRANSLATOR_NODROPOUT_PATH, "translator_nodropout"
+    else:
+        checkpoint_path, run_name = config.TRANSLATOR_PATH, "translator"
     os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     history = []
@@ -134,8 +141,7 @@ def main():
                 print("  no improvement for", patience, "epochs -> early stopping")
                 break
 
-    log_path = os.path.join(config.RESULTS_DIR, "translator_nocopy_log.csv" if args.no_copy
-                            else "translator_log.csv")
+    log_path = os.path.join(config.RESULTS_DIR, f"{run_name}_log.csv")
     with open(log_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["epoch", "train_loss", "valid_loss"])
