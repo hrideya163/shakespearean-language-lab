@@ -90,7 +90,7 @@ For a detector that gives a score: the probability that a random *bad* example g
 
 | RQ | One-sentence claim to present | Evidence |
 |---|---|---|
-| RQ1 | "Gating fixes vanishing gradients: the plain RNN's gradient dies within a few steps, the LSTM's survives much longer, and that shows up as lower loss when more context is available." | gradient-flow plot, memory curve, test bpc table (incl. size-matched models) |
+| RQ1 | "We measured the vanishing gradient directly: 50 characters back the plain RNN keeps 0.001 % of its gradient. With the same number of weights the GRU wins. The LSTM starts slower but keeps improving when trained 3× longer, while the RNN stops learning." | gradient-flow plot, long-budget plot, test bpc table (incl. size-matched models) |
 | RQ2 | "Individual LSTM cells learn interpretable jobs, like tracking position in the line or being inside a word, and switching some of them off specifically hurts the related predictions." | correlation table, coloured-text HTML, ablation table, embedding map |
 | RQ3 | "Temperature trades correctness for diversity. Around T = 0.8 the generated text's statistics best match real Shakespeare, but the model under-uses rare archaic words." | temperature table and plot |
 | RQ4 | "The copy gate gives a free, faithful explanation: kept words have high copy probability, changed words low. Attention points at the replaced word far above chance, and confidence is roughly calibrated." | ablation table with CIs, copy-probability table, alignment %, calibration plot |
@@ -119,9 +119,11 @@ off random cells (`exp_inside_lstm.py`). Some cells pass this test and some don'
 probably share their job with other cells (redundancy).
 
 **Q: Your BLEU is lower than the dictionary baseline. Isn't the model bad?**
-A: Shakespeare and modern lines share most of their words, so even copying the input scores
-well on BLEU. That's why we report the *copy-input* baseline too, plus metrics BLEU misses: archaic-word
-accuracy, style score and meaning preservation. *(Adjust this answer to the final numbers.)*
+A: Shakespeare and modern lines share most of their words, so even copying the input unchanged scores
+19.5 BLEU. Our model scores 19.2 and the dictionary 21.7, with overlapping confidence intervals. BLEU
+rewards keeping words. The style classifier shows our output is clearly more modern (0.45) than the
+dictionary's (0.60), which only swaps words and keeps the old sentence structure. Within our own models,
+BLEU is still useful: the copy gate adds +4.3 and dropout +1.9, and those differences are significant.
 
 **Q: Why is the drift benchmark synthetic?**
 A: Real meaning errors are rare and expensive to label. Controlled corruptions (negation, names,
@@ -129,5 +131,15 @@ numbers) give us thousands of labelled examples, and we know exactly what change
 that real drift can be subtler, as stated in the plan.
 
 **Q: What would you do with more time or compute?**
-A: Train longer and larger (the generator is still improving at 3,000 steps), use subword units so
-rare names aren't unknown words, run several random seeds, and collect a small human evaluation.
+A: Run several random seeds (we have one per model), use subword units so rare names and archaic words
+aren't unknown or rare, train larger models on a GPU, and collect a small human evaluation.
+
+**Q: Why does the LSTM lose to the GRU if LSTMs are "better"?**
+A: The GRU has fewer gates, so with a small budget it learns faster. Our long-budget run shows the LSTM
+is still improving at 9,000 steps while the size-matched RNN has stopped learning altogether. Which gated
+cell wins depends on budget and task. Gating versus no gating is the bigger difference.
+
+**Q: Your model prefers the correct sentence 90 % of the time, but its AUROC is only 0.61. How?**
+A: AUROC compares scores across *different* sentences, and some sentences are just harder to predict
+than others. The paired test compares two versions of the *same* sentence, so that difficulty cancels
+out. Comparison is a much stronger signal than an absolute score.

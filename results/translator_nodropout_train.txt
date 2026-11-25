@@ -1,0 +1,12 @@
+device=cpu  vocab=9024  train=34818  valid=2360 examples
+model parameters: 6.41 M
+epoch  1 | train loss 3.720 | valid loss 3.327 | valid perplexity 27.8
+  saved best model
+epoch  2 | train loss 3.075 | valid loss 3.125 | valid perplexity 22.8
+  saved best model
+epoch  3 | train loss 2.762 | valid loss 3.074 | valid perplexity 21.6
+  saved best model
+epoch  4 | train loss 2.481 | valid loss 3.102 | valid perplexity 22.2
+epoch  5 | train loss 2.227 | valid loss 3.170 | valid perplexity 23.8
+  no improvement for 2 epochs -> early stopping
+Training log written to results\translator_log.csv

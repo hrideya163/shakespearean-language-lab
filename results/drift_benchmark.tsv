@@ -1,0 +1,1069 @@
+type	shakespeare	candidate
+clean	Riddling confession finds but riddling shrift .	A jumbled confession can only receive a jumbled absolution.
+negation	Riddling confession finds but riddling shrift .	A jumbled confession can not only receive a jumbled absolution.
+clean	Then plainly know my heart's dear love is set On the fair daughter of rich Capulet .	I love rich Capulet's daughter.
+clean	As mine on hers , so hers is set on mine , And all combined , save what thou must combine By holy marriage .	We're bound to each other in every possible way, except we need you to marry us.
+clean	When and where and how We met , we wooed and made exchange of vow , I'll tell thee as we pass , but this I pray : That thou consent to marry us today .	I'll tell you more later about when and where we met, how we fell in love, and how we exchanged promises, but now I'm begging you: please, agree to marry us today.
+clean	Holy Saint Francis , what a change is here !	Holy Saint Francis, this is a drastic change!
+negation	Holy Saint Francis , what a change is here !	Holy Saint Francis, this is not a drastic change!
+name	Holy Saint Francis , what a change is here !	Holy Right Francis, this is a drastic change!
+clean	Is Rosaline , whom thou didst love so dear , So soon forsaken ?	Have you given up so quickly on Rosaline, whom you loved so much?
+negation	Is Rosaline , whom thou didst love so dear , So soon forsaken ?	Have not you given up so quickly on Rosaline, whom you loved so much?
+name	Is Rosaline , whom thou didst love so dear , So soon forsaken ?	Have you given up so quickly on Capulets, whom you loved so much?
+clean	Young men's love then lies Not truly in their hearts , but in their eyes .	Then young men love with their eyes, not with their hearts.
+negation	Young men's love then lies Not truly in their hearts , but in their eyes .	Then young men love with their eyes, with their hearts.
+clean	The sun not yet thy sighs from heaven clears , Thy old groans ring yet in my ancient ears .	The groans you used to make are still ringing in my old ears.
+negation	The sun not yet thy sighs from heaven clears , Thy old groans ring yet in my ancient ears .	The groans you used to make are not still ringing in my old ears.
+clean	Lo , here upon thy cheek the stain doth sit Of an old tear that is not washed off yet .	There's still a stain on your cheek from an old tear that hasn't been washed off yet.
+negation	Lo , here upon thy cheek the stain doth sit Of an old tear that is not washed off yet .	There's still a stain on your cheek from an old tear that has been washed off yet.
+clean	If e'er thou wast thyself and these woes thine , Thou and these woes were all for Rosaline .	If you were ever yourself, and this sadness was yours, you and your sadness were all for Rosaline.
+negation	If e'er thou wast thyself and these woes thine , Thou and these woes were all for Rosaline .	If you were not ever yourself, and this sadness was yours, you and your sadness were all for Rosaline.
+name	If e'er thou wast thyself and these woes thine , Thou and these woes were all for Rosaline .	If you were ever yourself, and this sadness was yours, you and your sadness were all for A.
+clean	And art thou changed ?	And now you've changed?
+clean	Pronounce this sentence then : Women may fall when there's no strength in men .	Then repeat this after me: you can't expect women to be faithful when men are so unreliable.
+negation	Pronounce this sentence then : Women may fall when there's no strength in men .	Then repeat this after me: you can expect women to be faithful when men are so unreliable.
+clean	Thou chid'st me oft for loving Rosaline .	You scolded me often for loving Rosaline.
+name	Thou chid'st me oft for loving Rosaline .	You scolded me often for loving These.
+clean	For doting , not for loving , pupil mine .	I scolded you for obsessing about her, not for loving her, my student.
+negation	For doting , not for loving , pupil mine .	I scolded you for obsessing about her, for loving her, my student.
+clean	And badest me bury love .	And you told me to bury my love.
+clean	Not in a grave , To lay one in , another out to have .	I didn't tell you to get rid of one love and replace her with another.
+negation	Not in a grave , To lay one in , another out to have .	I did tell you to get rid of one love and replace her with another.
+number	Not in a grave , To lay one in , another out to have .	I didn't tell you to get rid of six love and replace her with another.
+clean	I pray thee , chide not .	Please, I beg you, don't scold me.
+negation	I pray thee , chide not .	Please, I beg you, do scold me.
+clean	The other did not so .	The other girl did not love me.
+negation	The other did not so .	The other girl did love me.
+clean	Oh , she knew well Thy love did read by rote , that could not spell .	Oh, she knew very well that you were acting like you were in love without really knowing what love means.
+negation	Oh , she knew well Thy love did read by rote , that could not spell .	Oh, she knew very well that you were not acting like you were in love without really knowing what love means.
+clean	But come , young waverer , come , go with me , In one respect I'll thy assistant be , For this alliance may so happy prove To turn your households ' rancor to pure love .	But come on, inconsistent young man, come with me.
+clean	Oh , let us hence .	Let's get out of here.
+clean	I stand on sudden haste .	I'm in a rush.
+clean	Wisely and slow .	Go wisely and slowly.
+clean	They stumble that run fast .	Those who rush stumble and fall.
+clean	Where the devil should this Romeo be ?	Where the devil can Romeo be?
+negation	Where the devil should this Romeo be ?	Where the devil can not Romeo be?
+name	Where the devil should this Romeo be ?	Where the devil can Give be?
+clean	Came he not home tonight ?	Didn't he come home last night?
+negation	Came he not home tonight ?	Did he come home last night?
+clean	Not to his father's .	Not to his father's house.
+negation	Not to his father's .	To his father's house.
+clean	I spoke with his man .	I asked a servant.
+clean	Why , that same pale hard-hearted wench , that Rosaline , Torments him so , that he will sure run mad .	That fair - skinned, hard - hearted hussy, Rosaline is going to torment him until he goes insane.
+negation	Why , that same pale hard-hearted wench , that Rosaline , Torments him so , that he will sure run mad .	That fair - skinned, hard - hearted hussy, Rosaline is not going to torment him until he goes insane.
+name	Why , that same pale hard-hearted wench , that Rosaline , Torments him so , that he will sure run mad .	That fair - skinned, hard - hearted hussy, Give is going to torment him until he goes insane.
+clean	Tybalt , the kinsman to old Capulet , Hath sent a letter to his father's house .	Tybalt, old Capulet's nephew, has sent a letter to Romeo's father's house.
+negation	Tybalt , the kinsman to old Capulet , Hath sent a letter to his father's house .	Tybalt, old Capulet's nephew, has not sent a letter to Romeo's father's house.
+clean	A challenge , on my life .	I bet it's a challenge.
+clean	Romeo will answer it .	Romeo will answer the challenge.
+negation	Romeo will answer it .	Romeo will not answer the challenge.
+clean	Any man that can write may answer a letter .	Any man who knows how to write can answer a letter.
+negation	Any man that can write may answer a letter .	Any man who knows how to write can not answer a letter.
+clean	Nay , he will answer the letter's master , how he dares , being dared .	No, Romeo will respond to the letter's writer, telling him whether he accepts the challenge.
+negation	Nay , he will answer the letter's master , how he dares , being dared .	No, Romeo will not respond to the letter's writer, telling him whether he accepts the challenge.
+name	Nay , he will answer the letter's master , how he dares , being dared .	No, Francis will respond to the letter's writer, telling him whether he accepts the challenge.
+clean	Alas , poor Romeo !	Oh, poor Romeo!
+name	Alas , poor Romeo !	Oh, poor These!
+clean	And is he a man to encounter Tybalt ?	Is he man enough at this point to face off with Tybalt?
+negation	And is he a man to encounter Tybalt ?	Is not he man enough at this point to face off with Tybalt?
+name	And is he a man to encounter Tybalt ?	Is he man enough at this point to face off with Capulets?
+clean	Why , what is Tybalt ?	Why, what's Tybalt's story?
+clean	The what ?	He knows what?
+clean	Without his roe , like a dried herring .	He looks skinny, like a dried herring without its eggs, and he hasn't got his girl.
+negation	Without his roe , like a dried herring .	He looks skinny, like a dried herring without its eggs, and he has got his girl.
+clean	O flesh , flesh , how art thou fishified !	O flesh, flesh, you've turned pale and weak like a fish.
+clean	Now is he for the numbers that Petrarch flowed in .	Now he's ready for
+clean	Good morrow to you both .	Good morning to you both.
+clean	What counterfeit did I give you ?	What do you mean I faked you out?
+negation	What counterfeit did I give you ?	What do not you mean I faked you out?
+clean	The slip , sir , the slip .	You gave us the slip, sir, the slip.
+clean	Can you not conceive ?	Can't you understand what I'm saying?
+negation	Can you not conceive ?	Can you understand what I'm saying?
+clean	Nay , I am the very pink of courtesy .	The Right.
+name	Nay , I am the very pink of courtesy .	The Rosaline.
+clean	I serve as good a man as you .	My employer is as good as yours.
+negation	I serve as good a man as you .	My employer is not as good as yours.
+clean	No better .	But he's not better than mine.
+negation	No better .	But he's better than mine.
+clean	Well , sir .	Well then.
+clean	You lie .	You lie.
+clean	You know not what you do .	Gregory, remember how to slash.
+clean	What , art thou drawn among these heartless hinds ?	What?
+clean	Come between us , good Benvolio .	Come break this up, Benvolio.
+name	Come between us , good Benvolio .	Come break this up, These.
+clean	My wits faints .	I'm losing this duel of wits.
+clean	Switch and spurs , switch and spurs , or I'll cry a match .	Keep going, keep going, or I'll declare myself the winner.
+clean	Nay , if our wits run the wild-goose chase , I am done , for thou hast more of the wild-goose in one of thy wits than , I am sure , I have in my whole five .	You have more wild goose in one of your jokes than I have in five of mine.
+negation	Nay , if our wits run the wild-goose chase , I am done , for thou hast more of the wild-goose in one of thy wits than , I am sure , I have in my whole five .	You have not more wild goose in one of your jokes than I have in five of mine.
+number	Nay , if our wits run the wild-goose chase , I am done , for thou hast more of the wild-goose in one of thy wits than , I am sure , I have in my whole five .	You have more wild goose in ten of your jokes than I have in five of mine.
+clean	Was I with you there for the goose ?	Was I even close to you in the chase for the goose?
+negation	Was I with you there for the goose ?	Was not I even close to you in the chase for the goose?
+clean	Thou wast never with me for anything when thou wast not there for the goose .	You were never with me for anything if you weren't there for the goose.
+negation	Thou wast never with me for anything when thou wast not there for the goose .	You were with me for anything if you weren't there for the goose.
+clean	I will bite thee by the ear for that jest .	I'll bite you on the ear for that joke.
+clean	Nay , good goose , bite not .	No, good goose, don't bite me.
+negation	Nay , good goose , bite not .	No, good goose, do bite me.
+clean	Thy wit is a very bitter sweeting .	Your joke is a very bitter apple.
+negation	Thy wit is a very bitter sweeting .	Your joke is not a very bitter apple.
+clean	It is a most sharp sauce .	Your humor is a spicy sauce.
+negation	It is a most sharp sauce .	Your humor is not a spicy sauce.
+clean	And is it not well served into a sweet goose ?	Then isn't it just the right dish for a sweet goose?
+negation	And is it not well served into a sweet goose ?	Then is it just the right dish for a sweet goose?
+clean	Oh , here's a wit of cheveril , that stretches from an inch narrow to an ell broad !	Oh, that's a joke made out of leather that spreads itself thin, from the width of an inch to as fat as a yard.
+clean	I stretch it out for that word "broad , " which , added to the goose , proves thee far and wide a broad goose .	I stretch my joke for that word " fat. " If you add that word to the word " goose, " it shows that you are a fat goose.
+negation	I stretch it out for that word "broad , " which , added to the goose , proves thee far and wide a broad goose .	I stretch my joke for that word " fat. " If you add that word to the word " goose, " it shows that you are not a fat goose.
+clean	Why , is not this better now than groaning for love ?	Why, isn't all this joking better than groaning about love?
+negation	Why , is not this better now than groaning for love ?	Why, is all this joking better than groaning about love?
+clean	Now art thou sociable .	Now you're sociable.
+clean	Now art thou Romeo .	Now you're Romeo.
+name	Now art thou Romeo .	Now you're Capulet.
+clean	Thou wouldst else have made thy tale large .	Oh, you're wrong.
+clean	Oh , thou art deceived .	I would have made it short.
+negation	Oh , thou art deceived .	I would not have made it short.
+clean	I would have made it short , for I was come to the whole depth of my tale , and meant , indeed , to occupy the argument no longer .	I had come to the deepest part of my tale, and I planned to say nothing more on the topic.
+negation	I would have made it short , for I was come to the whole depth of my tale , and meant , indeed , to occupy the argument no longer .	I had not come to the deepest part of my tale, and I planned to say nothing more on the topic.
+clean	Here's goodly gear .	Here's something good.
+clean	Two , two , a shirt and a smock .	There's two, a man and a woman.
+number	Two , two , a shirt and a smock .	There's eight, a man and a woman.
+clean	Peter !	Peter!
+clean	Anon !	I'm at your service.
+clean	My fan , Peter .	Give me my fan, Peter.
+name	My fan , Peter .	Give me my fan, Benvolio.
+clean	God ye good morrow , gentlemen .	Good morning, gentlemen.
+clean	God ye good e'en , fair gentlewoman .	Good afternoon, fair lady.
+clean	Is it good e'en ?	Is it now afternoon?
+negation	Is it good e'en ?	Is not it now afternoon?
+clean	Tis no less , I tell you , for the bawdy hand of the dial is now upon the prick of noon .	It's not earlier than that, I tell you.
+negation	Tis no less , I tell you , for the bawdy hand of the dial is now upon the prick of noon .	It's earlier than that, I tell you.
+clean	Out upon you !	The Get out of here!
+name	Out upon you !	The A out of here!
+clean	What a man are you ?	What kind of man are you?
+negation	What a man are you ?	What kind of man are not you?
+clean	One , gentlewoman , that God hath made , himself to mar .	I'm a man, my lady, that God has made for himself to ruin.
+negation	One , gentlewoman , that God hath made , himself to mar .	I'm a man, my lady, that God has not made for himself to ruin.
+clean	By my troth , it is well said .	I swear, you speak the truth.
+clean	For himself to mar , " quoth he ?	For himself to ruin, " he says.
+clean	Gentlemen , can any of you tell me where I may find the young Romeo ?	Gentlemen, can any of you tell me where I can find young Romeo?
+negation	Gentlemen , can any of you tell me where I may find the young Romeo ?	Gentlemen, can not any of you tell me where I can find young Romeo?
+name	Gentlemen , can any of you tell me where I may find the young Romeo ?	Gentlemen, can any of you tell me where I can find young Capulet?
+clean	I can tell you , but young Romeo will be older when you have found him than he was when you sought him .	I can tell you, but young Romeo will be older when you find him than he was when you started looking for him.
+negation	I can tell you , but young Romeo will be older when you have found him than he was when you sought him .	I can not tell you, but young Romeo will be older when you find him than he was when you started looking for him.
+name	I can tell you , but young Romeo will be older when you have found him than he was when you sought him .	I can tell you, but young Get will be older when you find him than he was when you started looking for him.
+clean	I am the youngest of that name , for fault of a worse .	I am the youngest man by that name, because there is no one younger, or worse.
+negation	I am the youngest of that name , for fault of a worse .	I am not the youngest man by that name, because there is no one younger, or worse.
+number	I am the youngest of that name , for fault of a worse .	I am the youngest man by that name, because there is no five younger, or worse.
+clean	You say well .	You speak well.
+clean	Yea , is the worst well ?	Is the worst well?
+negation	Yea , is the worst well ?	Is not the worst well?
+clean	Very well took , i ' faith , wisely , wisely .	Very well taken, I believe, very wise.
+clean	She will indite him to some supper .	She will A pimp!
+negation	She will indite him to some supper .	She will not A pimp!
+name	She will indite him to some supper .	She will Paris pimp!
+clean	So ho !	I've found it out.
+clean	What hast thou found ?	What have you found out?
+negation	What hast thou found ?	What have not you found out?
+clean	Romeo , will you come to your father's ?	Romeo, are you going to your father's for lunch?
+negation	Romeo , will you come to your father's ?	Romeo, are not you going to your father's for lunch?
+clean	We'll to dinner , thither .	Let's go there.
+clean	I will follow you .	I'll follow after you.
+clean	A gentleman , Nurse , that loves to hear himself talk , and will speak more in a minute than he will stand to in a month .	He says more in one minute than he does in a whole month.
+negation	A gentleman , Nurse , that loves to hear himself talk , and will speak more in a minute than he will stand to in a month .	He says more in one minute than he does not in a whole month.
+number	A gentleman , Nurse , that loves to hear himself talk , and will speak more in a minute than he will stand to in a month .	He says more in two minute than he does in a whole month.
+clean	An he speak any thing against me , I'll take him down , an he were lustier than he is , and twenty such Jacks .	If he says anything against me, I'll humble him, even if he were stronger than he is, and twenty punks like him.
+negation	An he speak any thing against me , I'll take him down , an he were lustier than he is , and twenty such Jacks .	If he says anything against me, I'll humble him, even if he were not stronger than he is, and twenty punks like him.
+clean	And if I can not , I'll find those that shall .	If I can't do it myself, I'll find someone who can.
+negation	And if I can not , I'll find those that shall .	If I can do it myself, I'll find someone who can.
+clean	Scurvy knave !	That dirty rat!
+clean	I am none of his flirt-gills .	I'm not one of his sluts.
+negation	I am none of his flirt-gills .	I'm one of his sluts.
+number	I am none of his flirt-gills .	I'm not ten of his sluts.
+clean	I am none of his skains-mates .	I'm not one of his punk friends who carries a knife.
+negation	I am none of his skains-mates .	I'm one of his punk friends who carries a knife.
+number	I am none of his skains-mates .	I'm not five of his punk friends who carries a knife.
+clean	I saw no man use you at his pleasure .	I didn't see anybody use you for kicks.
+negation	I saw no man use you at his pleasure .	I did see anybody use you for kicks.
+clean	If I had , my weapon should quickly have been out , I warrant you .	If I had seen something like that, I would have quickly pulled out my weapon.
+negation	If I had , my weapon should quickly have been out , I warrant you .	If I had not seen something like that, I would have quickly pulled out my weapon.
+clean	I dare draw as soon as another man if I see occasion in a good quarrel and the law on my side .	Believe me, I'll draw my sword as quick as any other man if I see a fight starting and the law is on my side.
+negation	I dare draw as soon as another man if I see occasion in a good quarrel and the law on my side .	Believe me, I'll draw my sword as quick as any other man if I see a fight starting and the law is not on my side.
+clean	Now , afore God , I am so vexed that every part about me quivers .	Now, I swear, I'm so angry that I'm shaking all over.
+clean	Scurvy knave !	That rotten scoundrel!
+clean	Nurse , commend me to thy lady and mistress .	Nurse, give my regards to to your lady.
+clean	I protest unto thee , Good heart , and i ' faith , I will tell her as much .	I swear to you, You have a good heart, and believe me, I'll tell her that.
+negation	I protest unto thee , Good heart , and i ' faith , I will tell her as much .	I swear to you, You have not a good heart, and believe me, I'll tell her that.
+name	I protest unto thee , Good heart , and i ' faith , I will tell her as much .	I swear to you, Rosaline have a good heart, and believe me, I'll tell her that.
+clean	Lord , Lord , she will be a joyful woman .	Lord, Lord, she'll be a happy woman.
+clean	What wilt thou tell her , Nurse ?	What are you going to tell her, Nurse?
+negation	What wilt thou tell her , Nurse ?	What are not you going to tell her, Nurse?
+name	What wilt thou tell her , Nurse ?	What are you going to tell her, Romeo?
+clean	Thou dost not mark me .	You're not paying attention to me.
+negation	Thou dost not mark me .	You're paying attention to me.
+clean	And there she shall at Friar Lawrence ' cell Be shrived and married .	At Friar Lawrence's cell she can make confession and be married.
+negation	And there she shall at Friar Lawrence ' cell Be shrived and married .	At Friar Lawrence's cell she can not make confession and be married.
+name	And there she shall at Friar Lawrence ' cell Be shrived and married .	At Saint Lawrence's cell she can make confession and be married.
+clean	And stay , good Nurse .	Wait good Nurse.
+name	And stay , good Nurse .	Wait good Peter.
+clean	Behind the abbey wall Within this hour my man shall be with thee And bring thee cords made like a tackled stair , Which to the high top-gallant of my joy Must be my convoy in the secret night .	Within an hour, one of my men will come to you behind the abbey wall and give you a rope ladder.
+negation	Behind the abbey wall Within this hour my man shall be with thee And bring thee cords made like a tackled stair , Which to the high top-gallant of my joy Must be my convoy in the secret night .	Within an hour, one of my men will not come to you behind the abbey wall and give you a rope ladder.
+number	Behind the abbey wall Within this hour my man shall be with thee And bring thee cords made like a tackled stair , Which to the high top-gallant of my joy Must be my convoy in the secret night .	Within an hour, eight of my men will come to you behind the abbey wall and give you a rope ladder.
+clean	Farewell .	Goodbye.
+clean	Be trusty , and I'll quit thy pains .	Be honest and helpful, and I'll repay you for your efforts.
+clean	Farewell .	Goodbye.
+clean	Commend me to thy mistress .	Sing my praises to your mistress.
+clean	Now God in heaven bless thee !	May God in heaven bless you.
+negation	Now God in heaven bless thee !	May not God in heaven bless you.
+clean	Hark you , sir .	Now please listen, sir.
+clean	What sayst thou , my dear Nurse ?	What do you have to say, my dear Nurse?
+negation	What sayst thou , my dear Nurse ?	What do not you have to say, my dear Nurse?
+name	What sayst thou , my dear Nurse ?	What do you have to say, my dear Give?
+clean	Is your man secret ?	Can your man keep a secret?
+negation	Is your man secret ?	Can not your man keep a secret?
+clean	Did you ne'er hear say , "Two may keep counsel , putting one away" ?	Haven't you ever heard the saying, " Two can conspire to put one away "?
+negation	Did you ne'er hear say , "Two may keep counsel , putting one away" ?	Have you ever heard the saying, " Two can conspire to put one away "?
+number	Did you ne'er hear say , "Two may keep counsel , putting one away" ?	Haven't you ever heard the saying, " nine can conspire to put one away "?
+clean	Warrant thee , my man's as true as steel .	I assure you, my man is as true as steel.
+negation	Warrant thee , my man's as true as steel .	I assure you, my man is not as true as steel.
+clean	Well , sir , my mistress is the sweetest lady. , Lord , Lord !	Well, sir, my mistress is the sweetest lady.
+negation	Well , sir , my mistress is the sweetest lady. , Lord , Lord !	Well, sir, my mistress is not the sweetest lady.
+clean	when 'twas a little prating thing. , Oh , there is a nobleman in town , one Paris , that would fain lay knife aboard , but she , good soul , had as lief see a toad , a very toad , as see him .	Lord, Lord, when she was a little baby, Oh, there is one nobleman in the city, a guy named Paris, who would be happy to claim her as his own.
+negation	when 'twas a little prating thing. , Oh , there is a nobleman in town , one Paris , that would fain lay knife aboard , but she , good soul , had as lief see a toad , a very toad , as see him .	Lord, Lord, when she was not a little baby, Oh, there is one nobleman in the city, a guy named Paris, who would be happy to claim her as his own.
+name	when 'twas a little prating thing. , Oh , there is a nobleman in town , one Paris , that would fain lay knife aboard , but she , good soul , had as lief see a toad , a very toad , as see him .	Lord, Lord, when she was a little baby, Oh, there is one nobleman in the city, a guy named Prince, who would be happy to claim her as his own.
+number	when 'twas a little prating thing. , Oh , there is a nobleman in town , one Paris , that would fain lay knife aboard , but she , good soul , had as lief see a toad , a very toad , as see him .	Lord, Lord, when she was a little baby, Oh, there is six nobleman in the city, a guy named Paris, who would be happy to claim her as his own.
+clean	I anger her sometimes and tell her that Paris is the properer man .	I make her angry sometimes by saying that Paris is more handsome than you are.
+negation	I anger her sometimes and tell her that Paris is the properer man .	I make her angry sometimes by saying that Paris is not more handsome than you are.
+name	I anger her sometimes and tell her that Paris is the properer man .	I make her angry sometimes by saying that Tybalt is more handsome than you are.
+clean	But , I'll warrant you , when I say so , she looks as pale as any clout in the versal world .	But when I say so, I swear she turns white as a sheet.
+clean	Doth not Ay , Nurse , what of that ?	Don't " Yes, Nurse, what about that?
+negation	Doth not Ay , Nurse , what of that ?	Do " Yes, Nurse, what about that?
+name	Doth not Ay , Nurse , what of that ?	Don't " Yes, Verona, what about that?
+clean	Both with an Ah , mocker , that's the dog's name .	They both begin with the letter " R. " Ah, you jokester, that's the dog's name.
+clean	Commend me to thy lady .	Give my compliments to your lady.
+clean	Ay , a thousand times. , Peter !	Yes, a thousand times.
+clean	Anon !	Peter!
+clean	Before and apace .	I'm ready.
+clean	The clock struck nine when I did send the Nurse .	I sent the Nurse at nine o'clock.
+name	The clock struck nine when I did send the Nurse .	I sent the A at nine o'clock.
+number	The clock struck nine when I did send the Nurse .	I sent the Nurse at three o'clock.
+clean	Perchance she can not meet him .	Maybe she can't find him.
+negation	Perchance she can not meet him .	Maybe she can find him.
+clean	That's not so .	That can't be.
+negation	That's not so .	That can be.
+clean	Oh , she is lame !	Oh, she's slow!
+clean	Love's heralds should be thoughts , Which ten times faster glide than the sun's beams , Driving back shadows over louring hills .	Love's messengers should be thoughts, which fly ten times faster than sunbeams.
+negation	Love's heralds should be thoughts , Which ten times faster glide than the sun's beams , Driving back shadows over louring hills .	Love's messengers should not be thoughts, which fly ten times faster than sunbeams.
+number	Love's heralds should be thoughts , Which ten times faster glide than the sun's beams , Driving back shadows over louring hills .	Love's messengers should be thoughts, which fly seven times faster than sunbeams.
+clean	Now is the sun upon the highmost hill Of this day's journey , and from nine till twelve Is three long hours , yet she is not come .	That's three hours since nine o'clock, but she hasn't come back.
+negation	Now is the sun upon the highmost hill Of this day's journey , and from nine till twelve Is three long hours , yet she is not come .	That's three hours since nine o'clock, but she has come back.
+number	Now is the sun upon the highmost hill Of this day's journey , and from nine till twelve Is three long hours , yet she is not come .	That's seven hours since nine o'clock, but she hasn't come back.
+clean	Had she affections and warm youthful blood , She would be as swift in motion as a ball .	If she was young and passionate, she'd move as fast as a ball.
+negation	Had she affections and warm youthful blood , She would be as swift in motion as a ball .	If she was not young and passionate, she'd move as fast as a ball.
+clean	My words would bandy her to my sweet love , And his to me .	My words would bounce her to my sweet love, and his words would bounce her back to me.
+negation	My words would bandy her to my sweet love , And his to me .	My words would not bounce her to my sweet love, and his words would bounce her back to me.
+clean	But old folks , many feign as they were dead , Unwieldy , slow , heavy , and pale as lead .	But a lot of old people act like they're already dead, sluggish, slow, fat, and colorless, like lead.
+clean	O God , she comes. , O honey Nurse , what news ?	Oh sweet Nurse, what news do you bring?
+negation	O God , she comes. , O honey Nurse , what news ?	Oh sweet Nurse, what news do not you bring?
+name	O God , she comes. , O honey Nurse , what news ?	Oh sweet Goodbye, what news do you bring?
+clean	Hast thou met with him ?	Have you spoken to him?
+negation	Hast thou met with him ?	Have not you spoken to him?
+clean	Send thy man away .	Send your man away.
+clean	Peter , stay at the gate .	Peter, wait for me at the gate.
+clean	Now , good sweet Nurse , O Lord , why look'st thou sad ?	Now, good sweet Nurse, Oh Lord, why do you look so sad?
+negation	Now , good sweet Nurse , O Lord , why look'st thou sad ?	Now, good sweet Nurse, Oh Lord, why do not you look so sad?
+name	Now , good sweet Nurse , O Lord , why look'st thou sad ?	Now, good sweet Francis, Oh Lord, why do you look so sad?
+clean	Though news be sad , yet tell them merrily .	Even if the news is sad, tell me with a smile on your face.
+negation	Though news be sad , yet tell them merrily .	Even if the news is not sad, tell me with a smile on your face.
+clean	If good , thou shamest the music of sweet news By playing it to me with so sour a face .	If the news is good, you're ruining the sweet news by playing a trick with a sour face like that.
+negation	If good , thou shamest the music of sweet news By playing it to me with so sour a face .	If the news is not good, you're ruining the sweet news by playing a trick with a sour face like that.
+clean	I am aweary .	I am tired.
+negation	I am aweary .	I am not tired.
+clean	Give me leave awhile .	Leave me alone for a minute.
+clean	Fie , how my bones ache !	Oh my, my bones ache so much.
+clean	I would thou hadst my bones and I thy news .	I wish you had my bones, and I had your news.
+negation	I would thou hadst my bones and I thy news .	I wish you had not my bones, and I had your news.
+clean	Can you not stay awhile ?	Can't you wait for a moment?
+negation	Can you not stay awhile ?	Can you wait for a moment?
+clean	Do you not see that I am out of breath ?	Don't you see that I'm out of breath?
+negation	Do you not see that I am out of breath ?	Do you see that I'm out of breath?
+clean	How art thou out of breath when thou hast breath To say to me that thou art out of breath ?	How can you be out of breath when you have enough breath to tell me that you're out of breath?
+negation	How art thou out of breath when thou hast breath To say to me that thou art out of breath ?	How can not you be out of breath when you have enough breath to tell me that you're out of breath?
+clean	The excuse that thou dost make in this delay Is longer than the tale thou dost excuse .	The excuse you make to delay the news is longer than the news itself.
+negation	The excuse that thou dost make in this delay Is longer than the tale thou dost excuse .	The excuse you make to delay the news is not longer than the news itself.
+clean	Is thy news good , or bad ?	Is the news good or bad?
+negation	Is thy news good , or bad ?	Is not the news good or bad?
+clean	Answer to that .	Answer that question.
+clean	Say either , and I'll stay the circumstance .	Tell me if it's good or bad, and I'll wait for the details.
+clean	Let me be satisfied .	Tell me so I can be satisfied.
+negation	Let me be satisfied .	Tell me so I can not be satisfied.
+clean	Is 't good or bad ?	Is it good or bad?
+negation	Is 't good or bad ?	Is not it good or bad?
+clean	Well , you have made a simple choice .	Well, you have made a foolish choice.
+negation	Well , you have made a simple choice .	Well, you have not made a foolish choice.
+clean	You know not how to choose a man .	You don't know how to pick a man.
+negation	You know not how to choose a man .	You do know how to pick a man.
+clean	Romeo !	Romeo?
+clean	No , not he , though his face be better than any man's , yet his leg excels all men's , and for a hand and a foot and a body , though they be not to be talked on , yet they are past compare .	No, not him, though his face is more handsome than any man's, and his legs are prettier, and as for his hands and feet and body, they're not much to speak of, and yet they're beyond compare.
+negation	No , not he , though his face be better than any man's , yet his leg excels all men's , and for a hand and a foot and a body , though they be not to be talked on , yet they are past compare .	No, him, though his face is more handsome than any man's, and his legs are prettier, and as for his hands and feet and body, they're not much to speak of, and yet they're beyond compare.
+clean	He is not the flower of courtesy , but , I'll warrant him , as gentle as a lamb .	He's not the most polite man in the world, but, believe me, he's gentle as a lamb.
+negation	He is not the flower of courtesy , but , I'll warrant him , as gentle as a lamb .	He's the most polite man in the world, but, believe me, he's gentle as a lamb.
+clean	Go thy ways , wench .	Well, do what you want.
+negation	Go thy ways , wench .	Well, do not what you want.
+clean	Serve God .	Be good.
+clean	What , have you dined at home ?	Have you had lunch yet?
+negation	What , have you dined at home ?	Have not you had lunch yet?
+clean	No , no .	No, I haven't had lunch.
+negation	No , no .	No, I have had lunch.
+clean	But all this did I know before .	Everything you told me I already knew.
+clean	What says he of our marriage ?	What does he say about our marriage?
+negation	What says he of our marriage ?	What does not he say about our marriage?
+clean	What of that ?	What about that?
+clean	My back a ' t ' other side .	My head is pounding.
+negation	My back a ' t ' other side .	My head is not pounding.
+clean	Ah , my back , my back !	My back aches too,
+clean	I ' faith , I am sorry that thou art not well .	Believe me, I'm sorry you're in pain.
+clean	Sweet , sweet , sweet Nurse , tell me , what says my love ?	Sweet, sweet, sweet Nurse, tell me, what did my love Romeo say?
+negation	Sweet , sweet , sweet Nurse , tell me , what says my love ?	Sweet, sweet, sweet Nurse, tell me, what did not my love Romeo say?
+name	Sweet , sweet , sweet Nurse , tell me , what says my love ?	Sweet, sweet, sweet Get, tell me, what did my love Romeo say?
+clean	Your love says , like an honest gentleman , and a courteous , and a kind , and a handsome , and , I warrant , a virtuous , Where is your mother ?	Your love says, like an honorable gentleman, who is courteous, kind, handsome, and, I believe, virtuous, where is your mother?
+negation	Your love says , like an honest gentleman , and a courteous , and a kind , and a handsome , and , I warrant , a virtuous , Where is your mother ?	Your love says, like an honorable gentleman, who is not courteous, kind, handsome, and, I believe, virtuous, where is your mother?
+clean	Where is my mother ?	Where is my mother?
+negation	Where is my mother ?	Where is not my mother?
+clean	Why , she is within .	Why, she's inside.
+clean	Where should she be ?	Where else would she be?
+negation	Where should she be ?	Where else would not she be?
+clean	How oddly thou repliest !	Your answer is so strange!
+negation	How oddly thou repliest !	Your answer is not so strange!
+clean	Your love says , like an honest gentleman , 'Where is your mother ?	Your love says, like an honorable gentleman, 'Where is your mother?
+negation	Your love says , like an honest gentleman , 'Where is your mother ?	Your love says, like an honorable gentleman, 'Where is not your mother?
+clean	O God's lady dear , Are you so hot ?	Are you this impatient?
+negation	O God's lady dear , Are you so hot ?	Are not you this impatient?
+clean	Marry , come up , I trow .	Come on, you're being ridiculous!
+clean	Is this the poultice for my aching bones ?	Is this the cure for my aching bones?
+negation	Is this the poultice for my aching bones ?	Is not this the cure for my aching bones?
+clean	Henceforward do your messages yourself .	From now on, take care of your messages yourself.
+clean	Here's such a coil .	You're making such a fuss.
+clean	Come , what says Romeo ?	Come on, what did Romeo say?
+negation	Come , what says Romeo ?	Come on, what did not Romeo say?
+name	Come , what says Romeo ?	Come on, what did You say?
+clean	Have you got leave to go to shrift today ?	Do you have permission to go out and take confession today?
+negation	Have you got leave to go to shrift today ?	Do not you have permission to go out and take confession today?
+clean	I have .	I do.
+negation	I have .	I do not.
+clean	Then hie you hence to Friar Lawrence's cell .	Then hurry up and rush over to Friar Lawrence's cell.
+name	Then hie you hence to Friar Lawrence's cell .	Then hurry up and rush over to Thursday Lawrence's cell.
+clean	There stays a husband to make you a wife .	There's a husband there who's waiting to make you his wife.
+clean	Now comes the wanton blood up in your cheeks .	Now I see the blood rushing to your cheeks.
+clean	They'll be in scarlet straight at any news .	You blush bright red as soon as you hear any news.
+clean	Hie you to church .	Go to the church.
+clean	I must another way To fetch a ladder , by the which your love Must climb a bird's nest soon when it is dark .	Your love will use it to climb up to your window while it's dark.
+negation	I must another way To fetch a ladder , by the which your love Must climb a bird's nest soon when it is dark .	Your love will not use it to climb up to your window while it's dark.
+clean	Go .	Go.
+clean	I'll to dinner .	I'll go to lunch.
+clean	Hie you to the cell .	You go to Friar Lawrence's cell.
+name	Hie you to the cell .	You go to Juliet Lawrence's cell.
+clean	I do but keep the peace .	I'm only trying to keep the peace.
+clean	Put up thy sword , Or manage it to part these men with me .	Either put away your sword or use it to help me stop this fight.
+clean	What , drawn , and talk of peace ?	What?
+clean	I hate the word , As I hate hell , all Montagues , and thee .	I hate the word peace like I hate hell, all Montagues, and you.
+name	I hate the word , As I hate hell , all Montagues , and thee .	I hate the word peace like I hate hell, all Capulets, and you.
+clean	Have at thee , coward !	Let's go at it, coward!
+clean	Clubs , bills , and partisans !	Use your clubs and spears!
+clean	Strike !	Hit them!
+clean	Beat them down !	Beat them down!
+clean	Down with the Capulets !	Down with the Capulets!
+name	Down with the Capulets !	Down with the Capulet!
+clean	Down with the Montagues !	Down with the Montagues!
+name	Down with the Montagues !	Down with the Mantua!
+clean	What noise is this ?	What's this noise?
+clean	My sword , I say !	I want my sword.
+clean	Old Montague is come , And flourishes his blade in spite of me .	Old Montague is here, and he's waving his sword around just to make me mad.
+negation	Old Montague is come , And flourishes his blade in spite of me .	Old Montague is not here, and he's waving his sword around just to make me mad.
+name	Old Montague is come , And flourishes his blade in spite of me .	Old Capulets is here, and he's waving his sword around just to make me mad.
+clean	Thou villain Capulet !	Capulet, you villain!
+clean	Thou shalt not stir one foot to seek a foe .	You're not taking one step toward an enemy.
+negation	Thou shalt not stir one foot to seek a foe .	You're taking one step toward an enemy.
+number	Thou shalt not stir one foot to seek a foe .	You're not taking seven step toward an enemy.
+clean	Hie to high fortune !	Wish me luck.
+clean	Honest Nurse , farewell .	Thank you, dear Nurse.
+name	Honest Nurse , farewell .	Thank you, dear Verona.
+clean	Amen , amen .	Amen, amen.
+clean	But come what sorrow can , It can not countervail the exchange of joy That one short minute gives me in her sight .	But whatever misfortunes occur, they can't ruin the joy I feel with one look at her.
+negation	But come what sorrow can , It can not countervail the exchange of joy That one short minute gives me in her sight .	But whatever misfortunes occur, they can ruin the joy I feel with one look at her.
+number	But come what sorrow can , It can not countervail the exchange of joy That one short minute gives me in her sight .	But whatever misfortunes occur, they can't ruin the joy I feel with seven look at her.
+clean	Therefore love moderately .	Therefore, love each other in moderation.
+clean	Long love doth so .	That is the key to long - lasting love.
+negation	Long love doth so .	That is not the key to long - lasting love.
+clean	Too swift arrives as tardy as too slow .	Too fast is as bad as too slow.
+negation	Too swift arrives as tardy as too slow .	Too fast is not as bad as too slow.
+clean	Here comes the lady .	Here comes the lady.
+clean	Oh , so light a foot Will ne'er wear out the everlasting flint .	Oh, a footstep as light as hers will never endure the rocky road of life.
+negation	Oh , so light a foot Will ne'er wear out the everlasting flint .	Oh, a footstep as light as hers will endure the rocky road of life.
+clean	Good even to my ghostly confessor .	That's how flimsy and unreal pleasure is.
+negation	Good even to my ghostly confessor .	That's how flimsy and unreal pleasure is not.
+clean	Romeo shall thank thee , daughter , for us both .	Romeo will thank you, my girl, for both of us.
+negation	Romeo shall thank thee , daughter , for us both .	Romeo will not thank you, my girl, for both of us.
+clean	As much to him , else is his thanks too much .	I'll give him equal thanks, so we're even.
+clean	Ah , Juliet , if the measure of thy joy Be heaped like mine , and that thy skill be more To blazon it , then sweeten with thy breath This neighbor air , and let rich music's tongue Unfold the imagined happiness that both Receive in either by this dear encounter .	Ah, Juliet if you're as happy as I am, and you're better with words, tell me about the happiness you imagine we'll have in our marriage.
+negation	Ah , Juliet , if the measure of thy joy Be heaped like mine , and that thy skill be more To blazon it , then sweeten with thy breath This neighbor air , and let rich music's tongue Unfold the imagined happiness that both Receive in either by this dear encounter .	Ah, Juliet if you're as happy as I am not, and you're better with words, tell me about the happiness you imagine we'll have in our marriage.
+name	Ah , Juliet , if the measure of thy joy Be heaped like mine , and that thy skill be more To blazon it , then sweeten with thy breath This neighbor air , and let rich music's tongue Unfold the imagined happiness that both Receive in either by this dear encounter .	Ah, Right if you're as happy as I am, and you're better with words, tell me about the happiness you imagine we'll have in our marriage.
+clean	Conceit , more rich in matter than in words , Brags of his substance , not of ornament .	I can imagine more than I can say, I have more on my mind than words.
+negation	Conceit , more rich in matter than in words , Brags of his substance , not of ornament .	I can not imagine more than I can say, I have more on my mind than words.
+clean	Come , come with me , and we will make short work .	Come, come with me, and we'll do the job quickly.
+negation	Come , come with me , and we will make short work .	Come, come with me, and we'll do not the job quickly.
+clean	I pray thee , good Mercutio , let's retire .	I'm begging you, good Mercutio, let's call it a day.
+name	I pray thee , good Mercutio , let's retire .	I'm begging you, good Goodbye, let's call it a day.
+clean	Thou art like one of those fellows that , when he enters the confines of a tavern , claps me his sword upon the table and says "God send me no need of thee ! " and , by the operation of the second cup , draws it on the drawer when indeed there is no need .	You're like one of those guys who walks into a bar, slams his sword on the table, and then says, " I pray I never have to use you. " By the time he orders his second drink, he pulls his sword on the bartender for no reason at all.
+negation	Thou art like one of those fellows that , when he enters the confines of a tavern , claps me his sword upon the table and says "God send me no need of thee ! " and , by the operation of the second cup , draws it on the drawer when indeed there is no need .	You're like one of those guys who walks into a bar, slams his sword on the table, and then says, " I pray I have to use you. " By the time he orders his second drink, he pulls his sword on the bartender for no reason at all.
+number	Thou art like one of those fellows that , when he enters the confines of a tavern , claps me his sword upon the table and says "God send me no need of thee ! " and , by the operation of the second cup , draws it on the drawer when indeed there is no need .	You're like two of those guys who walks into a bar, slams his sword on the table, and then says, " I pray I never have to use you. " By the time he orders his second drink, he pulls his sword on the bartender for no reason at all.
+clean	Am I like such a fellow ?	Am I really like one of those guys?
+negation	Am I like such a fellow ?	Am not I really like one of those guys?
+number	Am I like such a fellow ?	Am I really like nine of those guys?
+clean	Come , come , thou art as hot a Jack in thy mood as any in Italy , and as soon moved to be moody , and as soon moody to be moved .	Come on, you can be as angry as any guy in Italy when you're in the mood.
+negation	Come , come , thou art as hot a Jack in thy mood as any in Italy , and as soon moved to be moody , and as soon moody to be moved .	Come on, you can not be as angry as any guy in Italy when you're in the mood.
+name	Come , come , thou art as hot a Jack in thy mood as any in Italy , and as soon moved to be moody , and as soon moody to be moved .	Come on, you can be as angry as any guy in Peter when you're in the mood.
+clean	And what to ?	And what about that?
+clean	Nay , an there were two such , we should have none shortly , for one would kill the other .	If there were two men like you, pretty soon there'd be none because the two of you would kill each other.
+negation	Nay , an there were two such , we should have none shortly , for one would kill the other .	If there were not two men like you, pretty soon there'd be none because the two of you would kill each other.
+number	Nay , an there were two such , we should have none shortly , for one would kill the other .	If there were three men like you, pretty soon there'd be none because the two of you would kill each other.
+clean	Thou , why , thou wilt quarrel with a man that hath a hair more or a hair less in his beard than thou hast .	You would fight with a man if he had one more whisker or one less whisker in his beard than you have in your beard.
+negation	Thou , why , thou wilt quarrel with a man that hath a hair more or a hair less in his beard than thou hast .	You would not fight with a man if he had one more whisker or one less whisker in his beard than you have in your beard.
+number	Thou , why , thou wilt quarrel with a man that hath a hair more or a hair less in his beard than thou hast .	You would fight with a man if he had eight more whisker or one less whisker in his beard than you have in your beard.
+clean	Thou wilt quarrel with a man for cracking nuts , having no other reason but because thou hast hazel eyes .	You'll fight with a man who's cracking nuts just because you have hazelnut - colored eyes.
+negation	Thou wilt quarrel with a man for cracking nuts , having no other reason but because thou hast hazel eyes .	You'll fight with a man who's cracking nuts just because you have not hazelnut - colored eyes.
+clean	What eye but such an eye would spy out such a quarrel ?	Only you would look for a fight like that.
+negation	What eye but such an eye would spy out such a quarrel ?	Only you would not look for a fight like that.
+clean	Thy head is as full of quarrels as an egg is full of meat , and yet thy head hath been beaten as addle as an egg for quarreling .	Your head is as full of fights as an egg is full of yolk, but your head has been beaten like scrambled eggs from so much fighting.
+negation	Thy head is as full of quarrels as an egg is full of meat , and yet thy head hath been beaten as addle as an egg for quarreling .	Your head is not as full of fights as an egg is full of yolk, but your head has been beaten like scrambled eggs from so much fighting.
+clean	Thou hast quarreled with a man for coughing in the street because he hath wakened thy dog that hath lain asleep in the sun .	You started a fight with a man who coughed in the street because he woke up a dog that was sleeping in the sun.
+negation	Thou hast quarreled with a man for coughing in the street because he hath wakened thy dog that hath lain asleep in the sun .	You started a fight with a man who coughed in the street because he woke up a dog that was not sleeping in the sun.
+clean	Didst thou not fall out with a tailor for wearing his new doublet before Easter ?	Didn't you argue it out with your tailor for wearing one of his new suits before the right season?
+negation	Didst thou not fall out with a tailor for wearing his new doublet before Easter ?	Did you argue it out with your tailor for wearing one of his new suits before the right season?
+number	Didst thou not fall out with a tailor for wearing his new doublet before Easter ?	Didn't you argue it out with your tailor for wearing three of his new suits before the right season?
+clean	With another , for tying his new shoes with old ribbon ?	And with another for tying the new shoes he made with old laces?
+clean	And yet thou wilt tutor me from quarreling !	And yet you're the one who wants to teach me about restraint!
+number	And yet thou wilt tutor me from quarreling !	And yet you're the ten who wants to teach me about restraint!
+clean	An I were so apt to quarrel as thou art , any man should buy the fee simple of my life for an hour and a quarter .	If I were in the habit of fighting the way you are, my life insurance rates would be sky high.
+negation	An I were so apt to quarrel as thou art , any man should buy the fee simple of my life for an hour and a quarter .	If I were not in the habit of fighting the way you are, my life insurance rates would be sky high.
+clean	The fee simple ?	Your life insurance?
+clean	O simple !	That's foolish.
+clean	By my head , here comes the Capulets .	Oh great, here come the Capulets.
+name	By my head , here comes the Capulets .	Oh great, here come the Italy.
+clean	By my heel , I care not .	Well, well, I don't care.
+negation	By my heel , I care not .	Well, well, I do care.
+clean	Couple it with something .	Put it together with something else.
+clean	Make it a word and a blow .	Make it a word and a blow.
+clean	You shall find me apt enough to that , sir , an you will give me occasion .	You'll find me ready enough to do that, sir, if you give me a reason.
+negation	You shall find me apt enough to that , sir , an you will give me occasion .	You'll find me ready enough to do not that, sir, if you give me a reason.
+clean	Could you not take some occasion without giving ?	Can't you find a reason without my giving you one?
+negation	Could you not take some occasion without giving ?	Can you find a reason without my giving you one?
+number	Could you not take some occasion without giving ?	Can't you find a reason without my giving you seven?
+clean	Mercutio , thou consort'st with Romeo .	Mercutio, you hang out with Romeo.
+name	Mercutio , thou consort'st with Romeo .	Mercutio, you hang out with Peter.
+clean	What , dost thou make us minstrels ?	Hang out? " Who do you think we are, musicians in a band?
+negation	What , dost thou make us minstrels ?	Hang out? " Who do not you think we are, musicians in a band?
+clean	An thou make minstrels of us , look to hear nothing but discords .	If we look like musicians to you, you can expect to hear nothing but noise.
+negation	An thou make minstrels of us , look to hear nothing but discords .	If we look like musicians to you, you can not expect to hear nothing but noise.
+clean	We talk here in the public haunt of men .	We're talking here in a public place.
+clean	Either withdraw unto some private place , And reason coldly of your grievances , Or else depart .	Either go someplace private, or talk it over rationally, or else just go away.
+clean	Here all eyes gaze on us .	Out here everybody can see us.
+negation	Here all eyes gaze on us .	Out here everybody can not see us.
+clean	Men's eyes were made to look and let them gaze .	Men's eyes were made to see things, so let them watch.
+negation	Men's eyes were made to look and let them gaze .	Men's eyes were not made to see things, so let them watch.
+clean	I will not budge for no man's pleasure , I .	I won't move to please anybody.
+negation	I will not budge for no man's pleasure , I .	I will move to please anybody.
+clean	Well , peace be with you , sir .	Well, may peace be with you.
+negation	Well , peace be with you , sir .	Well, may not peace be with you.
+clean	Here comes my man .	Here comes my man, the man I'm looking for.
+clean	But I'll be hanged , sir , if he wear your livery .	He's not your man.
+negation	But I'll be hanged , sir , if he wear your livery .	He's your man.
+clean	Tybalt , the reason that I have to love thee Doth much excuse the appertaining rage To such a greeting .	Tybalt, I have a reason to love you that lets me put aside the rage I should feel and excuse that insult.
+negation	Tybalt , the reason that I have to love thee Doth much excuse the appertaining rage To such a greeting .	Tybalt, I have not a reason to love you that lets me put aside the rage I should feel and excuse that insult.
+clean	Villain am I none .	I am no villain.
+negation	Villain am I none .	I am not no villain.
+clean	Therefore , farewell .	So, goodbye.
+clean	I see thou know'st me not .	I can tell that you don't know who I am.
+negation	I see thou know'st me not .	I can tell that you do know who I am.
+clean	Boy , this shall not excuse the injuries That thou hast done me .	Boy, your words can't excuse the harm you've done to me.
+negation	Boy , this shall not excuse the injuries That thou hast done me .	Boy, your words can excuse the harm you've done to me.
+clean	Therefore turn and draw .	So now turn and draw your sword.
+clean	And so , good Capulet , which name I tender As dearly as my own , be satisfied .	And so, good Capulet, which is a name I love like my own name, you should be satisfied with what I say.
+negation	And so , good Capulet , which name I tender As dearly as my own , be satisfied .	And so, good Capulet, which is not a name I love like my own name, you should be satisfied with what I say.
+name	And so , good Capulet , which name I tender As dearly as my own , be satisfied .	And so, good Give, which is a name I love like my own name, you should be satisfied with what I say.
+clean	O calm dishonourable , vile submission !	This calm submission is dishonorable and vile.
+negation	O calm dishonourable , vile submission !	This calm submission is not dishonorable and vile.
+clean	What wouldst thou have with me ?	What do you want from me?
+negation	What wouldst thou have with me ?	What do not you want from me?
+clean	Will you pluck your sword out of his pilcher by the ears ?	Will you pull your sword out of its sheath?
+negation	Will you pluck your sword out of his pilcher by the ears ?	Will not you pull your sword out of its sheath?
+clean	Make haste , lest mine be about your ears ere it be out .	Hurry up, or I'll smack you on the ears with my sword before you have yours drawn.
+negation	Make haste , lest mine be about your ears ere it be out .	Hurry up, or I'll smack you on the ears with my sword before you have not yours drawn.
+clean	I am for you .	I'll fight you.
+clean	Gentle Mercutio , put thy rapier up .	Noble Mercutio, put your sword away.
+name	Gentle Mercutio , put thy rapier up .	Noble Saint, put your sword away.
+clean	Away , Tybalt .	Let's get away, Tybalt.
+name	Away , Tybalt .	Let's get away, Capulet.
+clean	I am hurt .	I've been hurt.
+clean	A plague o ' both your houses !	May a plague curse both your families.
+negation	A plague o ' both your houses !	May not a plague curse both your families.
+clean	I am sped .	I'm finished.
+clean	Is he gone and hath nothing ?	Did he get away clean?
+negation	Is he gone and hath nothing ?	Did not he get away clean?
+clean	What , art thou hurt ?	What, are you hurt?
+negation	What , art thou hurt ?	What, are not you hurt?
+clean	Marry , 'tis enough .	But it's enough.
+clean	Where is my page ? , Go , villain , fetch a surgeon .	Where is my page?
+negation	Where is my page ? , Go , villain , fetch a surgeon .	Where is not my page?
+clean	Courage , man .	Have courage, man.
+negation	Courage , man .	Have not courage, man.
+clean	The hurt can not be much .	The wound can't be that bad.
+negation	The hurt can not be much .	The wound can be that bad.
+clean	No , 'tis not so deep as a well nor so wide as a church-door , but 'tis enough , 'twill serve .	No, it's not as deep as a well, or as wide as a church door, but it's enough.
+negation	No , 'tis not so deep as a well nor so wide as a church-door , but 'tis enough , 'twill serve .	No, it's as deep as a well, or as wide as a church door, but it's enough.
+clean	Ask for me tomorrow , and you shall find me a grave man .	Ask for me tomorrow, and you'll find me in a grave.
+clean	I am peppered , I warrant , for this world .	I'm done for in this world, I believe.
+clean	A plague o ' both your houses !	May a plague strike both your houses.
+negation	A plague o ' both your houses !	May not a plague strike both your houses.
+clean	Zounds , a dog , a rat , a mouse , a cat to scratch a man to death !	I can't believe that dog, that rat, that mouse, that cat could scratch me to death!
+negation	Zounds , a dog , a rat , a mouse , a cat to scratch a man to death !	I can believe that dog, that rat, that mouse, that cat could scratch me to death!
+clean	A braggart , a rogue , a villain that fights by the book of arithmetic !	That braggart, punk villain who fights like he learned swordsmanship from a manual!
+clean	Why the devil came you between us ?	Why the hell did you come in between us?
+negation	Why the devil came you between us ?	Why the hell did not you come in between us?
+clean	I was hurt under your arm .	He struck me from under your arm.
+clean	I thought all for the best .	I thought it was the right thing to do.
+negation	I thought all for the best .	I thought it was not the right thing to do.
+clean	Help me into some house , Benvolio , Or I shall faint .	Take me inside some house, Benvolio, or I'll pass out.
+name	Help me into some house , Benvolio , Or I shall faint .	Take me inside some house, Capulet, or I'll pass out.
+clean	A plague o ' both your houses !	May a plague strike both your families!
+negation	A plague o ' both your houses !	May not a plague strike both your families!
+clean	They have made worms ' meat of me .	They've turned me into food for worms.
+clean	I have it , And soundly too .	I'm done for.
+clean	Your houses !	Curse your families!
+clean	O Romeo , Romeo , brave Mercutio is dead !	Oh Romeo, Romeo, brave Mercutio is dead!
+negation	O Romeo , Romeo , brave Mercutio is dead !	Oh Romeo, Romeo, brave Mercutio is not dead!
+name	O Romeo , Romeo , brave Mercutio is dead !	Oh Rosaline, Rosaline, brave Mercutio is dead!
+clean	Here comes the furious Tybalt back again .	Here comes the furious Tybalt back again.
+name	Here comes the furious Tybalt back again .	Here comes the furious Give back again.
+clean	Alive in triumph , and Mercutio slain !	He's alive and victorious, and Mercutio's dead?
+clean	Either thou or I , or both , must go with him .	Either you, or I, or both of us have to go with him.
+negation	Either thou or I , or both , must go with him .	Either you, or I, or both of us have not to go with him.
+clean	Thou , wretched boy , that didst consort him here Shalt with him hence .	Wretched boy, you hung out with him here, and you're going to go to heaven with him.
+clean	This shall determine that .	This fight will decide who dies.
+negation	This shall determine that .	This fight will not decide who dies.
+clean	Romeo , away , be gone !	Romeo, get out of here.
+clean	The citizens are up , and Tybalt slain .	The citizens are around, and Tybalt is dead.
+negation	The citizens are up , and Tybalt slain .	The citizens are not around, and Tybalt is dead.
+name	The citizens are up , and Tybalt slain .	The citizens are around, and These is dead.
+clean	Stand not amazed .	Don't stand there shocked.
+negation	Stand not amazed .	Do stand there shocked.
+clean	The Prince will doom thee death If thou art taken .	The Prince will give you the death penalty if you get caught.
+negation	The Prince will doom thee death If thou art taken .	The Prince will not give you the death penalty if you get caught.
+name	The Prince will doom thee death If thou art taken .	The It will give you the death penalty if you get caught.
+clean	Hence , be gone , away !	So get out of here!
+clean	Why dost thou stay ?	Why are you waiting?
+negation	Why dost thou stay ?	Why are not you waiting?
+clean	Which way ran he that killed Mercutio ?	The man who killed Mercutio, which way did he go?
+negation	Which way ran he that killed Mercutio ?	The man who killed Mercutio, which way did not he go?
+name	Which way ran he that killed Mercutio ?	The man who killed Capulet, which way did he go?
+clean	Tybalt , that murderer , which way ran he ?	Tybalt, that murderer, which way did he run?
+negation	Tybalt , that murderer , which way ran he ?	Tybalt, that murderer, which way did not he run?
+clean	There lies that Tybalt .	Tybalt is lying over there.
+negation	There lies that Tybalt .	Tybalt is not lying over there.
+clean	Speak , nephew .	Speak, nephew.
+clean	Were you by when it began ?	Were you here when it started?
+negation	Were you by when it began ?	Were not you here when it started?
+clean	Where are the vile beginners of this fray ?	Where are the evil men who started this fight?
+negation	Where are the vile beginners of this fray ?	Where are not the evil men who started this fight?
+clean	O noble prince , I can discover all The unlucky manage of this fatal brawl .	Oh, noble prince, I can tell you everything about the unfortunate circumstances of this deadly fight.
+negation	O noble prince , I can discover all The unlucky manage of this fatal brawl .	Oh, noble prince, I can not tell you everything about the unfortunate circumstances of this deadly fight.
+clean	There lies the man , slain by young Romeo , That slew thy kinsman , brave Mercutio .	He killed your relative, brave Mercutio, and then young Romeo killed him.
+name	There lies the man , slain by young Romeo , That slew thy kinsman , brave Mercutio .	He killed your relative, brave Verona, and then young Romeo killed him.
+clean	Tybalt , my cousin !	Tybalt was my nephew!
+negation	Tybalt , my cousin !	Tybalt was not my nephew!
+clean	O my brother's child !	He was my brother's son!
+negation	O my brother's child !	He was not my brother's son!
+clean	O cousin , cousin !	Oh cousin, cousin!
+clean	Benvolio , who began this bloody fray ?	Benvolio, who started this fight?
+clean	Romeo , he cries aloud , "Hold , friends !	Romeo cried out, " Stop, my friends.
+clean	Friends , part ! " and , swifter than his tongue , His agile arm beats down their fatal points , And 'twixt them rushes , underneath whose arm An envious thrust from Tybalt hit the life Of stout Mercutio , and then Tybalt fled .	Break it up. " Then he jumped in between them and forced them to put their swords down.
+clean	But by and by comes back to Romeo , Who had but newly entertained revenge , And to 't they go like lightning , for ere I Could draw to part them was stout Tybalt slain .	Before I could break up the fight, Tybalt was killed.
+negation	But by and by comes back to Romeo , Who had but newly entertained revenge , And to 't they go like lightning , for ere I Could draw to part them was stout Tybalt slain .	Before I could not break up the fight, Tybalt was killed.
+name	But by and by comes back to Romeo , Who had but newly entertained revenge , And to 't they go like lightning , for ere I Could draw to part them was stout Tybalt slain .	Before I could break up the fight, Give was killed.
+clean	And , as he fell , did Romeo turn and fly .	Romeo ran away when Tybalt fell dead.
+name	And , as he fell , did Romeo turn and fly .	Romeo ran away when Verona fell dead.
+clean	This is the truth , or let Benvolio die .	Benvolio is part of the Montague family.
+negation	This is the truth , or let Benvolio die .	Benvolio is not part of the Montague family.
+name	This is the truth , or let Benvolio die .	Benvolio is part of the Capulets family.
+clean	He speaks not true .	He's not telling the truth.
+negation	He speaks not true .	He's telling the truth.
+clean	Some twenty of them fought in this black strife , And all those twenty could but kill one life .	There were twenty Montagues fighting in this awful riot, and together those twenty could only kill one man.
+negation	Some twenty of them fought in this black strife , And all those twenty could but kill one life .	There were not twenty Montagues fighting in this awful riot, and together those twenty could only kill one man.
+name	Some twenty of them fought in this black strife , And all those twenty could but kill one life .	There were twenty Mantua fighting in this awful riot, and together those twenty could only kill one man.
+number	Some twenty of them fought in this black strife , And all those twenty could but kill one life .	There were twenty Montagues fighting in this awful riot, and together those twenty could only kill six man.
+clean	I beg for justice , which thou , Prince , must give .	You, Prince, are the man who can give me justice.
+negation	I beg for justice , which thou , Prince , must give .	You, Prince, are not the man who can give me justice.
+name	I beg for justice , which thou , Prince , must give .	You, Montague, are the man who can give me justice.
+clean	Romeo slew Tybalt .	Romeo killed Tybalt.
+name	Romeo slew Tybalt .	Romeo killed Right.
+clean	Romeo must not live .	Romeo must die.
+negation	Romeo must not live .	Romeo must not die.
+clean	Romeo slew him ; he slew Mercutio .	Romeo killed Tybalt.
+name	Romeo slew him ; he slew Mercutio .	Romeo killed Tybalts.
+clean	Who now the price of his dear blood doth owe ?	Who should now pay the price for Mercutio's life?
+negation	Who now the price of his dear blood doth owe ?	Who should not now pay the price for Mercutio's life?
+clean	His fault concludes but what the law should end , The life of Tybalt .	His crime did justice's job by taking Tybalt's life.
+negation	His fault concludes but what the law should end , The life of Tybalt .	His crime did not justice's job by taking Tybalt's life.
+clean	I have an interest in your hearts ' proceeding .	I'm involved in your rivalry.
+clean	But I'll amerce you with so strong a fine That you shall all repent the loss of mine .	I'll punish you so harshly that you'll regret causing me this loss.
+clean	I will be deaf to pleading and excuses .	I won't listen to your pleas or excuses.
+negation	I will be deaf to pleading and excuses .	I will listen to your pleas or excuses.
+clean	Nor tears nor prayers shall purchase out abuses , Therefore use none .	You can't get out of trouble by praying or crying, so don't bother.
+negation	Nor tears nor prayers shall purchase out abuses , Therefore use none .	You can get out of trouble by praying or crying, so don't bother.
+clean	Bear hence this body and attend our will .	Take away this body, and do what I say.
+negation	Bear hence this body and attend our will .	Take away this body, and do not what I say.
+clean	Mercy but murders , pardoning those that kill .	Showing mercy by pardoning killers only causes more murders.
+clean	Lovers can see to do their amorous rites By their own beauties , or , if love be blind , It best agrees with night .	Or else love is blind, and its best time is the night.
+negation	Lovers can see to do their amorous rites By their own beauties , or , if love be blind , It best agrees with night .	Or else love is not blind, and its best time is the night.
+clean	Come , civil night , Thou sober-suited matron , all in black , And learn me how to lose a winning match Played for a pair of stainless maidenhoods .	I wish night would come, like a widow dressed in black, so I can learn how to submit to my husband and lose my virginity.
+negation	Come , civil night , Thou sober-suited matron , all in black , And learn me how to lose a winning match Played for a pair of stainless maidenhoods .	I wish night would not come, like a widow dressed in black, so I can learn how to submit to my husband and lose my virginity.
+clean	Hood my unmanned blood bating in my cheeks , With thy black mantle , till strange love , grow bold , Think true love acted simple modesty .	Let the blood rushing to my cheeks be calmed.
+clean	Come , night .	Come, night.
+clean	Come , Romeo .	Come, Romeo.
+name	Come , Romeo .	Come, Juliet.
+clean	Come , thou day in night , For thou wilt lie upon the wings of night Whiter than new snow upon a raven's back .	You're whiter than snow on the black wings of a raven.
+clean	And when I shall die , Take him and cut him out in little stars , And he will make the face of heaven so fine That all the world will be in love with night And pay no worship to the garish sun .	His face will make the heavens so beautiful that the world will fall in love with the night and forget about the garish sun.
+negation	And when I shall die , Take him and cut him out in little stars , And he will make the face of heaven so fine That all the world will be in love with night And pay no worship to the garish sun .	His face will not make the heavens so beautiful that the world will fall in love with the night and forget about the garish sun.
+clean	The cords That Romeo bid thee fetch ?	Is that the rope ladder Romeo told you to pick up?
+negation	The cords That Romeo bid thee fetch ?	Is not that the rope ladder Romeo told you to pick up?
+name	The cords That Romeo bid thee fetch ?	Is that the rope ladder Friar told you to pick up?
+clean	Ay , ay , the cords .	Yes, yes, this is the rope ladder.
+negation	Ay , ay , the cords .	Yes, yes, this is not the rope ladder.
+clean	Ay me , what news ?	Oh my, what's the news?
+clean	Why dost thou wring thy hands ?	Why do you look so upset?
+negation	Why dost thou wring thy hands ?	Why do not you look so upset?
+clean	Ah , welladay !	He's dead.
+clean	We are undone , lady , we are undone !	We're ruined, lady, we're ruined!
+clean	Alack the day !	What an awful day!
+clean	Can heaven be so envious ?	Can God be so jealous and hateful?
+negation	Can heaven be so envious ?	Can not God be so jealous and hateful?
+clean	Romeo can , Though heaven can not .	Romeo is hateful, even though God isn't.
+negation	Romeo can , Though heaven can not .	Romeo is hateful, even though God is.
+clean	What devil art thou that dost torment me thus ?	What kind of devil are you to torture me like this?
+negation	What devil art thou that dost torment me thus ?	What kind of devil are not you to torture me like this?
+clean	This torture should be roared in dismal hell .	This is as bad as the tortures of hell.
+negation	This torture should be roared in dismal hell .	This is not as bad as the tortures of hell.
+clean	Hath Romeo slain himself ?	Has Romeo killed himself?
+negation	Hath Romeo slain himself ?	Has not Romeo killed himself?
+name	Hath Romeo slain himself ?	Has Juliet killed himself?
+clean	Say thou but "ay , " And that bare vowel Than the death-darting eye of cockatrice .	Just say " Yes " and I will turn more poisonous than the snake with the evil eye.
+negation	Say thou but "ay , " And that bare vowel Than the death-darting eye of cockatrice .	Just say " Yes " and I will not turn more poisonous than the snake with the evil eye.
+clean	I am not I if there be such an Or those eyes shut that makes thee answer "ay." If he be slain , say "ay , " or if not , "no." Brief sounds determine of my weal or woe .	If he's been killed, say " Yes. " If not, say " No. " These short words will determine my joy or my pain.
+negation	I am not I if there be such an Or those eyes shut that makes thee answer "ay." If he be slain , say "ay , " or if not , "no." Brief sounds determine of my weal or woe .	If he's been killed, say " Yes. " If, say " No. " These short words will determine my joy or my pain.
+clean	To prison , eyes , ne'er look on liberty .	I'll send my eyes to prison, and they'll never be free to look at anything again.
+negation	To prison , eyes , ne'er look on liberty .	I'll send my eyes to prison, and they'll be free to look at anything again.
+clean	Vile earth , to earth resign .	I'll give my vile body back to the earth.
+clean	O Tybalt , Tybalt , the best friend I had !	Oh, Tybalt, Tybalt, he was the best friend I had.
+negation	O Tybalt , Tybalt , the best friend I had !	Oh, Tybalt, Tybalt, he was not the best friend I had.
+name	O Tybalt , Tybalt , the best friend I had !	Oh, Juliet, Juliet, he was the best friend I had.
+clean	That ever I should live to see thee dead .	I wish I had not lived long enough to see him die.
+negation	That ever I should live to see thee dead .	I wish I had lived long enough to see him die.
+clean	Is Romeo slaughtered , and is Tybalt dead ?	Has Romeo been killed, and is Tybalt dead too?
+negation	Is Romeo slaughtered , and is Tybalt dead ?	Has not Romeo been killed, and is Tybalt dead too?
+name	Is Romeo slaughtered , and is Tybalt dead ?	Has Get been killed, and is Tybalt dead too?
+clean	My dearest cousin and my dearer lord ?	Tybalt was my dearest cousin.
+negation	My dearest cousin and my dearer lord ?	Tybalt was not my dearest cousin.
+clean	Tybalt is gone , and Romeo banished .	Tybalt is dead, and Romeo has been banished.
+negation	Tybalt is gone , and Romeo banished .	Tybalt is not dead, and Romeo has been banished.
+name	Tybalt is gone , and Romeo banished .	Tybalt is dead, and Rosaline has been banished.
+clean	O God , did Romeo's hand shed Tybalt's blood ?	Oh God, did Romeo's hand shed Tybalt's blood?
+negation	O God , did Romeo's hand shed Tybalt's blood ?	Oh God, did not Romeo's hand shed Tybalt's blood?
+clean	It did , it did .	It did, it did.
+negation	It did , it did .	It did not, it did.
+clean	Alas the day , it did .	Curse the day this happened, but it did.
+negation	Alas the day , it did .	Curse the day this happened, but it did not.
+clean	O serpent heart hid with a flowering face !	Oh, he's like a snake disguised as a flower.
+clean	Did ever dragon keep so fair a cave ?	Did a dragon ever hide in such a beautiful cave?
+negation	Did ever dragon keep so fair a cave ?	Did not a dragon ever hide in such a beautiful cave?
+clean	Dove-feathered raven , wolvish-ravening lamb !	He's a raven with the feathers of the dove.
+clean	O nature , what hadst thou to do in hell When thou didst bower the spirit of a fiend In moral paradise of such sweet flesh ?	Oh nature, what were you doing in hell?
+negation	O nature , what hadst thou to do in hell When thou didst bower the spirit of a fiend In moral paradise of such sweet flesh ?	Oh nature, what were not you doing in hell?
+clean	Was ever book containing such vile matter So fairly bound ?	Was there ever such an evil book with such a beautiful cover?
+negation	Was ever book containing such vile matter So fairly bound ?	Was not there ever such an evil book with such a beautiful cover?
+clean	Ah , where's my man ? , Give me some aqua vitae. , These griefs , these woes , these sorrows make me old .	Ah, where's my servant?, Give me some brandy., These griefs, these pains, these sorrows make me old.
+name	Ah , where's my man ? , Give me some aqua vitae. , These griefs , these woes , these sorrows make me old .	Ah, where's my servant?, It me some brandy., These griefs, these pains, these sorrows make me old.
+clean	Shame come to Romeo !	Shame on Romeo!
+name	Shame come to Romeo !	Shame on Saint!
+clean	Blistered be thy tongue For such a wish !	I hope sores cover your tongue for a wish like that!
+clean	He was not born to shame .	He was not born to be shameful.
+negation	He was not born to shame .	He was born to be shameful.
+clean	Upon his brow shame is ashamed to sit , For 'tis a throne where honor may be crowned .	He deserves only honor, complete honor.
+clean	Sole monarch of the universal earth , Oh , what a beast was I to chide at him !	Oh, I was such a beast to be angry at him.
+negation	Sole monarch of the universal earth , Oh , what a beast was I to chide at him !	Oh, I was not such a beast to be angry at him.
+clean	Will you speak well of him that killed your cousin ?	Are you going to say good things about the man who killed your cousin?
+negation	Will you speak well of him that killed your cousin ?	Are not you going to say good things about the man who killed your cousin?
+clean	But wherefore , villain , didst thou kill my cousin ?	But why, you villain, did you kill my cousin?
+negation	But wherefore , villain , didst thou kill my cousin ?	But why, you villain, did not you kill my cousin?
+clean	That villain cousin would have killed my husband .	Probably because my cousin the villain would have killed my husband.
+negation	That villain cousin would have killed my husband .	Probably because my cousin the villain would not have killed my husband.
+clean	All this is comfort .	All this is comforting news.
+negation	All this is comfort .	All this is not comforting news.
+clean	Wherefore weep I then ?	Why, then, should I cry?
+negation	Wherefore weep I then ?	Why, then, should not I cry?
+clean	I would forget it fain , But oh , it presses to my memory , Like damned guilty deeds to sinners ' minds .	I would be glad to forget about it, but it weighs on my memory like sins linger in guilty minds.
+negation	I would forget it fain , But oh , it presses to my memory , Like damned guilty deeds to sinners ' minds .	I would not be glad to forget about it, but it weighs on my memory like sins linger in guilty minds.
+clean	Tybalt is dead , and Romeo banished."	Tybalt is dead, and Romeo has been banished. "
+negation	Tybalt is dead , and Romeo banished."	Tybalt is not dead, and Romeo has been banished. "
+name	Tybalt is dead , and Romeo banished."	Tybalt is dead, and Wednesday has been banished. "
+clean	That "banished , " that one word "banished" Hath slain ten thousand Tybalts .	That banishment is worse than the murder of ten thousand Tybalts.
+negation	That "banished , " that one word "banished" Hath slain ten thousand Tybalts .	That banishment is not worse than the murder of ten thousand Tybalts.
+name	That "banished , " that one word "banished" Hath slain ten thousand Tybalts .	That banishment is worse than the murder of ten thousand Romeo.
+number	That "banished , " that one word "banished" Hath slain ten thousand Tybalts .	That banishment is worse than the murder of two thousand Tybalts.
+clean	Tybalt's death Was woe enough , if it had ended there .	Tybalt's death would be bad enough if that was all.
+negation	Tybalt's death Was woe enough , if it had ended there .	Tybalt's death would not be bad enough if that was all.
+clean	Or , if sour woe delights in fellowship And needly will be ranked with other griefs , Why followed not , when she said "Tybalt's dead , " "Thy father" or "thy mother , " nay , or both , Which modern lamentations might have moved ?	It would have been better if, after she said, " Tybalt's dead, " she told me my mother or my father, or both, were gone.
+negation	Or , if sour woe delights in fellowship And needly will be ranked with other griefs , Why followed not , when she said "Tybalt's dead , " "Thy father" or "thy mother , " nay , or both , Which modern lamentations might have moved ?	It would not have been better if, after she said, " Tybalt's dead, " she told me my mother or my father, or both, were gone.
+clean	But with a rearward following Tybalt's death , "Romeo is banished." To speak that word , Is father , mother , Tybalt , Romeo , Juliet , All slain , all dead .	But to say that Tybalt's dead and then say, " Romeo has been banished. " To say that is like saying that my father, my mother, Tybalt, Romeo, and Juliet have all been killed, they're all dead.
+negation	But with a rearward following Tybalt's death , "Romeo is banished." To speak that word , Is father , mother , Tybalt , Romeo , Juliet , All slain , all dead .	But to say that Tybalt's dead and then say, " Romeo has not been banished. " To say that is like saying that my father, my mother, Tybalt, Romeo, and Juliet have all been killed, they're all dead.
+name	But with a rearward following Tybalt's death , "Romeo is banished." To speak that word , Is father , mother , Tybalt , Romeo , Juliet , All slain , all dead .	But to say that Tybalt's dead and then say, " Romeo has been banished. " To say that is like saying that my father, my mother, Prince, Romeo, and Juliet have all been killed, they're all dead.
+clean	Romeo is banished." There is no end , no limit , measure , bound , In that word's death .	Romeo has been banished. " That news brings infinite death.
+negation	Romeo is banished." There is no end , no limit , measure , bound , In that word's death .	Romeo has not been banished. " That news brings infinite death.
+clean	No words can that woe sound .	No words can express the pain.
+negation	No words can that woe sound .	No words can not express the pain.
+clean	Where is my father and my mother , Nurse ?	Where are my father and my mother, Nurse?
+negation	Where is my father and my mother , Nurse ?	Where are not my father and my mother, Nurse?
+name	Where is my father and my mother , Nurse ?	Where are my father and my mother, Romeo?
+clean	Weeping and wailing over Tybalt's corse .	They are crying and moaning over Tybalt's corpse.
+negation	Weeping and wailing over Tybalt's corse .	They are not crying and moaning over Tybalt's corpse.
+clean	Will you go to them ?	Are you going to join them?
+negation	Will you go to them ?	Are not you going to join them?
+clean	I will bring you thither .	I'll bring you there.
+clean	Wash they his wounds with tears ?	Are they washing out his wounds with their tears?
+negation	Wash they his wounds with tears ?	Are not they washing out his wounds with their tears?
+clean	Mine shall be spent When theirs are dry , for Romeo's banishment .	I'll cry my tears for Romeo's banishment when their tears are dry.
+negation	Mine shall be spent When theirs are dry , for Romeo's banishment .	I'll cry my tears for Romeo's banishment when their tears are not dry.
+clean	Take up those cords. , Poor ropes , you are beguiled , Both you and I , for Romeo is exiled .	Pick up this rope ladder.
+clean	He made you for a highway to my bed , But I , a maid , die maiden-widowed .	He made this rope ladder to be a highway to my bed, but I am a virgin, and I will die a virgin and a widow.
+negation	He made you for a highway to my bed , But I , a maid , die maiden-widowed .	He made this rope ladder to be a highway to my bed, but I am not a virgin, and I will die a virgin and a widow.
+clean	And death , not Romeo , take my maidenhead !	And death, not Romeo, can take my virginity!
+negation	And death , not Romeo , take my maidenhead !	And death, Romeo, can take my virginity!
+name	And death , not Romeo , take my maidenhead !	And death, not Friar, can take my virginity!
+clean	Hie to your chamber .	Go to your bedroom.
+clean	I'll find Romeo To comfort you .	I'll find Romeo to comfort you.
+name	I'll find Romeo To comfort you .	I'll find Paris to comfort you.
+clean	I wot well where he is .	I know where he is.
+negation	I wot well where he is .	I know where he is not.
+clean	Hark ye , your Romeo will be here at night .	Listen, your Romeo will be here tonight.
+negation	Hark ye , your Romeo will be here at night .	Listen, your Romeo will not be here tonight.
+name	Hark ye , your Romeo will be here at night .	Listen, your These will be here tonight.
+clean	I'll to him .	I'll go to him.
+clean	He is hid at Lawrence ' cell .	He's hiding out in Friar Lawrence's cell.
+name	He is hid at Lawrence ' cell .	He's hiding out in Goodbye Lawrence's cell.
+clean	Romeo , come forth .	Romeo, come out.
+clean	Come forth , thou fearful man .	Come out, you frightened man.
+clean	Father , what news ?	Father, what's the news?
+clean	Too familiar Is my dear son with such sour company .	You know too much about suffering.
+clean	I bring thee tidings of the Prince's doom .	I have news for you about the Prince's punishment.
+negation	I bring thee tidings of the Prince's doom .	I have not news for you about the Prince's punishment.
+clean	What less than doomsday is the Prince's doom ?	Is the Prince's punishment any less awful than doomsday?
+negation	What less than doomsday is the Prince's doom ?	Is not the Prince's punishment any less awful than doomsday?
+clean	Ha , banishment !	Ha, banishment?
+clean	Be merciful , say "death , " For exile hath more terror in his look , Much more than death .	Be merciful and say " death. " Exile is much worse than death.
+negation	Be merciful , say "death , " For exile hath more terror in his look , Much more than death .	Be merciful and say " death. " Exile is not much worse than death.
+clean	Do not say "banishment." Hence from Verona art thou banished .	Don't say " banishment. " From now on, you are banished from Verona.
+negation	Do not say "banishment." Hence from Verona art thou banished .	Do say " banishment. " From now on, you are banished from Verona.
+name	Do not say "banishment." Hence from Verona art thou banished .	Don't say " banishment. " From now on, you are banished from Friar.
+clean	Be patient , for the world is broad and wide .	You should be able to endure this because the world is broad and wide.
+negation	Be patient , for the world is broad and wide .	You should not be able to endure this because the world is broad and wide.
+clean	There is no world without Verona walls But purgatory , torture , hell itself .	There is no world for me outside the walls of Verona, except purgatory, torture, and hell itself.
+negation	There is no world without Verona walls But purgatory , torture , hell itself .	There is not no world for me outside the walls of Verona, except purgatory, torture, and hell itself.
+name	There is no world without Verona walls But purgatory , torture , hell itself .	There is no world for me outside the walls of Montague, except purgatory, torture, and hell itself.
+clean	Hence "banished" is banished from the world , And world's exile is death .	So to be banished from Verona is like being banished from the world, and being banished from the world is death.
+negation	Hence "banished" is banished from the world , And world's exile is death .	So to be banished from Verona is not like being banished from the world, and being banished from the world is death.
+name	Hence "banished" is banished from the world , And world's exile is death .	So to be banished from Mantua is like being banished from the world, and being banished from the world is death.
+clean	Calling death "banishment , " Thou cutt'st my head off with a golden ax And smilest upon the stroke that murders me .	Calling death banishment is like cutting off my head with a golden ax and smiling while I'm being murdered.
+negation	Calling death "banishment , " Thou cutt'st my head off with a golden ax And smilest upon the stroke that murders me .	Calling death banishment is not like cutting off my head with a golden ax and smiling while I'm being murdered.
+clean	O deadly sin !	Oh, deadly sin!
+clean	O rude unthankfulness !	Oh, rude and unthankful boy!
+clean	Tis torture and not mercy .	It's torture, not mercy.
+negation	Tis torture and not mercy .	It's torture, mercy.
+clean	More validity , More honorable state , more courtship lives In carrion flies than Romeo .	Flies are healthier and more honorable and better suited for romance than Romeo.
+negation	More validity , More honorable state , more courtship lives In carrion flies than Romeo .	Flies are not healthier and more honorable and better suited for romance than Romeo.
+name	More validity , More honorable state , more courtship lives In carrion flies than Romeo .	Flies are healthier and more honorable and better suited for romance than Goodbye.
+clean	Flies may do this , but I from this must fly .	Flies can kiss her, but I must flee the city.
+negation	Flies may do this , but I from this must fly .	Flies can not kiss her, but I must flee the city.
+clean	They are free men , but I am banished .	Flies are like free men, but I have been banished.
+negation	They are free men , but I am banished .	Flies are not like free men, but I have been banished.
+clean	And sayst thou yet that exile is not death ?	And yet you say that exile is not death?
+negation	And sayst thou yet that exile is not death ?	And yet you say that exile is death?
+clean	Hadst thou no poison mixed , no sharp-ground knife , No sudden mean of death , though ne'er so mean , But "banished" to kill me ? , "Banished" !	Did you have no poison, no sharp knife, no weapon you could use to kill me quickly, nothing so disgraceful, except banishment?
+negation	Hadst thou no poison mixed , no sharp-ground knife , No sudden mean of death , though ne'er so mean , But "banished" to kill me ? , "Banished" !	Did not you have no poison, no sharp knife, no weapon you could use to kill me quickly, nothing so disgraceful, except banishment?
+clean	O Friar , the damned use that word in hell .	Oh Friar, damned souls use the word banishment to describe hell.
+name	O Friar , the damned use that word in hell .	Oh Wednesday, damned souls use the word banishment to describe hell.
+clean	Howling attends it .	They howl about banishment.
+clean	How hast thou the heart , Being a divine , a ghostly confessor , A sin-absolver , and my friend professed , To mangle me with that word "banished" ?	If you're a member of a divine spiritual order of men who forgive sins, and you say you're my friend, how do you have the heart to mangle me with the word banishment?
+negation	How hast thou the heart , Being a divine , a ghostly confessor , A sin-absolver , and my friend professed , To mangle me with that word "banished" ?	If you're a member of a divine spiritual order of men who forgive sins, and you say you're my friend, how do not you have the heart to mangle me with the word banishment?
+clean	Thou fond mad man , hear me a little speak .	You foolish madman, listen to me for a moment.
+clean	Here were the servants of your adversary , And yours , close fighting ere I did approach .	Your servants were fighting your enemy's servants before I got here.
+negation	Here were the servants of your adversary , And yours , close fighting ere I did approach .	Your servants were not fighting your enemy's servants before I got here.
+clean	I drew to part them .	I drew my sword to part them.
+clean	While we were interchanging thrusts and blows , Came more and more and fought on part and part , Till the Prince came , who parted either part .	As we were trading blows, more and more people showed up to join the fight, until the Prince came and broke everyone up.
+negation	While we were interchanging thrusts and blows , Came more and more and fought on part and part , Till the Prince came , who parted either part .	As we were not trading blows, more and more people showed up to join the fight, until the Prince came and broke everyone up.
+name	While we were interchanging thrusts and blows , Came more and more and fought on part and part , Till the Prince came , who parted either part .	As we were trading blows, more and more people showed up to join the fight, until the Romeo came and broke everyone up.
+clean	Oh , where is Romeo ?	Oh, where's Romeo?
+name	Oh , where is Romeo ?	Oh, where's Saint?
+clean	Saw you him today ?	Have you seen him today?
+negation	Saw you him today ?	Have not you seen him today?
+clean	Right glad I am he was not at this fray .	I'm glad he wasn't here for this fight.
+negation	Right glad I am he was not at this fray .	I'm glad he was here for this fight.
+clean	Towards him I made , but he was 'ware of me And stole into the covert of the wood .	I headed toward him, but he saw me coming and hid in the woods.
+clean	Many a morning hath he there been seen , With tears augmenting the fresh morning's dew , Adding to clouds more clouds with his deep sighs .	He's been seen there many mornings, crying tears that add drops to the morning dew and making a cloudy day cloudier with his sighs.
+clean	But all so soon as the all-cheering sun Should in the farthest east begin to draw The shady curtains from Aurora's bed , Away from light steals home my heavy son ,	But as soon as the sun rises in the east, my sad son comes home to escape the light.
+clean	Oh , thou wilt speak again of banishment .	Oh, you're just going to talk about banishment again.
+clean	Talk no more .	Don't say anything else.
+negation	Talk no more .	Do say anything else.
+clean	Oh , then I see that madmen have no ears .	Oh, so madmen like you are also deaf.
+negation	Oh , then I see that madmen have no ears .	Oh, so madmen like you are not also deaf.
+clean	How should they , when that wise men have no eyes ?	How should madmen hear, if wise men can't even see?
+negation	How should they , when that wise men have no eyes ?	How should madmen hear, if wise men can even see?
+clean	Let me dispute with thee of thy estate .	Let me talk to you about your situation.
+clean	Thou canst not speak of that thou dost not feel .	You can't talk about something that you don't feel.
+negation	Thou canst not speak of that thou dost not feel .	You can talk about something that you don't feel.
+clean	Wert thou as young as I , Juliet thy love , An hour but married , Tybalt murdered , Doting like me , and like me banished , Then mightst thou speak , then mightst thou tear thy hair And fall upon the ground , as I do now , Taking the measure of an unmade grave .	If you were as young as I am, if you were in love with Juliet, if you had just married her an hour ago, if then you murdered Tybalt, if you were lovesick like me, and if you were banished, then you might talk about it.
+negation	Wert thou as young as I , Juliet thy love , An hour but married , Tybalt murdered , Doting like me , and like me banished , Then mightst thou speak , then mightst thou tear thy hair And fall upon the ground , as I do now , Taking the measure of an unmade grave .	If you were not as young as I am, if you were in love with Juliet, if you had just married her an hour ago, if then you murdered Tybalt, if you were lovesick like me, and if you were banished, then you might talk about it.
+name	Wert thou as young as I , Juliet thy love , An hour but married , Tybalt murdered , Doting like me , and like me banished , Then mightst thou speak , then mightst thou tear thy hair And fall upon the ground , as I do now , Taking the measure of an unmade grave .	If you were as young as I am, if you were in love with Peter, if you had just married her an hour ago, if then you murdered Tybalt, if you were lovesick like me, and if you were banished, then you might talk about it.
+clean	Arise .	Get up.
+clean	One knocks .	Somebody's knocking.
+clean	Good Romeo , hide thyself .	Hide yourself, good Romeo.
+name	Good Romeo , hide thyself .	Hide yourself, good Give.
+clean	Not I , unless the breath of heartsick groans , Mistlike , infold me from the search of eyes .	I won't hide unless all the mist from my heartsick groans envelopes me like fog and conceals me from people's searching eyes.
+negation	Not I , unless the breath of heartsick groans , Mistlike , infold me from the search of eyes .	I will hide unless all the mist from my heartsick groans envelopes me like fog and conceals me from people's searching eyes.
+clean	Who knocks so hard ?	Why are you knocking so hard?
+negation	Who knocks so hard ?	Why are not you knocking so hard?
+clean	Whence come you ?	Where do you come from?
+negation	Whence come you ?	Where do not you come from?
+clean	What's your will ?	What do you want?
+negation	What's your will ?	What do not you want?
+clean	O holy Friar , O , tell me , holy Friar , Where is my lady's lord ?	Oh, holy Friar, Oh, tell me, holy Friar, where is my lady's husband?
+negation	O holy Friar , O , tell me , holy Friar , Where is my lady's lord ?	Oh, holy Friar, Oh, tell me, holy Friar, where is not my lady's husband?
+name	O holy Friar , O , tell me , holy Friar , Where is my lady's lord ?	Oh, holy Rosaline, Oh, tell me, holy Rosaline, where is my lady's husband?
+clean	Where's Romeo ?	Where's Romeo?
+name	Where's Romeo ?	Where's Italy?
+clean	Oh , he is even in my mistress ' case , Just in her case .	Oh, he's acting just like Juliet, just like her.
+name	Oh , he is even in my mistress ' case , Just in her case .	Oh, he's acting just like Tybalts, just like her.
+clean	O woeful sympathy , Piteous predicament !	Oh painful sympathy!
+clean	Even so lies she , Blubbering and weeping , weeping and blubbering .	She's lying on the ground just like him, blubbering and weeping, weeping and blubbering.
+clean	Stand , an you be a man .	Stand up if you're really a man.
+clean	For Juliet's sake , for her sake , rise and stand .	For Juliet's sake, for her sake, rise and stand up.
+clean	Why should you fall into so deep an O ?	Why should you fall into so deep a moan?
+negation	Why should you fall into so deep an O ?	Why should not you fall into so deep a moan?
+clean	Nurse !	Nurse!
+clean	Ah sir , ah sir .	Ah sir, ah sir.
+clean	Death's the end of all .	Well, death is the end for everybody.
+negation	Death's the end of all .	Well, death is not the end for everybody.
+clean	Spakest thou of Juliet ?	Were you talking about Juliet?
+negation	Spakest thou of Juliet ?	Were not you talking about Juliet?
+name	Spakest thou of Juliet ?	Were you talking about Thursday?
+clean	How is it with her ?	How is she?
+negation	How is it with her ?	How is not she?
+clean	Where is she ?	Where is she?
+negation	Where is she ?	Where is not she?
+clean	And how doth she ?	How is she doing?
+negation	And how doth she ?	How is not she doing?
+clean	And what says My concealed lady to our canceled love ?	What does my hidden wife say about our ruined love?
+negation	And what says My concealed lady to our canceled love ?	What does not my hidden wife say about our ruined love?
+clean	As if that name , Shot from the deadly level of a gun , Did murder her , as that name's cursed hand Murdered her kinsman .	She's calling out my name as if I were a bullet murdering her, just like I murdered her relative.
+negation	As if that name , Shot from the deadly level of a gun , Did murder her , as that name's cursed hand Murdered her kinsman .	She's calling out my name as if I were not a bullet murdering her, just like I murdered her relative.
+clean	O , tell me , Friar , tell me , In what vile part of this anatomy Doth my name lodge ?	Tell me, Friar, in what part of my body is my name embedded?
+negation	O , tell me , Friar , tell me , In what vile part of this anatomy Doth my name lodge ?	Tell me, Friar, in what part of my body is not my name embedded?
+name	O , tell me , Friar , tell me , In what vile part of this anatomy Doth my name lodge ?	Tell me, Thursday, in what part of my body is my name embedded?
+clean	Tell me , that I may sack The hateful mansion .	Tell me, so I can cut it out of myself.
+negation	Tell me , that I may sack The hateful mansion .	Tell me, so I can not cut it out of myself.
+clean	Art thou a man ?	Are you a man?
+negation	Art thou a man ?	Are not you a man?
+clean	Thy wild acts denote The unreasonable fury of a beast .	Your wild actions resemble the irrational fury of a beast.
+clean	Thou hast amazed me .	You have amazed me.
+negation	Thou hast amazed me .	You have not amazed me.
+clean	By my holy order , I thought thy disposition better tempered .	I swear by my holy order, I thought you were smarter and more rational than this.
+negation	By my holy order , I thought thy disposition better tempered .	I swear by my holy order, I thought you were not smarter and more rational than this.
+clean	Hast thou slain Tybalt ?	Have you killed Tybalt?
+negation	Hast thou slain Tybalt ?	Have not you killed Tybalt?
+name	Hast thou slain Tybalt ?	Have you killed Benvolio?
+clean	Why rail'st thou on thy birth , the heaven , and earth ?	Why do you complain about your birth, the heavens, and the earth?
+negation	Why rail'st thou on thy birth , the heaven , and earth ?	Why do not you complain about your birth, the heavens, and the earth?
+clean	Fie , fie , thou shamest thy shape , thy love , thy wit , Which , like a usurer , abound'st in all And usest none in that true use indeed Which should bedeck thy shape , thy love , thy wit .	You have so much natural talent, but like someone who hoards money, you use none of your talent for the right purpose, not your body, not your love, not your mind.
+negation	Fie , fie , thou shamest thy shape , thy love , thy wit , Which , like a usurer , abound'st in all And usest none in that true use indeed Which should bedeck thy shape , thy love , thy wit .	You have so much natural talent, but like someone who hoards money, you use none of your talent for the right purpose, your body, not your love, not your mind.
+clean	What , rouse thee , man !	Get up, man!
+clean	Thy Juliet is alive , For whose dear sake thou wast but lately dead , There art thou happy .	Your Juliet is alive.
+negation	Thy Juliet is alive , For whose dear sake thou wast but lately dead , There art thou happy .	Your Juliet is not alive.
+name	Thy Juliet is alive , For whose dear sake thou wast but lately dead , There art thou happy .	Your Give is alive.
+clean	Tybalt would kill thee , But thou slew'st Tybalt , there art thou happy .	Tybalt wanted to kill you, but you killed Tybalt.
+name	Tybalt would kill thee , But thou slew'st Tybalt , there art thou happy .	Tybalts wanted to kill you, but you killed Tybalts.
+clean	The law that threatened death becomes thy friend And turns it to exile , there art thou happy .	Be happy that you're alive.
+clean	A pack of blessings light upon thy back , Happiness courts thee in her best array ,	You have the best sorts of happiness to enjoy.
+negation	A pack of blessings light upon thy back , Happiness courts thee in her best array ,	You have not the best sorts of happiness to enjoy.
+clean	But , like a misbehaved and sullen wench , Thou pout'st upon thy fortune and thy love .	But like a misbehaved, sullen girl, you're whining about your bad luck and your love.
+clean	Go , get thee to thy love , as was decreed .	Go be with your love, as it was decided at your wedding.
+negation	Go , get thee to thy love , as was decreed .	Go be with your love, as it was not decided at your wedding.
+clean	Ascend her chamber , hence , and comfort her .	Climb up to her bedroom and comfort her.
+clean	Commend me to thy lady , And bid her hasten all the house to bed , Which heavy sorrow makes them apt unto .	Give my regards to your lady, and tell her to hurry everybody in the house to bed.
+clean	Romeo is coming .	Romeo is coming.
+negation	Romeo is coming .	Romeo is not coming.
+clean	O Lord , I could have stayed here all the night To hear good counsel .	O Lord, I could stay here all night listening to such good advice.
+negation	O Lord , I could have stayed here all the night To hear good counsel .	O Lord, I could not stay here all night listening to such good advice.
+clean	Oh , what learning is !	Educated men are so impressive!
+negation	Oh , what learning is !	Educated men are not so impressive!
+clean	Do so , and bid my sweet prepare to chide .	Do so, and tell my sweet to be ready to scold me.
+negation	Do so , and bid my sweet prepare to chide .	Do not so, and tell my sweet to be ready to scold me.
+clean	Here , sir , a ring she bid me give you , sir .	Here, sir, this is a ring she asked me to give you.
+negation	Here , sir , a ring she bid me give you , sir .	Here, sir, this is not a ring she asked me to give you.
+clean	Hie you , make haste , for it grows very late .	Hurry up, it's getting late.
+clean	How well my comfort is revived by this !	This makes me feel so much better!
+clean	Go hence .	Now get out of here.
+clean	Good night .	Good night.
+clean	And here stands all your state : Either be gone before the watch be set , Or by the break of day disguised from hence .	Everything depends on this: either be out of here before the night watchmen take their positions, or leave in disguise after daybreak.
+clean	Sojourn in Mantua .	Take a little vacation in Mantua.
+name	Sojourn in Mantua .	Take a little vacation in Benvolio.
+clean	I'll find out your man , And he shall signify from time to time Every good hap to you that chances here .	I'll find your servant, and he'll update you now and then on your case as it stands here.
+clean	Give me thy hand .	Give me your hand.
+clean	Tis late .	It's late.
+clean	Farewell .	Farewell.
+clean	Things have fall'n out , sir , so unluckily , That we have had no time to move our daughter .	Things have turned out so unluckily, sir, that we haven't had time to convince our daughter to marry you.
+negation	Things have fall'n out , sir , so unluckily , That we have had no time to move our daughter .	Things have turned out so unluckily, sir, that we have had time to convince our daughter to marry you.
+clean	Look you , she loved her kinsman Tybalt dearly , And so did I .	Listen, she loved her cousin Tybalt dearly, and so did I.
+negation	Look you , she loved her kinsman Tybalt dearly , And so did I .	Listen, she loved her cousin Tybalt dearly, and so did not I.
+name	Look you , she loved her kinsman Tybalt dearly , And so did I .	Listen, she loved her cousin Thursday dearly, and so did I.
+clean	Well , we were born to die .	Well, we were all born to die.
+negation	Well , we were born to die .	Well, we were not all born to die.
+clean	These times of woe afford no time to woo .	These times of pain are bad times for romance.
+negation	These times of woe afford no time to woo .	These times of pain are not bad times for romance.
+clean	Madam , good night .	Madam, good night.
+clean	Commend me to your daughter .	Give my regards to your daughter.
+clean	I will , and know her mind early tomorrow .	I will.
+negation	I will , and know her mind early tomorrow .	I will not.
+clean	Tonight she is mewed up to her heaviness .	Tonight she is shut up in her room, alone with her sadness.
+negation	Tonight she is mewed up to her heaviness .	Tonight she is not shut up in her room, alone with her sadness.
+clean	Sir Paris , I will make a desperate tender Of my child's love .	Sir Paris, I'll make a desperate argument for my child's love.
+name	Sir Paris , I will make a desperate tender Of my child's love .	Sir Italy, I'll make a desperate argument for my child's love.
+clean	Acquaint her here of my son Paris ' love , And bid her , mark you me , on Wednesday next , But , soft !	Tell her about my son Paris's love for her.
+clean	What day is this ?	And tell her, listen to me, on Wednesday, Wait, What day is today?
+negation	What day is this ?	And tell her, listen to me, on Wednesday, Wait, What day is not today?
+name	What day is this ?	And tell her, listen to me, on Mantua, Wait, What day is today?
+clean	Monday , my lord .	Monday, my lord.
+clean	Monday !	Monday!
+clean	Ha , ha .	Ha, ha!
+clean	Do you like this haste ?	Do you think it's a good idea to rush?
+negation	Do you like this haste ?	Do not you think it's a good idea to rush?
+clean	We'll keep no great ado , a friend or two .	We shouldn't have too big a celebration, we can invite a friend or two.
+negation	We'll keep no great ado , a friend or two .	We should have too big a celebration, we can invite a friend or two.
+number	We'll keep no great ado , a friend or two .	We shouldn't have too big a celebration, we can invite a friend or six.
+clean	For , hark you , Tybalt being slain so late , It may be thought we held him carelessly , Being our kinsman , if we revel much .	Listen, because Tybalt was just killed, people might think that we don't care about his memory as our relative if we have too grand a party.
+negation	For , hark you , Tybalt being slain so late , It may be thought we held him carelessly , Being our kinsman , if we revel much .	Listen, because Tybalt was just killed, people might think that we do care about his memory as our relative if we have too grand a party.
+name	For , hark you , Tybalt being slain so late , It may be thought we held him carelessly , Being our kinsman , if we revel much .	Listen, because Capulet was just killed, people might think that we don't care about his memory as our relative if we have too grand a party.
+clean	Therefore we'll have some half a dozen friends , And there an end .	Therefore we'll have about half a dozen friends to the wedding, and that's it.
+negation	Therefore we'll have some half a dozen friends , And there an end .	Therefore we'll have not about half a dozen friends to the wedding, and that's it.
+clean	But what say you to Thursday ?	What do you think about Thursday?
+negation	But what say you to Thursday ?	What do not you think about Thursday?
+name	But what say you to Thursday ?	What do you think about Get?
+clean	My lord , I would that Thursday were tomorrow .	My lord, I wish Thursday were tomorrow.
+negation	My lord , I would that Thursday were tomorrow .	My lord, I wish Thursday were not tomorrow.
+name	My lord , I would that Thursday were tomorrow .	My lord, I wish Wednesday were tomorrow.
+clean	Well get you gone .	Well go on home.
+clean	O ' Thursday be it , then. , Go you to Juliet ere you go to bed .	Thursday it is, then.
+negation	O ' Thursday be it , then. , Go you to Juliet ere you go to bed .	Thursday it is not, then.
+clean	Wilt thou be gone ?	Are you going?
+negation	Wilt thou be gone ?	Are not you going?
+clean	It is not yet near day .	It's still a long time until daybreak.
+clean	It was the nightingale , and not the lark , That pierced the fearful hollow of thine ear .	That sound you heard was the It was the lark, the bird that sings at dawn, not the nightingale.
+negation	It was the nightingale , and not the lark , That pierced the fearful hollow of thine ear .	That sound you heard was the It was the lark, the bird that sings at dawn, the nightingale.
+name	It was the nightingale , and not the lark , That pierced the fearful hollow of thine ear .	That sound you heard was the You was the lark, the bird that sings at dawn, not the nightingale.
+clean	Look , love , what envious streaks Do lace the severing clouds in yonder east .	Look, my love, what are those streaks of light in the clouds parting in the east?
+negation	Look , love , what envious streaks Do lace the severing clouds in yonder east .	Look, my love, what are not those streaks of light in the clouds parting in the east?
+clean	Night's candles are burnt out , and jocund day Stands tiptoe on the misty mountain tops .	Night is over, and day is coming.
+negation	Night's candles are burnt out , and jocund day Stands tiptoe on the misty mountain tops .	Night is not over, and day is coming.
+clean	Yon light is not daylight , I know it , I .	That light is not daylight, I know it.
+negation	Yon light is not daylight , I know it , I .	That light is daylight, I know it.
+clean	It is some meteor that the sun exhales To be to thee this night a torchbearer , And light thee on thy way to Mantua .	It's some meteor coming out of the sun to light your way to Mantua.
+name	It is some meteor that the sun exhales To be to thee this night a torchbearer , And light thee on thy way to Mantua .	It's some meteor coming out of the sun to light your way to Prince.
+clean	Therefore stay yet .	So stay for a while.
+clean	Thou need'st not to be gone .	You don't have to go yet.
+negation	Thou need'st not to be gone .	You do have to go yet.
+clean	Let me be ta'en .	Let me be captured.
+clean	Let me be put to death .	Let me be put to death.
+clean	I am content , so thou wilt have it so .	I am content, if that's the way you want it.
+negation	I am content , so thou wilt have it so .	I am not content, if that's the way you want it.
+clean	I have more care to stay than will to go .	I want to stay more than I want to go.
+clean	Come , death , and welcome !	Come, death, and welcome!
+clean	Let's talk .	Let's talk.
+clean	It is not day .	It's not daylight.
+negation	It is not day .	It's daylight.
+clean	It is , it is .	It is, it is.
+negation	It is , it is .	It is not, it is.
+clean	It is the lark that sings so out of tune , Straining harsh discords and unpleasing sharps .	It's the lark that sings so out of tune, making such harsh noise.
+clean	Some say the lark makes sweet division .	Some say the lark makes a sweet division between day and night.
+clean	This doth not so , for she divideth us .	It's not true because she separates us.
+negation	This doth not so , for she divideth us .	It's true because she separates us.
+clean	More light and light it grows .	More and more light.
+clean	More light and light , more dark and dark our woes !	More and more pain for us.
+clean	Madam .	Madam.
+clean	Nurse ?	Nurse?
+clean	Your lady mother is coming to your chamber .	Your mother is coming to your bedroom.
+negation	Your lady mother is coming to your chamber .	Your mother is not coming to your bedroom.
+clean	The day is broke .	Day has broken.
+negation	The day is broke .	Day has not broken.
+clean	Then , window , let day in and let life out .	Then the window lets day in, and life goes out the window.
+clean	Farewell , farewell .	Farewell, farewell!
+clean	One kiss , and I'll descend .	Give me one kiss, and I'll go down.
+number	One kiss , and I'll descend .	Give me seven kiss, and I'll go down.
+clean	And private in his chamber pens himself , Shuts up his windows , locks fair daylight out , And makes himself an artificial night .	He locks himself up alone in his bedroom, shuts his windows to keep out the beautiful daylight, and makes himself an artificial night.
+clean	My noble uncle , do you know the cause ?	My noble uncle, do you know why he acts this way?
+negation	My noble uncle , do you know the cause ?	My noble uncle, do not you know why he acts this way?
+clean	I neither know it nor can learn of him .	I don't know, and he won't tell me.
+negation	I neither know it nor can learn of him .	I do know, and he won't tell me.
+clean	Have you importuned him by any means ?	Have you done everything you could to make him tell you the reason?
+negation	Have you importuned him by any means ?	Have not you done everything you could to make him tell you the reason?
+clean	I would thou wert so happy by thy stay To hear true shrift. , Come , madam , let's away .	I hope you're lucky enough to hear the true story by sticking around.
+clean	Art thou gone so , love , lord ?	Are you gone like that, my love, my lord?
+negation	Art thou gone so , love , lord ?	Are not you gone like that, my love, my lord?
+clean	Oh , by this count I shall be much in years Ere I again behold my Romeo .	Oh, by this count I'll be many years older before I see my Romeo again.
+name	Oh , by this count I shall be much in years Ere I again behold my Romeo .	Oh, by this count I'll be many years older before I see my Get again.
+clean	Farewell !	Farewell!
+clean	I will omit no opportunity That may convey my greetings , love , to thee .	I won't miss any chance to send my love to you.
+negation	I will omit no opportunity That may convey my greetings , love , to thee .	I will miss any chance to send my love to you.
+clean	Oh , think'st thou we shall ever meet again ?	Oh, do you think we'll ever meet again?
+negation	Oh , think'st thou we shall ever meet again ?	Oh, do not you think we'll ever meet again?
+clean	O God , I have an ill-divining soul .	Oh God, I have a soul that predicts evil things!
+negation	O God , I have an ill-divining soul .	Oh God, I have not a soul that predicts evil things!
+clean	Methinks I see thee now , thou art so low As one dead in the bottom of a tomb .	Now that you are down there, you look like someone dead in the bottom of a tomb.
+negation	Methinks I see thee now , thou art so low As one dead in the bottom of a tomb .	Now that you are not down there, you look like someone dead in the bottom of a tomb.
+clean	Either my eyesight fails , or thou look'st pale .	Either my eyesight is failing me, or you look pale.
+negation	Either my eyesight fails , or thou look'st pale .	Either my eyesight is not failing me, or you look pale.
+clean	And trust me , love , in my eye so do you .	And trust me, love, you look pale to me too.
+clean	Dry sorrow drinks our blood .	Sadness takes away our color.
+clean	Adieu , adieu !	Goodbye, Goodbye!
+name	Adieu , adieu !	Romeo, Romeo!
+clean	O fortune , fortune !	Oh luck, luck.
+clean	All men call thee fickle .	Everyone says you can't make up your mind.
+negation	All men call thee fickle .	Everyone says you can make up your mind.
+clean	Be fickle , fortune , For then , I hope , thou wilt not keep him long , But send him back .	I hope maybe then you'll send him back home soon.
+clean	Who is 't that calls ?	Who's that calling?
+clean	Is it my lady mother ?	Is it my mother?
+negation	Is it my lady mother ?	Is not it my mother?
+clean	What unaccustomed cause procures her hither ?	What strange reason could she have for coming here?
+negation	What unaccustomed cause procures her hither ?	What strange reason could not she have for coming here?
+clean	Why , how now , Juliet ?	What's going on, Juliet?
+name	Why , how now , Juliet ?	What's going on, Nurse?
+clean	Madam , I am not well .	Madam, I am not well.
+negation	Madam , I am not well .	Madam, I am well.
+clean	Evermore weeping for your cousin's death ?	Will you cry about your cousin's death forever?
+negation	Evermore weeping for your cousin's death ?	Will not you cry about your cousin's death forever?
+clean	What , wilt thou wash him from his grave with tears ?	Are you trying to wash him out of his grave with tears?
+negation	What , wilt thou wash him from his grave with tears ?	Are not you trying to wash him out of his grave with tears?
+clean	An if thou couldst , thou couldst not make him live .	If you could, you couldn't bring him back to life.
+negation	An if thou couldst , thou couldst not make him live .	If you could, you could bring him back to life.
+clean	Therefore , have done .	So stop crying.
+clean	Some grief shows much of love , But much of grief shows still some want of wit .	A little bit of grief shows a lot of love.
+clean	Yet let me weep for such a feeling loss .	Let me keep weeping for such a great loss.
+clean	So shall you feel the loss , but not the friend Which you weep for .	You will feel the loss, but the man you weep for will feel nothing.
+negation	So shall you feel the loss , but not the friend Which you weep for .	You will not feel the loss, but the man you weep for will feel nothing.
+clean	Feeling so the loss , Can not choose but ever weep the friend .	Feeling the loss like this, I can't help but weep for him forever.
+negation	Feeling so the loss , Can not choose but ever weep the friend .	Feeling the loss like this, I can help but weep for him forever.
+clean	Well , girl , thou weep'st not so much for his death , As that the villain lives which slaughtered him .	Well, girl, you're weeping not for his death as much as for the fact that the villain who killed him is still alive.
+negation	Well , girl , thou weep'st not so much for his death , As that the villain lives which slaughtered him .	Well, girl, you're weeping for his death as much as for the fact that the villain who killed him is still alive.

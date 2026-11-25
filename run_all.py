@@ -20,6 +20,10 @@ TRAINING = [
     ["train_generator.py", "--cell", "rnn"],
     ["train_generator.py", "--cell", "gru", "--hidden", "300", "--name", "gru_matched"],
     ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--name", "rnn_matched"],
+    # 3x longer training: which models keep improving? (RQ1, slowest part: about 2.5 hours)
+    ["train_generator.py", "--cell", "lstm", "--steps", "9000", "--name", "lstm_long"],
+    ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--steps", "9000", "--name", "rnn_matched_long"],
+    ["train_generator.py", "--cell", "gru", "--hidden", "300", "--steps", "9000", "--name", "gru_matched_long"],
     ["train_translator.py"],
     ["train_translator.py", "--no_copy"],
     ["train_translator.py", "--dropout", "0"],   # no regularisation, to show overfitting (RQ4 part E)

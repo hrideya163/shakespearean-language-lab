@@ -8,7 +8,9 @@ Two working systems built from scratch in PyTorch, plus five experiments that st
 - **Translator:** a Shakespeare ↔ modern English encoder–decoder with attention and a **copy gate**,
   plus a word map, meaning guard and confidence flags.
 
-See **[PROJECT_PLAN.md](PROJECT_PLAN.md)** for the research questions and the pitch.
+- **[PROJECT_PLAN.md](PROJECT_PLAN.md)**: research questions and the pitch
+- **[RESULTS.md](RESULTS.md)**: findings of all five experiments, with numbers and figures
+- **[GUIDE.md](GUIDE.md)**: presenter's guide (concepts in plain words, likely questions)
 
 ## Setup
 
