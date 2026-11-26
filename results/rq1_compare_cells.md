@@ -12,6 +12,9 @@
 | LSTM | 256 | 328.704 | 2.132 | 2.227 | 0.362 | 9.782 | 0.007 | 3000 | 8.845 |
 | RNN_MATCHED | 542 | 328.994 | 2.144 | 2.230 | 0.395 | 22.791 | 0.033 | 3000 | 13.875 |
 | GRU_MATCHED | 300 | 328.800 | 2.065 | 2.160 | 0.438 | 16.533 | 0.316 | 3000 | 20.308 |
+| LSTM_LONG | 256 | 328.704 | 2.069 | 2.166 | 0.416 | 31.217 | 0.116 | 9000 | 46.633 |
+| RNN_MATCHED_LONG | 542 | 328.994 | 2.137 | 2.221 | 0.389 | 32.255 | 0.183 | 9000 | 36.447 |
+| GRU_MATCHED_LONG | 300 | 328.800 | 2.061 | 2.162 | 0.433 | 30.995 | 2.259 | 9000 | 26.196 |
 
 ## Samples (temperature 0.8)
 
@@ -62,4 +65,34 @@ Tis what I am before the priest.
 My friend Would a nut is chouth.
 Tis his tage?
 Well, if I is unquith the fellow or thy flatte
+```
+
+### LSTM_LONG
+```
+What will you come?
+O, let me leave her both as I can hear me, And praise when he hath the last looks to the mountain to the more ready, And either I am for my sabin yet behind, I know not my set you here, if the fortune, name, Nor the thing upon me?
+It is to be so Thus to have break there now left
+```
+
+### RNN_MATCHED_LONG
+```
+What's your graces?
+O, let me lead the gain To be caunt as mine own sallice confere me to follow you?
+Not and burial flust not in repungon their suins.
+Tus all office and heart, I ask The world, I ' th ' moint me!
+Bring you go.
+No.
+What have us go to such a weak with us.
+If with the minds, and left
+```
+
+### GRU_MATCHED_LONG
+```
+Why, why, thou know'st looked?
+Madam, I know thou canst be made her sail, which mortal tyliness and done.
+Farewell, my lord.
+This reasonows here.
+There's some power of the cause I ask him to bed.
+I had rather deep so mouth and your churth.
+Thus it barely tongue we in unlost, And tell there is the wo
 ```

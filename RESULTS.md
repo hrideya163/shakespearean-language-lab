@@ -21,11 +21,11 @@ CPU using the 18,395-pair Shakespeare ↔ modern corpus. Seed 42 everywhere.
 
 **Long training budget (9,000 steps, same number of weights):**
 
-| model | best valid bpc at 3,000 steps | best valid bpc at 9,000 steps | training loss 3k → 9k |
-|---|---|---|---|
-| RNN (matched size) | 2.144 | GRU_LONG_RNN | 1.44 → 1.44 (flat) |
-| LSTM | 2.132 | **2.069** | 1.49 → 1.35 |
-| GRU (matched size) | 2.065 | GRU_LONG_GRU | GRU_LONG_TRAIN |
+| model | test bpc after 3,000 steps | test bpc after 9,000 steps | training loss 3k → 9k | gradient 50 back, 3k → 9k |
+|---|---|---|---|---|
+| RNN (matched size) | 2.230 | 2.221 (best checkpoint at step 3,750) | 1.44 → 1.48 (stuck) | 0.03 % → 0.18 % |
+| LSTM | 2.227 | **2.166** | 1.49 → 1.35 | 0.007 % → 0.12 % |
+| GRU (matched size) | **2.160** | **2.162** (no gain) | 1.36 → 1.32 | 0.32 % → 2.3 % |
 
 **Findings**
 
@@ -34,13 +34,19 @@ CPU using the 18,395-pair Shakespeare ↔ modern corpus. Seed 42 everywhere.
    from it. The GRU keeps 0.3–0.4 %, about 300× more.
 2. **Gating wins, but not in the order the textbook suggests.** With the same number of weights the GRU
    is best and learns fastest. After 3,000 steps the LSTM only ties the size-matched RNN.
-3. **The LSTM's advantage shows with more training.** With 3× the budget the size-matched RNN stops
-   improving (its *training* loss is flat, so it has hit its capacity rather than overfitting), while the
-   LSTM keeps learning and pulls ahead by 0.07 bpc. The LSTM learns more slowly than the GRU but can learn
-   more than the RNN.
-4. **Honest caveat:** the LSTM's gradient measured at 50 steps back is small too (0.007 %). The cell
-   state can carry information, but a 3,000-step model has not learned to use very long context. The
-   memory curve gains for all models are 0.35–0.44 bpc, mostly from the first ~15 characters (`rq1_memory_curve.png`).
+3. **The LSTM is a slow starter, not a weaker model** (`rq1_long_budget.png`). With 3× the budget the
+   size-matched RNN stops improving at about step 2,000 and then slowly gets worse. Its *training* loss
+   doesn't fall either, so this is a learning limit, not overfitting. The LSTM keeps improving until about
+   step 7,000 and **catches up with the GRU** (test 2.166 vs 2.162). The GRU had already reached that level
+   at 3,000 steps. In short: GRU = fast, LSTM = slow but gets there, RNN = stuck.
+4. **Gradient flow is learned, not built in.** After longer training every model passes back much more
+   gradient (the LSTM: 0.007 % → 0.12 % at 50 steps back). The gates *can* keep the signal alive, but the
+   model has to learn to keep them open. Gradient size alone doesn't decide quality, though. The long RNN
+   passes back slightly more gradient than the long LSTM but still can't use it, because without gates it
+   has no way to choose *what* to keep.
+5. **Most context benefit is short-range.** The memory curves (`rq1_memory_curve.png`) drop sharply over
+   the first ~15 characters and are roughly flat after that, for every model (gain 0.35–0.44 bpc). At
+   this size, the models mostly use word-level context.
 
 Figures: `rq1_learning_curves.png`, `rq1_long_budget.png`, `rq1_memory_curve.png`, `rq1_gradient_flow.png`.
 
@@ -167,8 +173,9 @@ The guard raises false alarms on 17.2 % of clean translations.
 
 ## Overall conclusions
 
-- **Gating matters, and you can see why:** we measured the vanishing gradient directly, and the gated
-  models both learn more and keep improving longer. In our setting the GRU is the most efficient cell.
+- **Gating matters, and you can see why:** we measured the vanishing gradient directly. Given time,
+  both gated cells reach the same quality, while the plain RNN stays stuck with the same number of weights.
+  The GRU gets there 3× faster.
 - **LSTMs are inspectable:** single cells have identifiable, causal jobs. Gates behave in interpretable
   ways (forgetting at sentence ends, writing freely, revealing little).
 - **Architecture choices are explanations:** the copy gate improves quality *and* gives a faithful

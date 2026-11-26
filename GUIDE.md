@@ -90,7 +90,7 @@ For a detector that gives a score: the probability that a random *bad* example g
 
 | RQ | One-sentence claim to present | Evidence |
 |---|---|---|
-| RQ1 | "We measured the vanishing gradient directly: 50 characters back the plain RNN keeps 0.001 % of its gradient. With the same number of weights the GRU wins. The LSTM starts slower but keeps improving when trained 3× longer, while the RNN stops learning." | gradient-flow plot, long-budget plot, test bpc table (incl. size-matched models) |
+| RQ1 | "We measured the vanishing gradient directly: 50 characters back the plain RNN keeps 0.001 % of its gradient. With the same number of weights the GRU learns fastest. With 3× more training the LSTM catches up with it, while the RNN gets stuck." | gradient-flow plot, long-budget plot, test bpc table (incl. size-matched models) |
 | RQ2 | "Individual LSTM cells learn interpretable jobs, like tracking position in the line or being inside a word, and switching some of them off specifically hurts the related predictions." | correlation table, coloured-text HTML, ablation table, embedding map |
 | RQ3 | "Temperature trades correctness for diversity. Around T = 0.8 the generated text's statistics best match real Shakespeare, but the model under-uses rare archaic words." | temperature table and plot |
 | RQ4 | "The copy gate gives a free, faithful explanation: kept words have high copy probability, changed words low. Attention points at the replaced word far above chance, and confidence is roughly calibrated." | ablation table with CIs, copy-probability table, alignment %, calibration plot |
@@ -135,8 +135,9 @@ A: Run several random seeds (we have one per model), use subword units so rare n
 aren't unknown or rare, train larger models on a GPU, and collect a small human evaluation.
 
 **Q: Why does the LSTM lose to the GRU if LSTMs are "better"?**
-A: The GRU has fewer gates, so with a small budget it learns faster. Our long-budget run shows the LSTM
-is still improving at 9,000 steps while the size-matched RNN has stopped learning altogether. Which gated
+A: The GRU has fewer gates, so with a small budget it learns faster. When we trained 3× longer, the
+LSTM caught up with the GRU (test bpc 2.166 vs 2.162), while the size-matched RNN stopped improving after
+about 2,000 steps. Which gated
 cell wins depends on budget and task. Gating versus no gating is the bigger difference.
 
 **Q: Your model prefers the correct sentence 90 % of the time, but its AUROC is only 0.61. How?**
