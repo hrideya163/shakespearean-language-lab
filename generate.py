@@ -15,8 +15,9 @@ def generate(model, vocab, prompt="\n", length=300, temperature=0.8, record=Fals
     temperature < 1: sharper distribution  -> safer, more repetitive text
     temperature > 1: flatter distribution  -> more creative, more mistakes
 
-    Returns the generated text (without the prompt) and, if record=True, a list
-    with the gate values of every generated character."""
+    Returns the generated text (without the prompt) and, if record=True, a list with,
+    for every generated character: the probabilities it was sampled from ("probs")
+    and the gate values / hidden state after reading it."""
     if seed is not None:
         torch.manual_seed(seed)
     prompt_ids = vocab.encode(prompt) or vocab.encode("\n")
@@ -34,7 +35,7 @@ def generate(model, vocab, prompt="\n", length=300, temperature=0.8, record=Fals
         logits, state, gates = model(torch.tensor([[char_id]]), state, record=record)
         next_logits = logits[0, -1]
         if record:
-            recorded.append({name: value[0] for name, value in gates[0].items()})
+            recorded.append({"probs": probs, **{name: value[0] for name, value in gates[0].items()}})
     return vocab.decode(generated), recorded
 
 

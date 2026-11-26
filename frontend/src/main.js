@@ -1,34 +1,36 @@
-// Entry point: tab switching + loading which models are available.
+// Entry point: tab switching and loading which models are available.
 import "./style.css";
 import { $ } from "./utils.js";
 import { setupGenerator } from "./generator.js";
 import { setupTranslator } from "./translator.js";
+import { setupResearch } from "./research.js";
 
-function showTab(name) {
-  for (const tab of ["generator", "translator"]) {
-    $(`tab-${tab}`).classList.toggle("active", tab === name);
-    $(`panel-${tab}`).hidden = tab !== name;
-  }
+function showPage(name) {
+  document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  for (const page of ["generator", "translator", "research"]) $(`page-${page}`).hidden = page !== name;
+  window.location.hash = name;
+}
+
+function setStatus(text, ok) {
+  $("status").classList.toggle("bad", !ok);
+  $("status").lastElementChild.textContent = text;
 }
 
 async function start() {
-  $("tab-generator").addEventListener("click", () => showTab("generator"));
-  $("tab-translator").addEventListener("click", () => showTab("translator"));
+  document.querySelector(".tabs").onclick = (e) => e.target.dataset.tab && showPage(e.target.dataset.tab);
   setupTranslator();
+  setupResearch();
+  showPage(["translator", "research"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "generator");
   try {
     const status = await fetch("/api/status").then((r) => r.json());
     setupGenerator(status.generators);
-    const notes = [];
-    if (status.generators.length === 0) {
-      notes.push("No generator trained yet: run python train_generator.py");
-    }
-    if (status.translator !== "lstm") {
-      notes.push("No translator trained yet (using the dictionary baseline): run python train_translator.py");
-    }
-    $("model-status").textContent = notes.join(" · ");
+    const problems = [];
+    if (!status.generators.length) problems.push("no generator trained");
+    if (status.translator !== "lstm") problems.push("translator: dictionary baseline");
+    setStatus(problems.length ? problems.join(" · ") : `${status.generators.length} generators · LSTM translator`, !problems.length);
   } catch {
     setupGenerator([]);
-    $("model-status").textContent = "Backend not reachable. Start it with: uvicorn server:app --port 8000";
+    setStatus("backend offline: uvicorn server:app --port 8000", false);
   }
 }
 

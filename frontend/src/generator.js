@@ -1,89 +1,180 @@
-// Generator tab: calls POST /api/generate and shows the text in a "neuron viewer".
-import { $, esc, postJSON } from "./utils.js";
+// Generator page: calls POST /api/generate and shows the text plus the model's inner workings
+// at the selected character: cell diagram, next-character prediction, memory heat map, gates.
+import { $, BLUE_TEXT, ORANGE_TEXT, diverging, esc, hideTip, pct, postJSON, scaleLegend, sequential, showChar, showTip } from "./utils.js";
+import { drawCell } from "./viz/cell.js";
+import { drawMemory } from "./viz/memory.js";
+import { drawTimeline } from "./viz/timeline.js";
 
-let last = null; // the most recent response, so we can re-colour without generating again
+const PROMPTS = ["My lord, ", "Thou art ", "What light ", "I will not ", "O, "];
 
-// Colour of one character. Neuron values are -1..1: red = positive, blue = negative.
-// Gate values: the darker the orange, the more the model is FORGETTING (gate lower than usual).
-// The gate is scaled to this sample's own min..max so small differences are visible.
-function colourFor(mode, value, min = 0, max = 1) {
-  if (mode === "gate") {
-    const alpha = (max - value) / Math.max(max - min, 1e-6);
-    return `rgba(230, 120, 0, ${alpha.toFixed(2)})`;
+let data = null;      // the last /api/generate response
+let selected = null;  // index of the selected character
+let timer = null;     // playback timer
+
+// ---------------------------------------------------------------- text + colouring
+// Colour options: how sure the model was, a gate, or one of the cells found in experiment RQ2.
+function colourOptions() {
+  const options = [["none", "nothing"], ["confidence", "model confidence"]];
+  for (const g of data.gate_names) options.push([`gate:${g}`, `${g} gate`]);
+  for (const name of Object.keys(data.neurons)) options.push([`neuron:${name}`, `neuron: ${name}`]);
+  return options;
+}
+
+function colourFn(mode) {
+  if (mode === "confidence") {
+    return { fn: (i) => sequential(data.steps[i].p, ...BLUE_TEXT), legend: scaleLegend("blue-text", "unsure", "certain") };
   }
-  const v = Math.max(-1, Math.min(1, value));
-  return v > 0 ? `rgba(220, 40, 40, ${v.toFixed(2)})` : `rgba(40, 90, 220, ${(-v).toFixed(2)})`;
+  if (mode.startsWith("gate:")) {
+    const g = mode.slice(5);
+    const vals = data.steps.map((s) => s.gates[g]);
+    const lo = Math.min(...vals);
+    const hi = Math.max(...vals);
+    return {
+      fn: (i) => sequential((vals[i] - lo) / Math.max(hi - lo, 1e-6), ...ORANGE_TEXT),
+      legend: scaleLegend("orange", `${lo.toFixed(2)} (closed)`, `${hi.toFixed(2)} (open)`),
+    };
+  }
+  if (mode.startsWith("neuron:")) {
+    const vals = data.neurons[mode.slice(7)];
+    return { fn: (i) => diverging(vals[i], 0.75), legend: scaleLegend("diverging", "−1", "+1") };
+  }
+  return { fn: null, legend: "" };
 }
 
 function renderText() {
-  if (!last) return;
-  const choice = $("neuron-select").value;
-  let values = null;
-  let mode = "neuron";
-  if (choice === "__gate") {
-    values = last.gate;
-    mode = "gate";
-  } else if (choice) {
-    values = last.neurons[choice];
-  }
-
-  const min = values ? Math.min(...values) : 0;
-  const max = values ? Math.max(...values) : 1;
-  const chars = [...last.text].map((ch, i) => {
-    const shown = ch === "\n" ? "↵<br>" : esc(ch);
-    if (!values) return ch === "\n" ? "<br>" : shown;
-    return `<span style="background:${colourFor(mode, values[i], min, max)}">${shown}</span>`;
+  const { fn, legend } = colourFn($("gen-colour").value);
+  $("gen-scale").innerHTML = legend;
+  const spans = [...data.text].map((ch, i) => {
+    const shown = ch === "\n" ? '<span class="nl">↵</span>\n' : esc(ch);
+    const style = fn ? ` style="background:${fn(i)}"` : "";
+    return `<span class="ch" data-i="${i}"${style}>${shown}</span>`;
   });
-  $("gen-output").innerHTML = `<span class="prompt">${esc(last.prompt)}</span>${chars.join("")}`;
+  $("gen-text").innerHTML = `<span class="prompt">${esc(data.prompt)}</span>${spans.join("")}`;
+  if (selected !== null) $("gen-text").querySelector(`[data-i="${selected}"]`)?.classList.add("sel");
 }
 
-function fillNeuronSelect(data) {
-  const options = ['<option value="">no colouring</option>'];
-  if (data.gate_name) {
-    options.push(`<option value="__gate">mean ${data.gate_name} gate</option>`);
-  }
-  for (const name of Object.keys(data.neurons)) {
-    options.push(`<option value="${esc(name)}">${esc(name)}</option>`);
-  }
-  const previous = $("neuron-select").value;
-  $("neuron-select").innerHTML = options.join("");
-  if ([...$("neuron-select").options].some((o) => o.value === previous)) {
-    $("neuron-select").value = previous;
-  }
+function renderStats() {
+  const meanP = data.steps.reduce((a, s) => a + s.p, 0) / data.steps.length;
+  const stats = [
+    [data.text.length, "characters"],
+    [pct(meanP), "avg. probability of chosen char"],
+    [data.style_score === null ? "–" : pct(data.style_score), "Shakespeare-style score"],
+    [`${data.cell.toUpperCase()} · ${data.hidden_size}`, "cell · memory units"],
+  ];
+  $("gen-stats").innerHTML = stats.map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+  $("gen-stats").hidden = false;
 }
 
-async function generateText() {
-  const button = $("generate-btn");
+// ---------------------------------------------------------------- inspector for one step
+function renderPrediction(step, ch) {
+  const rows = step.top.map(([c, p]) => [c, p, c === ch]);
+  if (!rows.some((r) => r[2])) rows.push([ch, step.p, true]);
+  const max = Math.max(...rows.map((r) => r[1]));
+  $("prediction").innerHTML =
+    rows
+      .map(([c, p, chosen]) => `<div class="pred-row${chosen ? " chosen" : ""}">
+          <span class="c">${esc(showChar(c))}</span>
+          <div class="track"><div class="fill" style="width:${(100 * p) / max}%"></div></div>
+          <span class="p">${(100 * p).toFixed(1)}%</span></div>`)
+      .join("") +
+    `<p class="muted" style="margin-top:8px">The model gave the character it wrote (outlined) a probability of
+     <b>${(100 * step.p).toFixed(1)}%</b>. Sampling with temperature ${$("gen-temp").value} picked it.</p>`;
+}
+
+function select(i) {
+  if (!data) return;
+  selected = Math.max(0, Math.min(data.steps.length - 1, i));
+  const ch = data.text[selected];
+  $("gen-text").querySelector(".ch.sel")?.classList.remove("sel");
+  const span = $("gen-text").querySelector(`[data-i="${selected}"]`);
+  span?.classList.add("sel");
+  span?.scrollIntoView({ block: "nearest" });
+  $("step-label").innerHTML = `character ${selected + 1} of ${data.steps.length} · <span class="kbd">${esc(showChar(ch))}</span>`;
+  drawCell($("cell-diagram"), data.cell, data.steps[selected].gates, ch);
+  renderPrediction(data.steps[selected], ch);
+  drawMemory($("memory-canvas"), data.memory, data.text, selected, select);
+  drawTimeline($("gate-timeline"), data.steps, data.gate_names, data.text, selected, select);
+}
+
+// ---------------------------------------------------------------- playback
+function stop() {
+  clearInterval(timer);
+  timer = null;
+  $("step-play").textContent = "▶ Play";
+}
+function togglePlay() {
+  if (!data) return;
+  if (timer) return stop();
+  if (selected === null || selected >= data.steps.length - 1) select(0);
+  $("step-play").textContent = "❚❚ Pause";
+  timer = setInterval(() => (selected >= data.steps.length - 1 ? stop() : select(selected + 1)), 90);
+}
+
+// ---------------------------------------------------------------- generate
+async function run() {
+  stop();
+  const button = $("gen-btn");
   button.disabled = true;
   button.textContent = "Generating…";
   try {
-    last = await postJSON("/api/generate", {
+    data = await postJSON("/api/generate", {
       prompt: $("gen-prompt").value,
-      temperature: parseFloat($("gen-temperature").value),
+      temperature: parseFloat($("gen-temp").value),
       length: parseInt($("gen-length").value, 10),
-      cell: $("gen-cell").value,
+      model: $("gen-model").value,
     });
-    fillNeuronSelect(last);
+    const previous = $("gen-colour").value;
+    const options = colourOptions();
+    $("gen-colour").innerHTML = options.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("");
+    $("gen-colour").value = options.some(([v]) => v === previous) ? previous : "confidence";
+    $("memory-title").textContent = `Memory over time (${data.memory_name}, ${data.memory[0].length} units)`;
+    $("memory-scale").innerHTML = scaleLegend("diverging", "−1", "+1");
+    selected = null;
     renderText();
-    $("gen-style").textContent =
-      last.style_score === null
-        ? ""
-        : `Shakespeare-style score: ${Math.round(last.style_score * 100)}% (from the style classifier)`;
+    renderStats();
+    select(0);
   } catch (err) {
-    $("gen-output").innerHTML = `<p class="warning">${esc(err.message)}</p>`;
+    $("gen-text").innerHTML = `<p class="error">${esc(err.message)}</p>`;
   } finally {
     button.disabled = false;
     button.textContent = "Generate";
   }
 }
 
-export function setupGenerator(availableCells) {
-  $("gen-cell").innerHTML = availableCells.length
-    ? availableCells.map((c) => `<option value="${c}">${c.toUpperCase()}</option>`).join("")
-    : '<option value="lstm">LSTM (not trained yet)</option>';
-  $("gen-temperature").addEventListener("input", () => {
-    $("gen-temperature-value").textContent = $("gen-temperature").value;
+export function setupGenerator(models) {
+  $("gen-model").innerHTML = models.length
+    ? models.map((m) => `<option value="${m.id}">${esc(m.label)}</option>`).join("")
+    : '<option value="lstm_long">no generator trained yet</option>';
+  $("gen-prompts").innerHTML = PROMPTS.map((p) => `<button class="chip">${esc(p.trim())}</button>`).join("");
+  $("gen-prompts").onclick = (e) => {
+    const i = [...$("gen-prompts").children].indexOf(e.target);
+    if (i >= 0) $("gen-prompt").value = PROMPTS[i];
+  };
+  $("gen-temp").oninput = () => ($("gen-temp-value").textContent = $("gen-temp").value);
+  $("gen-btn").onclick = run;
+  $("gen-colour").onchange = () => data && renderText();
+  $("step-prev").onclick = () => selected !== null && select(selected - 1);
+  $("step-next").onclick = () => selected !== null && select(selected + 1);
+  $("step-play").onclick = togglePlay;
+
+  $("gen-text").addEventListener("click", (e) => {
+    const span = e.target.closest(".ch");
+    if (span) { stop(); select(+span.dataset.i); }
   });
-  $("generate-btn").addEventListener("click", generateText);
-  $("neuron-select").addEventListener("change", renderText);
+  $("gen-text").addEventListener("mousemove", (e) => {
+    const span = e.target.closest(".ch");
+    if (!span) return hideTip();
+    const step = data.steps[+span.dataset.i];
+    showTip(`“${esc(showChar(data.text[+span.dataset.i]))}” had probability <b>${(100 * step.p).toFixed(1)}%</b><br>
+             top guess: “${esc(showChar(step.top[0][0]))}” ${(100 * step.top[0][1]).toFixed(0)}%`, e);
+  });
+  $("gen-text").addEventListener("mouseleave", hideTip);
+
+  document.addEventListener("keydown", (e) => {
+    if ($("page-generator").hidden || !data || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+    if (e.key === "ArrowRight") { stop(); select((selected ?? -1) + 1); e.preventDefault(); }
+    if (e.key === "ArrowLeft") { stop(); select((selected ?? 1) - 1); e.preventDefault(); }
+    if (e.key === " ") { togglePlay(); e.preventDefault(); }
+  });
+  window.addEventListener("resize", () => data && selected !== null && select(selected));
 }

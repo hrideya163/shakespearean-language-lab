@@ -92,14 +92,46 @@ def encode_target(tokens, vocab):
     return [vocab.index(SOS)] + vocab.encode(tokens) + [vocab.index(EOS)]
 
 
-def make_examples(pairs, vocab):
+# ---------------------------------------------------------------------------
+# Extended vocabulary (the "pointer-generator" trick, See et al. 2017)
+# ---------------------------------------------------------------------------
+# Words that are not in the vocabulary (rare names like "Romeo" when Romeo and Juliet
+# is in the test set) all become <unk>, so the model cannot tell them apart.
+# Fix: every unknown word of the INPUT gets a temporary id after the normal vocabulary
+# (len(vocab), len(vocab)+1, ...). The copy gate can put probability on these ids, so
+# the model can copy a word it has never seen. The embedding layers still see <unk>.
+def source_oovs(tokens, vocab):
+    """Unknown input words, in order of first appearance: ["romeo", "tybalt"]"""
+    return list(dict.fromkeys(t for t in tokens if t not in vocab.stoi))
+
+
+def encode_extended(tokens, vocab, oovs):
+    """Like vocab.encode, but an unknown word listed in oovs gets its temporary id."""
+    unk = vocab.stoi[UNK]
+    return [vocab.stoi[t] if t in vocab.stoi else
+            len(vocab) + oovs.index(t) if t in oovs else unk for t in tokens]
+
+
+def make_example(src_tokens, tgt_tokens, direction, vocab, extended=True):
+    """One training example: (source ids, source ids with temporary ids, target ids).
+    With extended=False (the no-copy ablation) temporary ids are not used."""
+    src = encode_source(src_tokens, direction, vocab)
+    if not extended:
+        return src, src, encode_target(tgt_tokens, vocab)
+    oovs = source_oovs(src_tokens, vocab)
+    src_ext = src[:1] + encode_extended(src_tokens, vocab, oovs)
+    tgt_ext = [vocab.index(SOS)] + encode_extended(tgt_tokens, vocab, oovs) + [vocab.index(EOS)]
+    return src, src_ext, tgt_ext
+
+
+def make_examples(pairs, vocab, extended=True):
     """Turn each pair into TWO training examples (one per direction)."""
     examples = []
     for shakes, modern in pairs:
         s, m = tokenize(shakes), tokenize(modern)
         if len(s) > config.MAX_LEN or len(m) > config.MAX_LEN:
             continue
-        examples.append((encode_source(s, "to_modern", vocab), encode_target(m, vocab)))
-        examples.append((encode_source(m, "to_shakes", vocab), encode_target(s, vocab)))
+        examples.append(make_example(s, m, "to_modern", vocab, extended))
+        examples.append(make_example(m, s, "to_shakes", vocab, extended))
     return examples
 

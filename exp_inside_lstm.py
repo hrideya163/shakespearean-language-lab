@@ -2,7 +2,8 @@
 
     python exp_inside_lstm.py
 
-We run the trained LSTM generator over validation text, record its cell state
+We run the best trained LSTM generator (lstm_long: 9000 steps, falls back to the
+3000-step lstm if it is missing) over validation text, record its cell state
 and forget gate at every character, and compute the correlation between every
 cell (256 of them) and some features we can compute ourselves:
 
@@ -176,9 +177,13 @@ def embedding_map(model, vocab, path):
     plt.savefig(path, dpi=120)
 
 
+MODEL = "lstm_long" if os.path.exists(config.generator_path("lstm_long")) else "lstm"
+
+
 @torch.no_grad()
 def main():
-    model, vocab = load_generator("lstm")
+    model, vocab = load_generator(MODEL)
+    print("analysing", MODEL)
     text = load_shakespeare_text("valid")[:N_CHARS]
     ids = torch.tensor([vocab.encode(text)])
     text = vocab.decode(ids[0].tolist())                 # same characters the model saw
@@ -218,7 +223,7 @@ def main():
     plt.savefig(os.path.join(config.RESULTS_DIR, "rq2_gate_saturation.png"), dpi=120)
 
     # 4. write the report
-    lines = ["# RQ2: Inside the LSTM generator", "",
+    lines = ["# RQ2: Inside the LSTM generator", "", f"Model: `{MODEL}`.", "",
              f"Analysed {len(text):,} validation characters, {cells.shape[1]} cells.", "",
              "## Cell most correlated with each feature", "",
              "| feature | cell | correlation |", "|---|---|---|"]
@@ -262,7 +267,7 @@ def main():
         f.write("\n".join(page))
 
     with open(os.path.join(config.RESULTS_DIR, "interesting_units.json"), "w") as f:
-        json.dump(top, f, indent=2)
+        json.dump({"model": MODEL, "features": top}, f, indent=2)
 
     print("\n".join(lines))
     print("\nWritten: results/rq2_inside_lstm.md, rq2_inside_lstm.html, rq2_gate_saturation.png, "

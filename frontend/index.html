@@ -3,69 +3,136 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shakespearean Language Lab</title>
+    <title>Shakespearean Language Lab · Inside the LSTM</title>
   </head>
   <body>
-    <header>
-      <h1>📜 Shakespearean Language Lab</h1>
-      <p class="subtitle">Inside the LSTM: generating and transforming Shakespearean English with small recurrent networks.</p>
-      <p id="model-status" class="status"></p>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div>
+          <div class="brand-name">Shakespearean Language Lab</div>
+          <div class="brand-sub">Inside the LSTM</div>
+        </div>
+      </div>
       <nav class="tabs">
-        <button id="tab-generator" class="active">Text generator</button>
-        <button id="tab-translator">Translator</button>
+        <button data-tab="generator" class="active">Generator</button>
+        <button data-tab="translator">Translator</button>
+        <button data-tab="research">Research</button>
       </nav>
+      <div id="status" class="status-pill"><span class="dot"></span><span>connecting…</span></div>
     </header>
 
     <main>
-      <!-- ============ GENERATOR ============ -->
-      <section id="panel-generator">
-        <div class="controls">
-          <label>Prompt <input id="gen-prompt" value="ROMEO:" /></label>
-          <label>Model <select id="gen-cell"></select></label>
-          <label>Temperature
-            <input id="gen-temperature" type="range" min="0.2" max="1.5" step="0.1" value="0.8" />
-            <span id="gen-temperature-value">0.8</span>
-          </label>
-          <label>Length <input id="gen-length" type="number" min="50" max="1000" step="50" value="400" /></label>
-          <button id="generate-btn">Generate</button>
+      <!-- =============================================================== GENERATOR -->
+      <section id="page-generator">
+        <div class="page-head">
+          <h2>Character-level text generator</h2>
+          <p>A recurrent network writes Shakespeare one character at a time. Hover or step through the
+            text to see what the model predicted, how its gates opened, and what is in its memory.</p>
         </div>
-        <div class="controls">
-          <label>Neuron viewer: colour the text by
-            <select id="neuron-select"><option value="">no colouring</option></select>
-          </label>
-          <span class="hint">red = cell positive · blue = negative · orange = forgetting</span>
+        <div class="grid-gen">
+          <aside class="card">
+            <label class="field"><span>Model</span><select id="gen-model"></select></label>
+            <label class="field"><span>Prompt</span><input id="gen-prompt" type="text" value="My lord, " /></label>
+            <div class="chips" id="gen-prompts" style="margin:-6px 0 14px"></div>
+            <label class="field">
+              <span>Temperature <b id="gen-temp-value">0.7</b></span>
+              <input id="gen-temp" type="range" min="0.2" max="1.5" step="0.1" value="0.7" />
+              <div class="range-labels"><span>safe, repetitive</span><span>creative, error-prone</span></div>
+            </label>
+            <label class="field"><span>Length (characters)</span>
+              <input id="gen-length" type="number" min="50" max="800" step="50" value="300" /></label>
+            <button id="gen-btn" class="btn wide">Generate</button>
+            <p class="muted" style="margin-top:12px">Tip: click a character to select it, then use
+              <span class="kbd">←</span> <span class="kbd">→</span> to step or <span class="kbd">Space</span> to play.</p>
+          </aside>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-title">
+                <h3>Generated text</h3>
+                <div class="toolbar">
+                  <label class="muted">Colour by <select id="gen-colour" style="width:auto"></select></label>
+                  <div id="gen-scale" class="scale"></div>
+                </div>
+              </div>
+              <div id="gen-text" class="gen-text"><p class="empty">Press Generate to write some Shakespeare.</p></div>
+              <div id="gen-stats" class="stats-row" hidden></div>
+            </div>
+
+            <div class="row-2">
+              <div class="card">
+                <div class="card-title">
+                  <div class="step-head"><h3>Step</h3><span id="step-label" class="muted">–</span></div>
+                  <div class="toolbar">
+                    <button id="step-prev" class="btn ghost small">←</button>
+                    <button id="step-play" class="btn ghost small">▶ Play</button>
+                    <button id="step-next" class="btn ghost small">→</button>
+                  </div>
+                </div>
+                <div id="cell-diagram"></div>
+              </div>
+              <div class="card">
+                <div class="card-title"><h3>Next-character prediction</h3><span class="hint">what the model expected</span></div>
+                <div id="prediction" class="pred"><p class="empty">Select a character.</p></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">
+                <h3 id="memory-title">Memory over time</h3>
+                <span class="hint">rows = memory units, columns = characters · click to jump</span>
+              </div>
+              <div class="heat-wrap"><canvas id="memory-canvas" height="256"></canvas></div>
+              <div class="scale" style="margin-top:8px" id="memory-scale"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title"><h3>Gates over time</h3><span class="hint">average gate value across all units</span></div>
+              <div id="gate-timeline"></div>
+            </div>
+          </div>
         </div>
-        <p id="gen-style" class="counts"></p>
-        <div id="gen-output" class="gen-output">Press Generate to write some Shakespeare.</div>
       </section>
 
-      <!-- ============ TRANSLATOR ============ -->
-      <section id="panel-translator" hidden>
-        <label for="passage">Paste a passage (one line per sentence):</label>
-        <textarea id="passage" rows="6"></textarea>
-        <div class="controls">
-          <select id="direction">
-            <option value="to_modern">Shakespeare → Modern</option>
-            <option value="to_shakes">Modern → Shakespeare</option>
-          </select>
-          <label><input type="checkbox" id="show-inside" /> Look inside the LSTM</label>
-          <button id="translate-btn">Translate</button>
+      <!-- =============================================================== TRANSLATOR -->
+      <section id="page-translator" hidden>
+        <div class="page-head">
+          <h2>Shakespeare ↔ modern English translator</h2>
+          <p>An LSTM encoder–decoder with attention and a copy gate. Every output word comes with an
+            explanation: which input word the model looked at, and whether it copied or wrote a new word.</p>
         </div>
-        <div class="legend">
-          <span class="w kept">kept</span>
-          <span class="w swapped">archaic ↔ modern swap</span>
-          <span class="w reworded">reworded</span>
-          <span class="w added">added</span>
-          <span class="w removed">removed</span>
-          <span class="w unsure">unsure</span>
-        </div>
-        <div class="layout">
-          <section id="results"></section>
-          <aside id="sidebar"></aside>
+        <div class="grid-tr">
+          <div class="stack">
+            <div class="card">
+              <textarea id="tr-input" rows="4"></textarea>
+              <div class="chips" id="tr-examples" style="margin:10px 0"></div>
+              <div class="toolbar">
+                <div class="segmented" id="tr-direction">
+                  <button data-v="to_modern" class="active">Shakespeare → Modern</button>
+                  <button data-v="to_shakes">Modern → Shakespeare</button>
+                </div>
+                <div class="segmented" id="tr-decoding" title="How the next word is chosen">
+                  <button data-v="beam" class="active">Beam search</button>
+                  <button data-v="greedy">Greedy</button>
+                </div>
+                <span class="spacer"></span>
+                <button id="tr-btn" class="btn">Translate</button>
+              </div>
+            </div>
+            <div class="legend" id="tr-legend"></div>
+            <div id="tr-results" class="stack"></div>
+          </div>
+          <aside id="tr-side" class="stack"></aside>
         </div>
       </section>
+
+      <!-- =============================================================== RESEARCH -->
+      <section id="page-research" hidden></section>
     </main>
 
+    <div id="tooltip" class="tooltip"></div>
+    <div id="lightbox" class="lightbox"><img alt="" /></div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

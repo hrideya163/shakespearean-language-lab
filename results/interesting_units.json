@@ -1,22 +1,25 @@
 {
-  "position_in_line": {
-    "unit": 53,
-    "correlation": 0.35245534777641296
-  },
-  "inside_word": {
-    "unit": 10,
-    "correlation": 0.6246376633644104
-  },
-  "capital_letter": {
-    "unit": 77,
-    "correlation": 0.3103838562965393
-  },
-  "after_punctuation": {
-    "unit": 129,
-    "correlation": 0.44421395659446716
-  },
-  "end_of_line": {
-    "unit": 34,
-    "correlation": 0.6630498170852661
+  "model": "lstm_long",
+  "features": {
+    "position_in_line": {
+      "unit": 53,
+      "correlation": 0.2992468476295471
+    },
+    "inside_word": {
+      "unit": 220,
+      "correlation": 0.6261739134788513
+    },
+    "capital_letter": {
+      "unit": 77,
+      "correlation": 0.33206743001937866
+    },
+    "after_punctuation": {
+      "unit": 129,
+      "correlation": 0.37443146109580994
+    },
+    "end_of_line": {
+      "unit": 184,
+      "correlation": 0.4274412989616394
+    }
   }
 }

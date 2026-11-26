@@ -6,6 +6,7 @@ SAMPLE_DIR = "data/sample"        # tiny hand-made dataset for a quick smoke tes
 CHECKPOINT_DIR = "checkpoints"
 TRANSLATOR_PATH = "checkpoints/translator.pt"
 TRANSLATOR_NOCOPY_PATH = "checkpoints/translator_nocopy.pt"
+TRANSLATOR_NOEXT_PATH = "checkpoints/translator_noext.pt"
 TRANSLATOR_NODROPOUT_PATH = "checkpoints/translator_nodropout.pt"   # first run, kept for comparison
 STYLE_CLASSIFIER_PATH = "checkpoints/style_classifier.joblib"
 RESULTS_DIR = "results"

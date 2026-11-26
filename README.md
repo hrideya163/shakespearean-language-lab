@@ -39,8 +39,9 @@ python train_translator.py --dropout 0     # no regularisation, to show overfitt
 Quick checks:
 
 ```powershell
-python generate.py --prompt "ROMEO:" --temperature 0.8
+python generate.py --prompt "My lord, " --temperature 0.7
 python translate.py "Wherefore art thou Romeo?"
+python translate.py --greedy "Wherefore art thou Romeo?"   # old decoding, for comparison
 ```
 
 ## Run the experiments
@@ -53,7 +54,8 @@ Everything (training + experiments) in one go: `python run_all.py`
 | `python exp_compare_cells.py` | RQ1: RNN vs GRU vs LSTM | `rq1_compare_cells.md`, learning-curve + memory-curve plots |
 | `python exp_inside_lstm.py` | RQ2: what do LSTM cells track? | `rq2_inside_lstm.md`, `rq2_inside_lstm.html` |
 | `python exp_temperature.py` | RQ3: temperature vs quality and style | `rq3_temperature.md`, plot |
-| `python exp_copy_gate.py` | RQ4: does the copy gate help, and is it a faithful trace? | `rq4_copy_gate.md` |
+| `python exp_copy_gate.py` | RQ4: copy gate and extended vocabulary ablation; is the trace faithful? | `rq4_copy_gate.md`, calibration + overfitting plots |
+| `python exp_decoding.py` | RQ4: greedy vs beam search, repeat blocking, coverage | `decoding.md`, `decoding.png` |
 | `python exp_drift.py` | RQ5: can meaning drift be detected? | `rq5_drift.md`, `drift_benchmark.tsv` |
 | `python evaluate.py` | LLM baseline comparison | `results.md` |
 
@@ -80,7 +82,8 @@ python evaluate.py --llm results/llm_run1.txt results/llm_run2.txt
 python -m pytest tests
 ```
 
-These check the measuring tools (tokeniser, word map, meaning guard, bootstrap) that the experiments rely on.
+These check the measuring tools (tokeniser, word map, meaning guard, bootstrap) that the experiments rely on,
+plus the decoding rules and the extended vocabulary.
 
 ## Web app
 
@@ -94,11 +97,17 @@ uvicorn server:app --port 8000
 cd frontend; npm run dev
 ```
 
-Open http://localhost:5173. The app has two tabs:
+Open http://localhost:5173. The app has three pages:
 
-- **Text generator:** prompt, model (LSTM/GRU/RNN), temperature and a **neuron viewer** that colours the
-  text by a chosen LSTM cell or by the forget gate.
-- **Translator:** word map, meaning guard, confidence, glossary, and attention / copy-gate charts.
+- **Generator:** write text with the LSTM, GRU or RNN, then step through it character by character
+  (click, arrow keys or ▶ Play). For each character the **visualizer** shows a live diagram of the cell
+  with its gate values, the next-character probabilities the model sampled from, a heat map of the whole
+  memory over time, and the gates over time. The text can be coloured by confidence, a gate, or one of
+  the cells found in RQ2.
+- **Translator:** translation with a word map, meaning guard and glossary. The explanation shows an
+  **alignment diagram** (where attention looked), the copy gate for every word, the beam-search
+  candidates and an attention heat map. A switch compares beam search with greedy decoding.
+- **Research:** the findings of RQ1-RQ5 with their figures, and diagrams of both models.
 
 ## Files
 
@@ -113,14 +122,15 @@ Open http://localhost:5173. The app has two tabs:
 | `char_lm.py` | character-level language model |
 | `train_generator.py` / `generate.py` | train the generator / sample text |
 | `translator_model.py` | encoder–decoder with attention and copy gate |
-| `train_translator.py` / `translate.py` | train / run the translator (+ likelihood scoring) |
+| `train_translator.py` | train the translator |
+| `translate.py` | decoding (beam search, repeat blocking, coverage) + likelihood scoring |
 | `style_classifier.py` | logistic-regression style classifier |
 | `stats.py` | bootstrap confidence intervals |
 | `run_all.py` | runs the whole study in order |
 | `evaluate.py` | baseline vs LSTM vs LLM |
 | `exp_*.py` | the five experiments |
 | `server.py` | FastAPI backend |
-| `frontend/` | Vite + plain JavaScript web app |
+| `frontend/` | Vite + plain JavaScript web app (`src/viz/` = the visualizer components) |
 
 ## Data credit
 

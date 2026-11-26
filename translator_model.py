@@ -12,11 +12,19 @@ Why a copy gate? Most words in a Shakespeare line stay the same in modern
 English ("I have betrayed him" -> only "thou"/"hast" change). Copying makes it
 easy for the model to keep names and ordinary words unchanged, and the gate
 value tells the student whether each word was kept or rewritten.
+
+Extended vocabulary: unknown input words get temporary ids after the vocabulary
+(see data.py), passed in as `src_ext`. The copy distribution is spread over
+src_ext, so the model can copy words it has never seen, such as new names.
 """
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+
+from data import SPECIALS, UNK
+
+UNK_IDX = SPECIALS.index(UNK)
 
 
 class Encoder(nn.Module):
@@ -45,6 +53,7 @@ class Decoder(nn.Module):
     def __init__(self, vocab_size, emb_dim, hid_dim, pad_idx, use_copy=True, dropout=0.0):
         super().__init__()
         self.use_copy = use_copy       # False = ablation without the copy gate (experiment RQ4)
+        self.vocab_size = vocab_size
         self.embedding = nn.Embedding(vocab_size, emb_dim, padding_idx=pad_idx)
         self.dropout = nn.Dropout(dropout)
         self.lstm_cell = nn.LSTMCell(emb_dim, hid_dim)
@@ -53,15 +62,18 @@ class Decoder(nn.Module):
         self.out = nn.Linear(hid_dim, vocab_size)
         self.copy_gate = nn.Linear(hid_dim + 2 * hid_dim + emb_dim, 1)
 
-    def step(self, prev_token, h, c, enc_outputs, enc_keys, src, src_mask):
+    def step(self, prev_token, h, c, enc_outputs, enc_keys, src_ext, src_mask):
         """Produce ONE output word distribution.
 
         Returns:
-          probs   (B, V) probability of every vocabulary word
+          probs   (B, V + n) probability of every vocabulary word and of the n
+                  unknown input words (temporary ids)
           h, c    new LSTM state
           attn    (B, S) attention weights over the input words
           p_copy  (B,)   probability of copying instead of generating
         """
+        # a copied unknown word has a temporary id: the embedding layer sees <unk>
+        prev_token = prev_token.masked_fill(prev_token >= self.vocab_size, UNK_IDX)
         emb = self.dropout(self.embedding(prev_token))              # (B, E)
         h, c = self.lstm_cell(emb, (h, c))                          # (B, H)
 
@@ -74,9 +86,11 @@ class Decoder(nn.Module):
         # --- option 1: GENERATE a word from the whole vocabulary ---
         hidden = torch.tanh(self.combine(torch.cat([h, context], dim=1)))
         generate_probs = F.softmax(self.out(self.dropout(hidden)), dim=1)  # (B, V)
+        n_extra = max(0, int(src_ext.max()) + 1 - self.vocab_size)  # unknown input words
+        generate_probs = F.pad(generate_probs, (0, n_extra))        # they can't be generated
 
         # --- option 2: COPY an input word (use attention weights as probabilities) ---
-        copy_probs = torch.zeros_like(generate_probs).scatter_add(1, src, attn)  # (B, V)
+        copy_probs = torch.zeros_like(generate_probs).scatter_add(1, src_ext, attn)  # (B, V+n)
 
         # --- copy gate mixes the two options ---
         p_copy = torch.sigmoid(self.copy_gate(torch.cat([h, context, emb], dim=1)))  # (B, 1)
@@ -99,13 +113,13 @@ class Seq2Seq(nn.Module):
         src_mask = src != self.pad_idx
         return enc_outputs, enc_keys, src_mask, h, c
 
-    def forward(self, src, src_lens, tgt):
+    def forward(self, src, src_ext, src_lens, tgt):
         """Training with TEACHER FORCING: at each step the decoder is fed the
         correct previous word (from tgt), not its own guess.
-        Returns probabilities of shape (B, T-1, V) for predicting tgt[:, 1:]."""
+        Returns probabilities of shape (B, T-1, V+n) for predicting tgt[:, 1:]."""
         enc_outputs, enc_keys, src_mask, h, c = self.encode(src, src_lens)
         all_probs = []
         for t in range(tgt.size(1) - 1):
-            probs, h, c, _, _ = self.decoder.step(tgt[:, t], h, c, enc_outputs, enc_keys, src, src_mask)
+            probs, h, c, _, _ = self.decoder.step(tgt[:, t], h, c, enc_outputs, enc_keys, src_ext, src_mask)
             all_probs.append(probs)
         return torch.stack(all_probs, dim=1)

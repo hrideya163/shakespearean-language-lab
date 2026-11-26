@@ -62,7 +62,7 @@ class CharLM(nn.Module):
     def forward(self, x, state=None, record=False, ablate=None):
         """x: (B, T) character ids.
         Returns logits (B, T, V), the final state, and (if record=True) a list with
-        the gate values of every time step.
+        the gate values and the hidden state h of every time step.
         ablate: optional list of hidden units to switch off (set to 0) at every step.
                 Used in exp_inside_lstm.py to test what a unit is responsible for."""
         batch, steps = x.shape
@@ -77,7 +77,7 @@ class CharLM(nn.Module):
                 h = state[0]                         # h is always the first part of the state
             outputs.append(h)
             if record:
-                recorded.append({name: value.detach() for name, value in gates.items()})
+                recorded.append({"hidden": h.detach(), **{name: v.detach() for name, v in gates.items()}})
         logits = self.out(self.dropout(torch.stack(outputs, dim=1)))
         return logits, state, recorded
 

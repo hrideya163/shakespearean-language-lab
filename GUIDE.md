@@ -72,6 +72,23 @@ The copy distribution is just the attention weights placed on the input words. M
 Shakespeare line stay the same in modern English, so copying is very useful. The gate value tells us
 whether each word was copied or rewritten.
 
+### Extended vocabulary (pointer-generator)
+The vocabulary is built from the training plays only. *Romeo and Juliet* is in the test set, so "Romeo"
+is an unknown word (`<unk>`). Fix: each unknown **input** word gets a temporary id after the vocabulary,
+and the copy distribution puts probability on those ids. The model can now copy a word it has never
+seen. Its embedding layer still sees `<unk>`, but the copy gate points at the right word.
+(`source_oovs` / `encode_extended` in `data.py`)
+
+### Decoding: beam search, no repeats, coverage
+The model only gives probabilities. **Decoding** decides which words to write (`translate.py`):
+- **Greedy**: always the single most likely word. Fast, but a small mistake can't be undone, and
+  small models get stuck in loops ("agree, agree, agree").
+- **Beam search**: keep the 5 most likely partial translations and extend all of them, then pick the
+  best finished one (by *average* log-probability, otherwise short outputs win).
+- **No repeats**: forbid the previous word again and any 3-word phrase that already appeared.
+- **Coverage penalty**: add up the attention each input word received. If a word got almost none, the
+  translation probably left it out, so it ranks lower.
+
 ### Teacher forcing
 During training the decoder is fed the *correct* previous word, not its own guess. That makes
 training faster and more stable.

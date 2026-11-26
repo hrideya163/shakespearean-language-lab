@@ -3,6 +3,7 @@
   python train_translator.py              # full corpus (run download_data.py first)
   python train_translator.py --no_copy    # ablation: same model without the copy gate (RQ4)
   python train_translator.py --dropout 0  # turn regularisation off (to see overfitting)
+  python train_translator.py --no_extended  # ablation: copy gate can only copy known words
   python train_translator.py --sample     # tiny built-in dataset, just to check everything runs
 """
 import argparse
@@ -35,13 +36,14 @@ class TranslationDataset(Dataset):
 
 
 def collate(batch):
-    """Pad a list of (src, tgt) id lists into tensors of equal length."""
-    src_lens = torch.tensor([len(s) for s, _ in batch])
+    """Pad a list of (src, src_ext, tgt) id lists into tensors of equal length."""
+    src_lens = torch.tensor([len(s) for s, _, _ in batch])
     max_src = int(src_lens.max())
-    max_tgt = max(len(t) for _, t in batch)
-    src = torch.tensor([s + [PAD_IDX] * (max_src - len(s)) for s, _ in batch])
-    tgt = torch.tensor([t + [PAD_IDX] * (max_tgt - len(t)) for _, t in batch])
-    return src, src_lens, tgt
+    max_tgt = max(len(t) for _, _, t in batch)
+    src = torch.tensor([s + [PAD_IDX] * (max_src - len(s)) for s, _, _ in batch])
+    src_ext = torch.tensor([e + [PAD_IDX] * (max_src - len(e)) for _, e, _ in batch])
+    tgt = torch.tensor([t + [PAD_IDX] * (max_tgt - len(t)) for _, _, t in batch])
+    return src, src_ext, src_lens, tgt
 
 
 def loss_fn(probs, tgt):
@@ -56,9 +58,9 @@ def run_epoch(model, loader, device, optimizer=None):
     model.train(training)
     total = 0.0
     with torch.set_grad_enabled(training):
-        for batch_i, (src, src_lens, tgt) in enumerate(loader, start=1):
-            src, tgt = src.to(device), tgt.to(device)
-            probs = model(src, src_lens, tgt)
+        for batch_i, (src, src_ext, src_lens, tgt) in enumerate(loader, start=1):
+            src, src_ext, tgt = src.to(device), src_ext.to(device), tgt.to(device)
+            probs = model(src, src_ext, src_lens, tgt)
             loss = loss_fn(probs, tgt)
             if training:
                 optimizer.zero_grad()
@@ -78,6 +80,8 @@ def main():
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--no_copy", action="store_true", help="turn the copy gate off (ablation)")
     parser.add_argument("--dropout", type=float, default=config.DROPOUT)
+    parser.add_argument("--no_extended", action="store_true",
+                        help="no temporary ids for unknown words (ablation)")
     args = parser.parse_args()
 
     random.seed(config.SEED)
@@ -94,8 +98,9 @@ def main():
     valid_pairs = read_split("valid", data_dir)
     all_tokens = [tokenize(s) for pair in train_pairs for s in pair]
     vocab = Vocab.build(all_tokens, min_freq, extra_words=ARCHAIC.keys())
-    train_ex = make_examples(train_pairs, vocab)
-    valid_ex = make_examples(valid_pairs, vocab)
+    extended = not (args.no_copy or args.no_extended)   # without a copy gate there is nothing to extend
+    train_ex = make_examples(train_pairs, vocab, extended)
+    valid_ex = make_examples(valid_pairs, vocab, extended)
     print(f"device={device}  vocab={len(vocab)}  train={len(train_ex)}  valid={len(valid_ex)} examples")
 
     train_loader = DataLoader(TranslationDataset(train_ex), batch_size=config.BATCH_SIZE,
@@ -115,6 +120,8 @@ def main():
     # 3. training loop with early stopping
     if args.no_copy:
         checkpoint_path, run_name = config.TRANSLATOR_NOCOPY_PATH, "translator_nocopy"
+    elif args.no_extended:
+        checkpoint_path, run_name = config.TRANSLATOR_NOEXT_PATH, "translator_noext"
     elif args.dropout == 0:
         checkpoint_path, run_name = config.TRANSLATOR_NODROPOUT_PATH, "translator_nodropout"
     else:
