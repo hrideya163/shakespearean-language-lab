@@ -68,8 +68,9 @@ export function setupResearch() {
         <div id="arch-cell"></div></div>
       <div class="card"><div class="card-title"><h3>The translator</h3><span class="hint">translator_model.py</span></div>
         ${translatorDiagram()}
-        <p class="muted" style="margin-top:6px">Unknown input words (like new names) get temporary ids, so the copy
-          gate can copy words it has never seen (pointer-generator, See et al. 2017).</p></div>
+        <p class="muted" style="margin-top:6px">Beam search picks the words: 5 candidates, no repeated words or phrases,
+          and a coverage penalty for candidates that ignored an input word. Unknown words (new names) are copied
+          from where the attention points.</p></div>
     </div>
     <div class="rq-list">${questions}</div>`;
 

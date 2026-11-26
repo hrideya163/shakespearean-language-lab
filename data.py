@@ -95,6 +95,10 @@ def encode_target(tokens, vocab):
 # ---------------------------------------------------------------------------
 # Extended vocabulary (the "pointer-generator" trick, See et al. 2017)
 # ---------------------------------------------------------------------------
+# Used by the ablation `train_translator.py --extended` (RQ4). It did NOT help: the simple
+# fallback in translate.py (replace a written <unk> by the input word the model was looking at)
+# already copies unknown names, and the model trained this way kept fewer names.
+#
 # Words that are not in the vocabulary (rare names like "Romeo" when Romeo and Juliet
 # is in the test set) all become <unk>, so the model cannot tell them apart.
 # Fix: every unknown word of the INPUT gets a temporary id after the normal vocabulary

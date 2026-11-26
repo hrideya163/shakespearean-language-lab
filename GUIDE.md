@@ -72,12 +72,15 @@ The copy distribution is just the attention weights placed on the input words. M
 Shakespeare line stay the same in modern English, so copying is very useful. The gate value tells us
 whether each word was copied or rewritten.
 
-### Extended vocabulary (pointer-generator)
+### Unknown words and the extended vocabulary (a negative result)
 The vocabulary is built from the training plays only. *Romeo and Juliet* is in the test set, so "Romeo"
-is an unknown word (`<unk>`). Fix: each unknown **input** word gets a temporary id after the vocabulary,
-and the copy distribution puts probability on those ids. The model can now copy a word it has never
-seen. Its embedding layer still sees `<unk>`, but the copy gate points at the right word.
-(`source_oovs` / `encode_extended` in `data.py`)
+is an unknown word (`<unk>`). Our translator handles this simply: when it writes `<unk>`, we replace it
+by the input word its attention points at (`_words` in `translate.py`).
+We also tried the textbook fix, the **extended vocabulary** of pointer-generator networks (See et al.,
+2017): each unknown input word gets a temporary id, so the copy gate can copy it directly
+(`train_translator.py --extended`). It did **not** help. It kept fewer names (61% vs 70%), because the
+simple fallback already copies them and the harder training target made the model worse. Reporting
+ideas that failed is part of the study.
 
 ### Decoding: beam search, no repeats, coverage
 The model only gives probabilities. **Decoding** decides which words to write (`translate.py`):
@@ -88,6 +91,9 @@ The model only gives probabilities. **Decoding** decides which words to write (`
 - **No repeats**: forbid the previous word again and any 3-word phrase that already appeared.
 - **Coverage penalty**: add up the attention each input word received. If a word got almost none, the
   translation probably left it out, so it ranks lower.
+- **Tuned on validation, measured on test**: the coverage weight was picked on the validation set
+  (`exp_decoding.py --tune`). Two other ideas, dictionary hints and clause splitting, were measured and
+  rejected.
 
 ### Teacher forcing
 During training the decoder is fed the *correct* previous word, not its own guess. That makes
@@ -108,9 +114,9 @@ For a detector that gives a score: the probability that a random *bad* example g
 | RQ | One-sentence claim to present | Evidence |
 |---|---|---|
 | RQ1 | "We measured the vanishing gradient directly: 50 characters back the plain RNN keeps 0.001 % of its gradient. With the same number of weights the GRU learns fastest. With 3× more training the LSTM catches up with it, while the RNN gets stuck." | gradient-flow plot, long-budget plot, test bpc table (incl. size-matched models) |
-| RQ2 | "Individual LSTM cells learn interpretable jobs, like tracking position in the line or being inside a word, and switching some of them off specifically hurts the related predictions." | correlation table, coloured-text HTML, ablation table, embedding map |
+| RQ2 | "Individual LSTM cells learn interpretable jobs, like tracking the position in the line or capital letters, and switching some of them off specifically hurts the related predictions. The same cells keep their jobs as training continues." | correlation table, coloured-text HTML, ablation table, embedding map |
 | RQ3 | "Temperature trades correctness for diversity. Around T = 0.8 the generated text's statistics best match real Shakespeare, but the model under-uses rare archaic words." | temperature table and plot |
-| RQ4 | "The copy gate gives a free, faithful explanation: kept words have high copy probability, changed words low. Attention points at the replaced word far above chance, and confidence is roughly calibrated." | ablation table with CIs, copy-probability table, alignment %, calibration plot |
+| RQ4 | "The copy gate is the most important part of the translator and a faithful explanation: kept words have high copy probability, changed words low. How we decode matters as much: blocking repeats and a coverage penalty took loops from 14.6% to 0.6%." | ablation table with CIs, copy-probability table, alignment %, decoding study, calibration plot |
 | RQ5 | "Rule-based and model-based drift detectors complement each other. The guard catches name swaps that the model can't see (rare names are unknown words), and the model's likelihood catches some negation flips." | drift table, paired test, failure examples |
 
 ---
@@ -137,10 +143,16 @@ probably share their job with other cells (redundancy).
 
 **Q: Your BLEU is lower than the dictionary baseline. Isn't the model bad?**
 A: Shakespeare and modern lines share most of their words, so even copying the input unchanged scores
-19.5 BLEU. Our model scores 19.2 and the dictionary 21.7, with overlapping confidence intervals. BLEU
-rewards keeping words. The style classifier shows our output is clearly more modern (0.45) than the
-dictionary's (0.60), which only swaps words and keeps the old sentence structure. Within our own models,
-BLEU is still useful: the copy gate adds +4.3 and dropout +1.9, and those differences are significant.
+19.5 BLEU. Our model scores 20.0 and the dictionary 21.7, with overlapping confidence intervals (on the
+full test set: 21.6 / 23.1 / 23.9). BLEU rewards keeping words. The style classifier shows our output is
+clearly more modern (0.49) than the dictionary's (0.60), which only swaps words and keeps the old sentence
+structure. Within our own models BLEU is still useful for comparisons: the copy gate adds +2.2 (and keeps
+11 points more names, numbers and negations), dropout +1.7, and the coverage penalty +0.8.
+
+**Q: Why did the translator repeat words ("agree, agree, agree") in the first version?**
+A: Greedy decoding: small seq2seq models often fall into loops, and 14.6% of greedy outputs did. Blocking
+repeated words and 3-word phrases, plus beam search, brings that to 0.6%. We measured each step
+(`exp_decoding.py`), which is a nice example of how much decoding matters, separately from training.
 
 **Q: Why is the drift benchmark synthetic?**
 A: Real meaning errors are rare and expensive to label. Controlled corruptions (negation, names,

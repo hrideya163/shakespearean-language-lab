@@ -16,12 +16,16 @@ How a translation is produced (DECODING), step by step:
              never paid attention to some input word (they probably left it out).
              This is the "coverage penalty" of Google's 2016 translation system.
   4. LENGTH CAP  the output may be at most 1.5x the input length + 4 words.
+The coverage weight was tuned on the VALIDATION set (exp_decoding.py --tune).
 The decoding experiment (exp_decoding.py) measures what each of these steps adds.
-We also tried translating long inputs clause by clause (split=True). It made results
-WORSE (the model needs the whole sentence as context), so it is off by default.
+Two more ideas were tried and measured, and are OFF because they did not help:
+  - split=True       translate long inputs clause by clause (the model needs the whole sentence)
+  - hint_bonus > 0   DICTIONARY HINTS: give the dictionary's suggestion (thou -> you) a small
+                     bonus until it has been written (lower BLEU on the validation set)
 """
 import argparse
 import os
+from collections import Counter
 from dataclasses import dataclass, field
 
 import torch
@@ -30,6 +34,7 @@ import config
 from data import (EOS, PAD, SOS, TO_MODERN, TO_SHAKES, UNK, Vocab, detokenize, encode_extended, encode_source,
                   source_oovs, tokenize)
 from explain import restore_name_capitals
+from lexicon import MODERN_TO_ARCHAIC, meaning_of
 from translator_model import Seq2Seq
 
 BEAM_SIZE = 5
@@ -38,6 +43,7 @@ CLAUSE_END = {",", ":", ";"}
 LONG_PIECE = 16          # pieces longer than this are split again at commas
 MIN_CLAUSE = 6           # ...but never into clauses shorter than this
 COVERAGE_WEIGHT = 0.4    # how strongly to penalise ignored input words (0 = off)
+HINT_BONUS = 0.0         # bonus for a dictionary suggestion. Off: it did not help on validation
 
 
 def split_clauses(tokens):
@@ -115,24 +121,41 @@ class Translator:
         self.model = Seq2Seq(**ckpt["model_args"])
         self.model.load_state_dict(ckpt["model_state"])
         self.model.eval()
+        self.extended = ckpt.get("extended", False)     # trained with the extended vocabulary?
         self.device = device
+
+    def _source_ext(self, src_ids, source):
+        """Source ids for the copy distribution: with temporary ids for unknown words if the
+        model was trained that way (data.py), otherwise the normal ids."""
+        if not self.extended:
+            return src_ids
+        return src_ids[:1] + encode_extended(source, self.vocab, source_oovs(source, self.vocab))
 
     # ------------------------------------------------------------------ decoding one piece
     @torch.no_grad()
+    def dictionary_hints(self, source, direction):
+        """Word ids the dictionary suggests for this input, with how often: {id of "you": 2}"""
+        hints = Counter()
+        for word in source:
+            meaning = meaning_of(word) if direction == "to_modern" else MODERN_TO_ARCHAIC.get(word)
+            for m in (meaning or "").lower().split():
+                if m in self.vocab.stoi:
+                    hints[self.vocab.stoi[m]] += 1
+        return hints
+
     def decode(self, source, direction, beam_size=BEAM_SIZE, block_repeats=True,
-               coverage_weight=COVERAGE_WEIGHT):
+               coverage_weight=COVERAGE_WEIGHT, hint_bonus=HINT_BONUS):
         """Translate one short list of (lower-case) tokens.
         beam_size=1 and block_repeats=False gives plain greedy decoding.
         Returns the finished hypotheses, best first."""
         src_ids = encode_source(source, direction, self.vocab)
         src = torch.tensor([src_ids], device=self.device)
-        # unknown input words get temporary ids, so they can be copied (see data.py)
-        src_ext = torch.tensor([src_ids[:1] + encode_extended(source, self.vocab, source_oovs(source, self.vocab))],
-                               device=self.device)
+        src_ext = torch.tensor([self._source_ext(src_ids, source)], device=self.device)
         enc_outputs, enc_keys, src_mask, h, c = self.model.encode(src, torch.tensor([len(src_ids)]))
         sos, eos = self.vocab.index(SOS), self.vocab.index(EOS)
         max_len = int(1.5 * len(source)) + 4
 
+        hints = self.dictionary_hints(source, direction) if hint_bonus else Counter()
         beams = [Hypothesis([], 0.0, h, c)]
         finished = []
         for step in range(max_len):
@@ -150,6 +173,11 @@ class Translator:
                         log_probs[i, word] = float("-inf")
             for special in (PAD, SOS, TO_MODERN, TO_SHAKES):  # never write these
                 log_probs[:, self.vocab.index(special)] = float("-inf")
+            for i, b in enumerate(beams):                  # dictionary hints not yet written
+                written = Counter(b.tokens)
+                for word, needed in hints.items():
+                    if written[word] < needed:
+                        log_probs[i, word] += hint_bonus
             if step == 0:
                 log_probs[:, eos] = float("-inf")           # no empty translations
 
@@ -173,24 +201,30 @@ class Translator:
         finished = finished or beams                        # hit the length cap
         return sorted(finished, key=lambda hyp: hyp.score(coverage_weight), reverse=True)
 
-    def _words(self, hyp, source):
-        """Turn a hypothesis into words. A temporary id means "copy unknown input word
-        number k". A plain <unk> is replaced by the input word the model was looking at."""
+    def _words(self, hyp, source, block_repeats=True):
+        """Turn a hypothesis into words. Returns the words and, for each word, its position in
+        the hypothesis (to look up its confidence, copy probability and attention).
+        A plain <unk> is replaced by the input word the model was looking at (most unknown
+        words are names, so copying them is the right guess). With the extended vocabulary a
+        temporary id means "copy unknown input word number k"."""
         n = len(hyp.tokens) - (1 if hyp.tokens and hyp.tokens[-1] == self.vocab.index(EOS) else 0)
         oovs = source_oovs(source, self.vocab)
-        words = []
+        words, positions = [], []
         for t in range(n):
             token = hyp.tokens[t]
             word = oovs[token - len(self.vocab)] if token >= len(self.vocab) else self.vocab.itos[token]
             if word == UNK:
                 attn = hyp.attention[t]
                 word = source[max(range(len(attn)), key=attn.__getitem__)]
+            if block_repeats and words and word == words[-1]:   # e.g. "man <unk>" -> "man man"
+                continue
             words.append(word)
-        return words, n
+            positions.append(t)
+        return words, positions
 
     # ------------------------------------------------------------------ full translation
     def translate(self, text, direction="to_modern", beam_size=BEAM_SIZE,
-                  block_repeats=True, split=False, coverage_weight=COVERAGE_WEIGHT):
+                  block_repeats=True, split=False, coverage_weight=COVERAGE_WEIGHT, hint_bonus=HINT_BONUS):
         source_cased = tokenize(text, lower=False)       # keep capitals for name detection
         source = [t.lower() for t in source_cased]
         if not source:
@@ -200,21 +234,21 @@ class Translator:
         output, confidences, copy_probs, attention, alternatives = [], [], [], [], []
         for start, end in pieces:
             piece = source[start:end]
-            hyps = self.decode(piece, direction, beam_size, block_repeats, coverage_weight)
+            hyps = self.decode(piece, direction, beam_size, block_repeats, coverage_weight, hint_bonus)
             best = hyps[0]
-            words, n = self._words(best, piece)
+            words, positions = self._words(best, piece, block_repeats)
             # a piece cut at a comma should not end with a full stop
             if split and len(pieces) > 1 and words and words[-1] in ".!?" and piece[-1] in CLAUSE_END:
                 words[-1] = piece[-1]
             output += words
-            confidences += best.confidences[:n]
-            copy_probs += best.copy_probs[:n]
+            confidences += [best.confidences[t] for t in positions]
+            copy_probs += [best.copy_probs[t] for t in positions]
             # attention over the WHOLE input: zeros outside this piece
-            for row in best.attention[:n]:
-                attention.append([0.0] * start + row + [0.0] * (len(source) - end))
+            for t in positions:
+                attention.append([0.0] * start + best.attention[t] + [0.0] * (len(source) - end))
             alternatives.append({
                 "source": detokenize(source_cased[start:end]),
-                "options": [{"text": detokenize(restore_name_capitals(source_cased[start:end], self._words(h, piece)[0])),
+                "options": [{"text": detokenize(restore_name_capitals(source_cased[start:end], self._words(h, piece, block_repeats)[0])),
                              "score": round(h.score(coverage_weight), 3)}
                             for h in hyps[:3]],
             })
@@ -243,8 +277,8 @@ class Translator:
         candidate = tokenize(candidate_text)
         src_ids = encode_source(source, direction, self.vocab)
         src = torch.tensor([src_ids], device=self.device)
-        oovs = source_oovs(source, self.vocab)
-        src_ext = torch.tensor([src_ids[:1] + encode_extended(source, self.vocab, oovs)], device=self.device)
+        oovs = source_oovs(source, self.vocab) if self.extended else []
+        src_ext = torch.tensor([self._source_ext(src_ids, source)], device=self.device)
         enc_outputs, enc_keys, src_mask, h, c = self.model.encode(src, torch.tensor([len(src_ids)]))
         targets = encode_extended(candidate, self.vocab, oovs) + [self.vocab.index(EOS)]
         token = torch.tensor([self.vocab.index(SOS)], device=self.device)
@@ -262,7 +296,7 @@ def main():
     parser.add_argument("--to_shakes", action="store_true", help="modern -> Shakespearean")
     parser.add_argument("--greedy", action="store_true", help="old decoding, for comparison")
     args = parser.parse_args()
-    options = dict(beam_size=1, block_repeats=False, split=False, coverage_weight=0) if args.greedy else {}
+    options = dict(beam_size=1, block_repeats=False, coverage_weight=0, hint_bonus=0) if args.greedy else {}
     result = Translator().translate(args.text, "to_shakes" if args.to_shakes else "to_modern", **options)
     print(result["text"])
     for word, conf, cp in zip(result["output_tokens"], result["confidences"], result["copy_probs"]):

@@ -13,8 +13,9 @@ English ("I have betrayed him" -> only "thou"/"hast" change). Copying makes it
 easy for the model to keep names and ordinary words unchanged, and the gate
 value tells the student whether each word was kept or rewritten.
 
-Extended vocabulary: unknown input words get temporary ids after the vocabulary
-(see data.py), passed in as `src_ext`. The copy distribution is spread over
+Extended vocabulary (only for the `--extended` ablation): unknown input words get
+temporary ids after the vocabulary (see data.py), passed in as `src_ext`. For the
+normal model src_ext is simply the same as src. The copy distribution is spread over
 src_ext, so the model can copy words it has never seen, such as new names.
 """
 import torch

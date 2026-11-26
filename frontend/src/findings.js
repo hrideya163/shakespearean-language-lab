@@ -4,7 +4,7 @@
 export const HEADLINES = [
   ["0.001%", "of the gradient survives 50 characters back in a plain RNN (vanishing gradient)"],
   ["2.17 bpc", "best LSTM after 9,000 steps: it caught up with the GRU, the RNN stayed stuck"],
-  ["+4.3 BLEU", "from the copy gate, the largest single improvement to the translator"],
+  ["14.6% → 0.6%", "of translations stuck in a loop: greedy decoding vs our beam search, same model"],
   ["90.5%", "of negation flips: the translator prefers the correct meaning when shown both"],
 ];
 
@@ -60,10 +60,11 @@ export const QUESTIONS = [
     title: "Copy gate, extended vocabulary and decoding",
     claim: "The copy gate is the biggest improvement and also a faithful explanation of every output word.",
     points: [
-      "Copy gate: <b>+4.3 BLEU</b> over the same model without it.",
-      "Copy probability: <b>0.45</b> for kept words vs <b>0.03</b> for swapped words (thou → you).",
-      "Attention points at the replaced word <b>61%</b> of the time (chance ≈ 9%).",
-      "Greedy decoding loops on <b>12%</b> of sentences; blocking repeats removes all loops.",
+      "Copy gate: <b>+2.2 BLEU</b> and <b>75%</b> vs <b>64%</b> of names, numbers and negations kept.",
+      "Copy probability: <b>0.47</b> for kept words vs <b>0.03</b> for swapped words (thou → you).",
+      "Attention points at the replaced word <b>68%</b> of the time (chance ≈ 9%).",
+      "Decoding matters: greedy decoding loops on <b>14.6%</b> of sentences, the final beam search on <b>0.6%</b>; the coverage penalty adds <b>+0.8 BLEU</b>.",
+      "Tried and rejected: the pointer-generator extended vocabulary kept <i>fewer</i> names (61% vs 70%); dictionary hints and clause splitting did not help either.",
     ],
     figures: [
       ["decoding.png", "Decoding study"],

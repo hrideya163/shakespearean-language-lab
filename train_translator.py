@@ -3,7 +3,7 @@
   python train_translator.py              # full corpus (run download_data.py first)
   python train_translator.py --no_copy    # ablation: same model without the copy gate (RQ4)
   python train_translator.py --dropout 0  # turn regularisation off (to see overfitting)
-  python train_translator.py --no_extended  # ablation: copy gate can only copy known words
+  python train_translator.py --extended   # ablation: pointer-generator extended vocabulary
   python train_translator.py --sample     # tiny built-in dataset, just to check everything runs
 """
 import argparse
@@ -80,8 +80,8 @@ def main():
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--no_copy", action="store_true", help="turn the copy gate off (ablation)")
     parser.add_argument("--dropout", type=float, default=config.DROPOUT)
-    parser.add_argument("--no_extended", action="store_true",
-                        help="no temporary ids for unknown words (ablation)")
+    parser.add_argument("--extended", action="store_true",
+                        help="temporary ids for unknown words (pointer-generator ablation)")
     args = parser.parse_args()
 
     random.seed(config.SEED)
@@ -98,7 +98,7 @@ def main():
     valid_pairs = read_split("valid", data_dir)
     all_tokens = [tokenize(s) for pair in train_pairs for s in pair]
     vocab = Vocab.build(all_tokens, min_freq, extra_words=ARCHAIC.keys())
-    extended = not (args.no_copy or args.no_extended)   # without a copy gate there is nothing to extend
+    extended = args.extended and not args.no_copy   # without a copy gate there is nothing to extend
     train_ex = make_examples(train_pairs, vocab, extended)
     valid_ex = make_examples(valid_pairs, vocab, extended)
     print(f"device={device}  vocab={len(vocab)}  train={len(train_ex)}  valid={len(valid_ex)} examples")
@@ -120,8 +120,8 @@ def main():
     # 3. training loop with early stopping
     if args.no_copy:
         checkpoint_path, run_name = config.TRANSLATOR_NOCOPY_PATH, "translator_nocopy"
-    elif args.no_extended:
-        checkpoint_path, run_name = config.TRANSLATOR_NOEXT_PATH, "translator_noext"
+    elif args.extended:
+        checkpoint_path, run_name = config.TRANSLATOR_EXT_PATH, "translator_ext"
     elif args.dropout == 0:
         checkpoint_path, run_name = config.TRANSLATOR_NODROPOUT_PATH, "translator_nodropout"
     else:
@@ -140,7 +140,7 @@ def main():
         if valid_loss < best_valid:
             best_valid, bad_epochs = valid_loss, 0
             torch.save({"model_state": model.state_dict(), "model_args": model_args,
-                        "vocab": vocab.itos}, checkpoint_path)
+                        "vocab": vocab.itos, "extended": extended}, checkpoint_path)
             print("  saved best model")
         else:
             bad_epochs += 1

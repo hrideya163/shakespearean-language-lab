@@ -26,7 +26,7 @@ TRAINING = [
     ["train_generator.py", "--cell", "gru", "--hidden", "300", "--steps", "9000", "--name", "gru_matched_long"],
     ["train_translator.py"],
     ["train_translator.py", "--no_copy"],
-    ["train_translator.py", "--no_extended"],   # copy gate without the extended vocabulary (RQ4)
+    ["train_translator.py", "--extended"],      # pointer-generator extended vocabulary (RQ4 ablation)
     ["train_translator.py", "--dropout", "0"],   # no regularisation, to show overfitting (RQ4 part E)
 ]
 

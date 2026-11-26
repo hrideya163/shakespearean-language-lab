@@ -20,7 +20,9 @@ async function start() {
   document.querySelector(".tabs").onclick = (e) => e.target.dataset.tab && showPage(e.target.dataset.tab);
   setupTranslator();
   setupResearch();
-  showPage(["translator", "research"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "generator");
+  const pageFromUrl = () => (["translator", "research"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "generator");
+  showPage(pageFromUrl());
+  window.addEventListener("hashchange", () => showPage(pageFromUrl()));   // back/forward buttons, links
   try {
     const status = await fetch("/api/status").then((r) => r.json());
     setupGenerator(status.generators);

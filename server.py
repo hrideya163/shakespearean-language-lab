@@ -147,7 +147,7 @@ class TranslateRequest(BaseModel):
 
 def translate_line(line, direction, decoding):
     if translator:
-        options = {} if decoding == "beam" else dict(beam_size=1, block_repeats=False, coverage_weight=0)
+        options = {} if decoding == "beam" else dict(beam_size=1, block_repeats=False, coverage_weight=0, hint_bonus=0)
         return translator.translate(line, direction, **options)
     tokens = tokenize(line, lower=False)
     out = restore_name_capitals(tokens, baseline_translate([t.lower() for t in tokens], direction))

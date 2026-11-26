@@ -3,7 +3,7 @@
 First train the translators:
     python train_translator.py                -> checkpoints/translator.pt
     python train_translator.py --no_copy      -> checkpoints/translator_nocopy.pt
-    python train_translator.py --no_extended  -> checkpoints/translator_noext.pt
+    python train_translator.py --extended     -> checkpoints/translator_ext.pt
     python train_translator.py --dropout 0    -> checkpoints/translator_nodropout.pt
 Then run:
     python exp_copy_gate.py
@@ -147,7 +147,7 @@ def main():
                "Dictionary baseline": [baseline_translate(s) for s in sources]}
     results_by_model = {}
     for name, path in [("LSTM without copy gate", config.TRANSLATOR_NOCOPY_PATH),
-                       ("LSTM with copy gate, no extended vocabulary", config.TRANSLATOR_NOEXT_PATH),
+                       ("LSTM with copy gate + extended vocabulary", config.TRANSLATOR_EXT_PATH),
                        ("LSTM with copy gate, no dropout", config.TRANSLATOR_NODROPOUT_PATH),
                        ("LSTM with copy gate", config.TRANSLATOR_PATH)]:
         if not os.path.exists(path):

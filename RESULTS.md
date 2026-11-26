@@ -4,7 +4,7 @@ Findings of the five research questions, with the numbers from the final run. Ev
 reproduced with `python run_all.py` (the per-experiment reports and all figures are written to `results/`).
 
 **Setup in one line:** character-level generators (hidden size 256, 3,000 steps of 64 × 100 characters) and a
-word-level BiLSTM encoder–decoder translator with attention and a copy gate (6.4 M parameters), trained on
+word-level BiLSTM encoder–decoder translator with attention, a copy gate and beam-search decoding (6.4 M parameters), trained on
 CPU using the 18,395-pair Shakespeare ↔ modern corpus. Seed 42 everywhere.
 
 ---
@@ -54,31 +54,38 @@ Figures: `rq1_learning_curves.png`, `rq1_long_budget.png`, `rq1_memory_curve.png
 
 ## RQ2: What do individual LSTM cells learn?
 
-| feature | most correlated cell | correlation | switching it off hurts more than a random cell? |
-|---|---|---|---|
-| inside a word | #10 | +0.62 | **yes** (+0.0102 vs +0.0023 nats) |
-| position in line | #53 | +0.35 | **yes** (+0.0033 vs +0.0003) |
-| end of line | #34 | +0.66 | no |
-| after punctuation | #129 | +0.44 | no |
-| capital letter | #77 | +0.31 | no |
+Analysed on the best LSTM (`lstm_long`, 9,000 steps). It was trained with the same seed as the
+3,000-step model, so its first 3,000 steps are identical, and we can see which cells keep their job.
+
+| feature | most correlated cell | correlation | switching it off hurts more than a random cell? | same cell at 3,000 steps? |
+|---|---|---|---|---|
+| position in line | #53 | +0.30 | **yes** (+0.0040 vs +0.0003 nats, 13×) | yes |
+| capital letter | #77 | +0.33 | **yes** (+0.0050 vs +0.0010, 5×) | yes (was not causal yet) |
+| inside a word | #220 | +0.63 | no (+0.0099 vs +0.0061) | no (was #10, causal) |
+| after punctuation | #129 | +0.37 | no | yes |
+| end of line | #184 | +0.43 | no | no (was #34) |
 
 **Findings**
 
-1. **Some cells are interpretable *and* causal.** Cell #10 tracks "am I inside a word". Switching off
-   that single cell (1 of 256) raises the loss on within-word letters 4× more than switching off a random
-   cell. The coloured text in `rq2_inside_lstm.html` shows it switching on and off at word boundaries.
-2. **Correlation is not causation.** The cell most correlated with *end of line* (+0.66) has no causal
-   effect when removed, so that information must be stored redundantly across several cells.
-3. **The forget gate resets at boundaries.** Mean forget value: 0.74 on letters, 0.70 on newlines,
-   0.68 on spaces, 0.62 after sentence ends. The model clears memory most at the end of a sentence, as
+1. **Some cells are interpretable *and* causal.** Cell #53 tracks the position in the line. Switching
+   off that single cell (1 of 256) hurts the newline predictions 13× more than switching off a random
+   cell. The coloured text in `rq2_inside_lstm.html` (and the web app's neuron viewer) shows it ramping
+   up along each line.
+2. **Jobs are stable, but they reorganise.** Three of the five top cells are the same after 3× more
+   training. The capital-letter cell *became* causal, while "inside a word" went from one causal
+   cell (#10) to being spread over many cells. Training both sharpens some cells and spreads out others.
+3. **Correlation is not causation.** The strongest end-of-line cell (+0.43) has no effect when removed,
+   so that information must be stored redundantly across several cells.
+4. **The forget gate resets at boundaries.** Mean forget value: 0.71 on letters, 0.69 on newlines,
+   0.65 on spaces, 0.58 after sentence ends. The model clears memory most at the end of a sentence, as
    intuition suggests.
-4. **Gates specialise** (`rq2_gate_saturation.png`). The input gate is almost always open (mean 0.83),
-   while the output gate is mostly closed (0.40, 142 of 256 units closed most of the time). The LSTM
+5. **Gates specialise** (`rq2_gate_saturation.png`). The input gate is almost always open (mean 0.80),
+   while the output gate is mostly closed (0.40, 160 of 256 units closed most of the time). The LSTM
    writes a lot to memory but reveals only a little at each step.
-5. **The character embedding learns what a character *does*, not what it looks like**
+6. **The character embedding learns what a character *does*, not what it looks like**
    (`rq2_embeddings.png`, 2-D PCA). Letters form one central cloud. Punctuation and whitespace sit on the
-   edges, and the sentence enders `. ! ?` sit next to each other. Upper/lower-case pairs (a/A, e/E,
-   o/O) land close together, although the model was never told they are the same letter. Vowels and
+   edges, and the sentence enders `? !` sit next to each other. Upper/lower-case pairs (a/A, e/E, q/Q)
+   land close together, although the model was never told they are the same letter. Vowels and
    consonants do *not* separate clearly.
 
 ---
@@ -106,41 +113,70 @@ Figures: `rq1_learning_curves.png`, `rq1_long_budget.png`, `rq1_memory_curve.png
 
 ---
 
-## RQ4: Does the copy gate help, and is it a faithful explanation?
+## RQ4: Copy gate, unknown words and decoding
 
+All translators below use the same final decoding (beam search, no repeats, coverage penalty).
 500 test sentences, Shakespeare → modern:
 
 | system | BLEU (95 % CI) | names/numbers/negations kept % | style score (lower = more modern) |
 |---|---|---|---|
 | Copy input (no change) | 19.5 (17.5–21.7) | 100 | 0.72 |
 | Dictionary baseline | 21.7 (19.5–24.2) | 100 | 0.60 |
-| LSTM without copy gate | 14.9 (12.8–17.3) | 64 | **0.37** |
-| LSTM + copy gate, no dropout | 17.3 (15.3–19.4) | 68 | 0.48 |
-| **LSTM + copy gate + dropout** | 19.2 (17.0–21.3) | 72 | 0.45 |
+| LSTM without copy gate | 17.8 (15.9–19.7) | 64 | **0.38** |
+| LSTM + copy gate, no dropout | 18.3 (16.3–20.3) | 72 | 0.51 |
+| LSTM + copy gate + extended vocabulary | 19.4 (17.3–21.3) | 69 | 0.48 |
+| **LSTM + copy gate + dropout (final)** | **20.0** (18.1–22.0) | **75** | 0.49 |
 | *human reference* | – | – | *0.29* |
+
+On the full test set (1,462 sentences, `evaluate.py`): copy input 21.6, dictionary 23.9, **our LSTM 23.1**.
+
+**Decoding study** (`exp_decoding.py`, same trained model, Shakespeare → modern):
+
+| decoding | BLEU | outputs stuck in a loop | names/numbers/negations kept |
+|---|---|---|---|
+| greedy | 19.2 | 14.6 % | 72 % |
+| + no repeats | 19.2 | 1.0 % | 72 % |
+| + beam search (5) | 19.2 | 0.4 % | 67 % |
+| **+ coverage penalty (final)** | **20.0** | **0.6 %** | **76 %** |
+| final + dictionary hints *(rejected)* | 20.0 | 0.6 % | 76 % |
+| final + clause splitting *(rejected)* | 18.7 | 8.6 % | 82 % |
+
+The other direction (modern → Shakespeare) shows the same pattern: greedy 17.6 BLEU with 11.8 % loops,
+final 17.9 BLEU with 0.2 % loops. The one mixed result: in this direction clause splitting
+raised BLEU to 18.4 but brought loops back (5 %), so it stays off. A stricter no-repeat rule (also no word repeated two positions back, to stop "why, why") cost
+0.9 BLEU on validation and was rejected too. The coverage weight (0.4) was chosen on the validation set
+(`decoding_tuning.md`), where dictionary hints never helped.
 
 **Findings**
 
-1. **The copy gate is the biggest single improvement:** +4.3 BLEU, and 8 percentage points more meaning
-   anchors kept. The confidence intervals do not overlap. Its validation perplexity is 20.8 vs 24.6
-   without it.
-2. **Dropout is the second** (+1.9 BLEU). Without it the model overfits after epoch 3: training loss
-   keeps falling while validation loss rises (`rq4_overfitting.png`).
-3. **BLEU alone would pick the wrong system.** Copying the input unchanged scores as high as our model,
-   because Shakespeare and modern English share most words. The style score shows what BLEU misses: our
-   model's output reads as clearly more modern (0.45) than the dictionary baseline's (0.60), which only
-   swaps words. Lower BLEU at higher modernity is a **faithfulness vs. fluency trade-off**: the no-copy
-   model is the most modern (0.37) but loses a third of names, numbers and negations.
-4. **The copy gate is a faithful built-in explanation.** Mean copy probability is 0.45 for words that were
-   kept, 0.21 for reworded words and 0.03 for swapped words (thou → you). The model's internal switch agrees
-   with what actually happened to each word.
-5. **Attention works as alignment.** For changed words, the attention peak lands on the input word they
-   replaced **60.7 %** of the time (chance ≈ 9 %).
-6. **Confidence is usable** (`rq4_calibration.png`). Accuracy rises steadily with confidence
-   (34 % → 84 %) and is close to calibrated above 0.6. Low confidence is *under*-confident, partly because
+1. **Decoding matters as much as the model.** With greedy decoding, 1 in 7 translations gets stuck
+   repeating itself ("agree, agree, agree"). A two-line rule (no word twice in a row, no repeated
+   3-word phrase) removes almost all loops. Beam search alone drops content (fewer anchors kept),
+   because shorter outputs are more likely. The **coverage penalty** fixes that: candidates that ignored
+   an input word rank lower, giving +0.8 BLEU and +9 points of names, numbers and negations kept.
+2. **The copy gate is the most important part of the model:** +2.2 BLEU and 11 points more anchors kept
+   than the same model without it. Dropout adds another +1.7 BLEU. Without it the model overfits after
+   epoch 3 (`rq4_overfitting.png`).
+3. **A textbook improvement that didn't work.** The pointer-generator *extended vocabulary* (See et al.,
+   2017) gives unknown words like new names their own temporary ids, so the copy gate can copy them. Here
+   it was *worse* (69 % vs 75 % anchors, 61 % vs 70 % of names). Our simpler fallback already copies
+   them: when the model writes `<unk>`, we take the input word its attention points at. The harder
+   training target only made the model less accurate.
+4. **BLEU alone would pick the wrong system.** Copying the input unchanged scores almost as high as our
+   model, because Shakespeare and modern English share most words. The style score shows what BLEU
+   misses: our output reads clearly more modern (0.49) than the dictionary baseline's (0.60), which only
+   swaps words. The no-copy model is the most modern (0.38) but loses a third of the names, numbers and
+   negations: a **faithfulness vs. fluency trade-off**.
+5. **The copy gate is a faithful built-in explanation.** Mean copy probability is 0.47 for words that
+   were kept, 0.20 for reworded words and 0.03 for swapped words (thou → you). The model's internal switch
+   agrees with what actually happened to each word.
+6. **Attention works as alignment.** For changed words, the attention peak lands on the input word they
+   replaced **67.7 %** of the time (chance ≈ 9 %).
+7. **Confidence is usable** (`rq4_calibration.png`). Accuracy rises steadily with confidence
+   (35 % → 82 %) and is close to calibrated above 0.6. Low confidence is *under*-confident, partly because
    "correct" means "appears in the reference", a lenient test.
-7. **Weaknesses are clear and explainable.** Long sentences (21+ tokens) drop to 13.8 BLEU. Rare archaic
-   words (doth, wilt, hence) are almost never modernised, which is the same rare-word effect as RQ3.
+8. **Weaknesses are clear and explainable.** Long sentences (21+ tokens) drop to 14.9 BLEU. Rare archaic
+   words (doth, wilt, hence) are almost never modernised, which is the same rare-word effect as in RQ3.
 
 ---
 
@@ -180,6 +216,10 @@ The guard raises false alarms on 17.2 % of clean translations.
   ways (forgetting at sentence ends, writing freely, revealing little).
 - **Architecture choices are explanations:** the copy gate improves quality *and* gives a faithful
   word-level account of what the model changed.
+- **How you decode matters as much as what you train:** the same model goes from 1 in 7 sentences stuck
+  in a loop to almost none, using rules that fit in a few lines.
+- **Negative results are results:** the extended vocabulary, dictionary hints and clause splitting were
+  measured and rejected. Settings were chosen on the validation set, never the test set.
 - **Metrics disagree, so report several:** BLEU, style score, anchors kept and paired likelihood each
   tell part of the story, and BLEU on its own would be misleading here.
 
