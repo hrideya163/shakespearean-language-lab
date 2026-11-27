@@ -1,40 +1,26 @@
-"""Compare the dictionary baseline, our LSTM and (optionally) an LLM on the same test sentences.
-
-Step 1 (optional, for the LLM comparison):
-    python evaluate.py --write_llm_input
-  -> creates results/llm_input.txt. Paste it into ChatGPT (or another LLM) with the prompt
-     from the README, and save the answers, one per line, as results/llm_run1.txt.
-     Repeat in a NEW chat and save the answers as results/llm_run2.txt (to measure consistency).
-
-Step 2:
-    python evaluate.py --llm results/llm_run1.txt results/llm_run2.txt
-  -> prints a results table and writes results/results.md
-"""
 import argparse
 import os
 import time
 
 import sacrebleu
 
-import config
-from data import read_split, tokenize
-from explain import meaning_guard
-from lexicon import baseline_translate
+from lab import config
+from lab.data import read_split, tokenize
+from lab.explain import meaning_guard
+from lab.lexicon import baseline_translate
+from lab.translator.decode import Translator
 
 PUNCT = set(".,!?;:'\"()-")
 
 
 def kept_word_rate(src_tokens, ref_tokens, hyp_tokens):
-    """Words that appear in BOTH the source and the human reference should stay unchanged.
-    Returns (how many of those the system kept, how many there were)."""
     should_keep = {t for t in src_tokens if t not in PUNCT} & set(ref_tokens)
     return len(should_keep & set(hyp_tokens)), len(should_keep)
 
 
 def score(sources_cased, references, outputs):
-    """outputs: list of token lists (lowercase)."""
     bleu = sacrebleu.corpus_bleu([" ".join(o) for o in outputs],
-                                 [[" ".join(r) for r in references]], tokenize="none").score
+                                 [[" ".join(r) for r in references]], tokenize="none", force=True).score
     a_found = a_kept = k_kept = k_total = 0
     for src, ref, out in zip(sources_cased, references, outputs):
         found, kept, _ = meaning_guard(src, out)
@@ -85,16 +71,12 @@ def main():
 
     rows = {}
 
-    # 0. "copy input": output the Shakespeare line unchanged (shows how much BLEU comes from overlap)
     rows["Copy input (no change)"] = score(sources_cased, references,
                                            [[t.lower() for t in s] for s in sources_cased])
 
-    # 1. dictionary baseline
     baseline = [baseline_translate([t.lower() for t in s]) for s in sources_cased]
     rows["Dictionary baseline"] = score(sources_cased, references, baseline)
 
-    # 2. our LSTM (measured twice to check consistency, timed on CPU)
-    from translate import Translator
     translator = Translator()
     start = time.perf_counter()
     lstm_run1 = [[w.lower() for w in translator.translate(s)["output_tokens"]] for s in sources_text]
@@ -106,14 +88,12 @@ def main():
     rows["Our LSTM"]["Model size MB"] = os.path.getsize(config.TRANSLATOR_PATH) / 1e6
     n_params = sum(p.numel() for p in translator.model.parameters())
 
-    # 3. LLM answers (if provided)
     if args.llm:
         llm_runs = [read_lines(path, len(pairs)) for path in args.llm]
         rows["LLM"] = score(sources_cased, references, llm_runs[0])
         if len(llm_runs) > 1:
             rows["LLM"]["Consistency %"] = consistency(llm_runs[0], llm_runs[1])
 
-    # results table
     columns = ["BLEU", "Anchors kept %", "Kept-word rate %", "Consistency %",
                "ms / sentence (CPU)", "Model size MB"]
     lines = ["| System | " + " | ".join(columns) + " |",

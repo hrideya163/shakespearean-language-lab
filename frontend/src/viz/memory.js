@@ -1,14 +1,8 @@
-// Memory heat map: every memory unit (row) at every generated character (column),
-// blue = negative, grey = 0, red = positive. A vertical box marks the selected step.
-// Rows are sorted by each unit's average value, so units that behave alike sit together.
-// Drawn on a <canvas> because it has tens of thousands of cells. The heat map itself is
-// drawn once into an off-screen canvas; moving the selection only redraws the cursor.
 import { diverging, hideTip, showChar, showTip } from "../utils.js";
 
 const HEIGHT = 256;
 let cache = { memory: null, width: 0, image: null, order: null };
 
-// unit numbers ordered by their average value over the text (most negative first)
 function sortedUnits(memory) {
   const units = memory[0].length;
   const mean = (u) => memory.reduce((a, row) => a + row[u], 0) / memory.length;

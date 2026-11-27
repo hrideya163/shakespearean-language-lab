@@ -1,55 +1,37 @@
-"""A hand-written dictionary of archaic Shakespearean words.
-
-Used for:
-  1. the glossary shown to students,
-  2. labelling word swaps in the word map (explain.py),
-  3. the dictionary BASELINE that our LSTM is compared against.
-"""
-
 ARCHAIC = {
-    # pronouns
     "thou": "you", "thee": "you", "thy": "your", "thine": "yours", "ye": "you",
     "thyself": "yourself",
-    # verbs: to be / to have / to do
     "art": "are", "wert": "were", "wast": "were", "beest": "are",
     "hast": "have", "hath": "has", "hadst": "had",
     "dost": "do", "doth": "does", "didst": "did",
-    # other verbs ending in -st / -eth
     "wilt": "will", "shalt": "shall", "canst": "can", "couldst": "could",
     "wouldst": "would", "shouldst": "should", "mayst": "may", "mightst": "might",
     "knowest": "know", "knoweth": "knows", "sayest": "say", "saith": "says",
     "goest": "go", "goeth": "goes", "cometh": "comes", "maketh": "makes",
     "speaketh": "speaks", "loveth": "loves", "seest": "see", "seeth": "sees",
     "durst": "dared", "bade": "told", "spake": "spoke", "wot": "know",
-    # contractions
     "'tis": "it is", "'twas": "it was", "'twere": "it would be", "'twill": "it will",
     "o'er": "over", "ne'er": "never", "e'er": "ever", "e'en": "even",
     "'gainst": "against", "th'": "the", "i'": "in", "o'": "of", "an't": "if it",
-    # question / place words
     "wherefore": "why", "whence": "from where", "hence": "from here",
     "thence": "from there", "hither": "here", "thither": "there",
     "whither": "where", "yonder": "over there", "yon": "that",
     "wherein": "in which", "whereof": "of which", "whereon": "on which",
-    # time
     "ere": "before", "anon": "soon", "oft": "often", "morrow": "morning",
     "whilst": "while", "betimes": "early",
-    # yes / no / nothing
     "ay": "yes", "aye": "yes", "nay": "no", "naught": "nothing", "nought": "nothing",
     "aught": "anything",
-    # expressions
     "prithee": "please", "pray": "please", "methinks": "I think",
     "forsooth": "truly", "verily": "truly", "sooth": "truth", "troth": "faith",
     "alack": "alas", "fie": "shame", "marry": "indeed", "zounds": "damn",
     "perchance": "perhaps", "haply": "perhaps", "mayhap": "perhaps",
     "belike": "probably", "fain": "gladly", "withal": "as well",
-    # nouns / adjectives
     "sirrah": "sir", "knave": "rascal", "wench": "girl", "coz": "cousin",
     "liege": "lord", "nuncle": "uncle", "kinsman": "relative", "visage": "face",
     "afeard": "afraid", "bootless": "useless", "twain": "two", "nigh": "near",
     "betwixt": "between", "hie": "hurry", "beseech": "beg", "hap": "luck",
 }
 
-# A tiny reverse dictionary for the modern -> Shakespearean baseline.
 MODERN_TO_ARCHAIC = {
     "you": "thou", "your": "thy", "yours": "thine", "yourself": "thyself",
     "before": "ere", "often": "oft", "why": "wherefore", "never": "ne'er",
@@ -58,11 +40,10 @@ MODERN_TO_ARCHAIC = {
 
 
 def meaning_of(word):
-    """Return the modern meaning of an archaic word, or None if it is not archaic."""
     word = word.lower()
     if word in ARCHAIC:
         return ARCHAIC[word]
-    if word.endswith("'st") and len(word) > 4:          # speak'st -> speak
+    if word.endswith("'st") and len(word) > 4:
         return word[:-3]
     return None
 
@@ -72,7 +53,6 @@ def is_archaic(word):
 
 
 def baseline_translate(tokens, direction="to_modern"):
-    """DICTIONARY BASELINE: replace each word on its own, no machine learning."""
     out = []
     for t in tokens:
         if direction == "to_modern":

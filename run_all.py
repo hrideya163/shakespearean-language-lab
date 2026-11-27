@@ -1,55 +1,48 @@
-"""Reproduce the whole study with one command (takes a few hours on a laptop CPU).
-
-    python run_all.py               # everything
-    python run_all.py --skip_train  # only re-run the experiments on existing checkpoints
-
-Every step is just one of the normal scripts, run in order, so you can also run them by hand.
-"""
 import argparse
 import os
 import subprocess
 import sys
 
-import config
+from lab import config
 
-TRAINING = [
-    ["download_data.py"],
-    ["style_classifier.py"],
-    ["train_generator.py", "--cell", "lstm"],
-    ["train_generator.py", "--cell", "gru"],
-    ["train_generator.py", "--cell", "rnn"],
-    ["train_generator.py", "--cell", "gru", "--hidden", "300", "--name", "gru_matched"],
-    ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--name", "rnn_matched"],
-    # 3x longer training: which models keep improving? (RQ1, slowest part: about 2.5 hours)
-    ["train_generator.py", "--cell", "lstm", "--steps", "9000", "--name", "lstm_long"],
-    ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--steps", "9000", "--name", "rnn_matched_long"],
-    ["train_generator.py", "--cell", "gru", "--hidden", "300", "--steps", "9000", "--name", "gru_matched_long"],
-    # the largest LSTM (512 units), used by the web app (RQ3 part C)
-    ["train_generator.py", "--cell", "lstm", "--hidden", "512", "--steps", "9000", "--name", "lstm_large"],
-    ["train_translator.py"],
-    ["train_translator.py", "--no_copy"],
-    ["train_translator.py", "--extended"],      # pointer-generator extended vocabulary (RQ4 ablation)
-    ["train_translator.py", "--dropout", "0"],   # no regularisation, to show overfitting (RQ4 part E)
+GENERATORS = [
+    ["--cell", "lstm"],
+    ["--cell", "gru"],
+    ["--cell", "rnn"],
+    ["--cell", "gru", "--hidden", "300", "--name", "gru_matched"],
+    ["--cell", "rnn", "--hidden", "542", "--name", "rnn_matched"],
+    ["--cell", "lstm", "--steps", "9000", "--name", "lstm_long"],
+    ["--cell", "rnn", "--hidden", "542", "--steps", "9000", "--name", "rnn_matched_long"],
+    ["--cell", "gru", "--hidden", "300", "--steps", "9000", "--name", "gru_matched_long"],
+    ["--cell", "lstm", "--hidden", "512", "--steps", "9000", "--name", "lstm_large"],
 ]
+TRANSLATORS = [[], ["--no_copy"], ["--extended"], ["--dropout", "0"]]
 
+TRAINING = (
+    [["download_data.py"], ["-m", "lab.style"]]
+    + [["-m", "lab.generator.train", *args] for args in GENERATORS]
+    + [["-m", "lab.translator.train", *args] for args in TRANSLATORS]
+)
 EXPERIMENTS = [
-    ["exp_compare_cells.py"],   # RQ1
-    ["exp_inside_lstm.py"],     # RQ2
-    ["exp_temperature.py"],     # RQ3
-    ["exp_copy_gate.py"],       # RQ4
-    ["exp_drift.py"],           # RQ5
-    ["evaluate.py"],            # baseline vs LSTM (add --llm files for the LLM comparison)
+    ["-m", "experiments.rq1_cells"],
+    ["-m", "experiments.rq2_inside_lstm"],
+    ["-m", "experiments.rq3_sampling"],
+    ["-m", "experiments.rq4_copy_gate"],
+    ["-m", "experiments.rq4_decoding", "--tune"],
+    ["-m", "experiments.rq4_decoding"],
+    ["-m", "experiments.rq5_drift"],
+    ["-m", "experiments.evaluate"],
 ]
 
 
 def run(step):
     print("\n" + "=" * 70 + "\n>>> python " + " ".join(step) + "\n" + "=" * 70, flush=True)
-    subprocess.run([sys.executable] + step, check=True)
+    subprocess.run([sys.executable, *step], check=True)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skip_train", action="store_true")
+    parser.add_argument("--skip_train", action="store_true", help="only re-run the experiments")
     args = parser.parse_args()
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     for step in ([] if args.skip_train else TRAINING) + EXPERIMENTS:

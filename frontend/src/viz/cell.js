@@ -1,6 +1,3 @@
-// SVG diagram of one recurrent cell (LSTM, GRU or plain RNN) at the selected time step.
-// Each gate is drawn as a box that fills up to its average value (0 = closed, 1 = open),
-// so you can watch the gates move while stepping through the text.
 import { esc, showChar } from "../utils.js";
 
 const COLOURS = {
@@ -13,7 +10,6 @@ const COLOURS = {
 const BOX_W = 66;
 const BOX_H = 78;
 
-// ---------------------------------------------------------------- drawing helpers
 const line = (pts, extra = "") =>
   `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="var(--ink-2)" stroke-width="1.6" ${extra}/>`;
 const arrowLine = (pts) => line(pts, 'marker-end="url(#arrow)"');
@@ -23,7 +19,6 @@ const node = (x, y, symbol) =>
 const label = (x, y, text, size = 14, anchor = "middle", fill = "var(--ink-2)", weight = 400) =>
   `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" fill="${fill}" font-weight="${weight}">${text}</text>`;
 
-// a gate box centred at (cx, top), filled to `value`
 function gateBox(cx, top, name, symbol, value, colour) {
   const x = cx - BOX_W / 2;
   const filled = value === null ? 0 : value * BOX_H;
@@ -43,7 +38,6 @@ function frame(body, width, height) {
       <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-2)"/></marker></defs>${body}</svg>`;
 }
 
-// the inputs at the bottom: previous hidden state and the character just read
 function inputBus(gateXs, y, ch) {
   const right = Math.max(...gateXs);
   let s = line([[40, y], [right, y]]);
@@ -54,29 +48,23 @@ function inputBus(gateXs, y, ch) {
   return s;
 }
 
-// ---------------------------------------------------------------- the three cells
 function lstm(g, ch) {
   const top = 168;
   const cx = { forget: 170, input: 262, cand: 350, output: 448 };
   let s = "";
-  // the cell state "conveyor belt" along the top
   s += arrowLine([[40, 50], [158, 50]]) + line([[182, 50], [288, 50]]) + arrowLine([[312, 50], [560, 50]]);
   s += label(36, 54, "c(t-1)", 14, "end") + label(566, 54, "c(t)", 14, "start");
   s += label(300, 28, "cell state: the long-term memory", 13, "middle", "var(--ink-3)");
   s += node(170, 50, "×") + node(300, 50, "+");
-  // forget gate -> multiply the old memory
   s += arrowLine([[cx.forget, top], [cx.forget, 63]]);
-  // input gate × candidate -> add to memory
   s += line([[cx.input, top], [cx.input, 112], [288, 112]]) + line([[cx.cand, top], [cx.cand, 112], [312, 112]]);
   s += node(300, 112, "×") + arrowLine([[300, 100], [300, 63]]);
-  // output path: tanh(c) × output gate -> h(t)
   s += arrowLine([[505, 50], [505, 84]]);
   s += `<ellipse cx="505" cy="98" rx="24" ry="13" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="1.6"/>`;
   s += label(505, 102, "tanh", 11);
   s += arrowLine([[505, 111], [505, 128]]) + node(505, 140, "×");
   s += line([[cx.output, top], [cx.output, 140], [493, 140]]);
   s += arrowLine([[517, 140], [560, 140]]) + label(566, 144, "h(t)", 14, "start");
-  // gates
   s += gateBox(cx.forget, top, "forget gate", "σ", g.forget, COLOURS.forget);
   s += gateBox(cx.input, top, "input gate", "σ", g.input, COLOURS.input);
   s += gateBox(cx.cand, top, "new info", "tanh", null, "var(--ink-3)");
@@ -117,7 +105,6 @@ function rnn(ch) {
   return frame(s, 610, 360);
 }
 
-// ---------------------------------------------------------------- captions
 function caption(cell, g) {
   const p = (v) => `<b>${Math.round(v * 100)}%</b>`;
   if (cell === "lstm") {

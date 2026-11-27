@@ -1,38 +1,3 @@
-"""RQ1: Why LSTM?  Compare vanilla RNN, GRU and LSTM text generators.
-
-First train the models (same number of steps for all):
-    python train_generator.py --cell lstm
-    python train_generator.py --cell gru
-    python train_generator.py --cell rnn
-    # optional fair comparison with (almost) the same number of recurrent weights as the LSTM:
-    python train_generator.py --cell gru --hidden 300 --name gru_matched
-    python train_generator.py --cell rnn --hidden 542 --name rnn_matched
-    # optional LONG training budget (9000 steps), to see which models keep improving:
-    python train_generator.py --cell lstm --steps 9000 --name lstm_long
-    python train_generator.py --cell rnn --hidden 542 --steps 9000 --name rnn_matched_long
-    python train_generator.py --cell gru --hidden 300 --steps 9000 --name gru_matched_long
-Then run:
-    python exp_compare_cells.py
-
-Three analyses:
-  1. QUALITY      validation and TEST bits-per-character (bpc, lower is better).
-                  Validation was used to pick the best checkpoint, so the test set
-                  gives the honest final number.
-  2. MEMORY CURVE every 200-character window starts with an empty memory. If a model
-                  uses long context, its loss keeps falling as it reads more of the window.
-  3. GRADIENT FLOW (the vanishing gradient problem, measured directly)
-                  We compute the loss on the LAST character of a 100-character window and
-                  measure how big its gradient is with respect to each EARLIER input.
-                  If the gradient shrinks to ~0 a few steps back, the model cannot learn
-                  long-range patterns. LSTMs were designed to fix exactly this.
-
-Outputs (in results/):
-    rq1_compare_cells.md     table + sample text
-    rq1_learning_curves.png  validation bpc during training
-    rq1_memory_curve.png     loss vs. context length
-    rq1_gradient_flow.png    gradient size vs. distance into the past
-    rq1_long_budget.png      learning curves of the 9000-step models
-"""
 import csv
 import math
 import os
@@ -43,9 +8,9 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
 
-import config
-from char_lm import load_generator, load_shakespeare_text
-from generate import generate
+from lab import config
+from lab.generator.model import load_generator, load_shakespeare_text
+from lab.generator.sample import generate
 
 MODELS = ["rnn", "gru", "lstm", "rnn_matched", "gru_matched",
           "lstm_long", "rnn_matched_long", "gru_matched_long"]
@@ -65,7 +30,6 @@ def bits_per_char(model, vocab, text, max_chars=100_000):
 
 @torch.no_grad()
 def memory_curve(model, vocab, text):
-    """Average loss (in bits) at each position 0..WINDOW-1, over many windows."""
     data = torch.tensor(vocab.encode(text))
     n = min((len(data) - 1) // WINDOW, 300)
     x = data[:n * WINDOW].view(n, WINDOW)
@@ -76,25 +40,21 @@ def memory_curve(model, vocab, text):
 
 
 def gradient_flow(model, vocab, text, n_windows=64):
-    """Size of d(loss at the last step) / d(input at step t), for every t.
-    Returned as a list indexed by DISTANCE from the end (0 = the last input)."""
     data = torch.tensor(vocab.encode(text))
     x = data[:n_windows * GRAD_WINDOW].view(n_windows, GRAD_WINDOW)
     y_last = data[GRAD_WINDOW:(n_windows + 1) * GRAD_WINDOW:GRAD_WINDOW][:n_windows]
 
-    # Run the cell by hand so we can ask PyTorch for gradients w.r.t. the inputs.
-    emb = model.embedding(x).detach().requires_grad_(True)       # (B, T, E)
+    emb = model.embedding(x).detach().requires_grad_(True)
     state = model.cell.init_state(n_windows, x.device)
     for t in range(GRAD_WINDOW):
         h, state, _ = model.cell(emb[:, t], state)
     loss = F.cross_entropy(model.out(h), y_last)
     loss.backward()
-    size = emb.grad.norm(dim=2).mean(dim=0)                       # (T,) average over windows
-    return list(reversed(size.tolist()))                          # index = distance from the end
+    size = emb.grad.norm(dim=2).mean(dim=0)
+    return list(reversed(size.tolist()))
 
 
 def read_log(name):
-    """Full training log from results/generator_<name>_log.csv (one row per evaluation)."""
     path = os.path.join(config.RESULTS_DIR, f"generator_{name}_log.csv")
     with open(path) as f:
         return [{k: float(v) for k, v in row.items()} for row in csv.DictReader(f)]
@@ -160,7 +120,6 @@ def main():
     with open(os.path.join(config.RESULTS_DIR, "rq1_compare_cells.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(report))
 
-    # plots
     short = {n: log for n, log in logs.items() if not n.endswith("_long")}
     long_ = {n: log for n, log in logs.items() if n.endswith("_long")}
     plt.figure(figsize=(6, 4))

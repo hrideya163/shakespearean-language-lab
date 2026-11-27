@@ -1,11 +1,3 @@
-"""Train the character-level text generator.
-
-  python train_generator.py                 # LSTM (default)
-  python train_generator.py --cell gru      # or rnn, for the comparison experiment (RQ1)
-  python train_generator.py --steps 500     # shorter run
-  python train_generator.py --cell rnn --hidden 540 --name rnn_matched
-                                            # bigger RNN with as many weights as the LSTM (fair comparison)
-"""
 import argparse
 import csv
 import math
@@ -16,12 +8,11 @@ import time
 import torch
 import torch.nn.functional as F
 
-import config
-from char_lm import CharLM, CharVocab, load_shakespeare_text
+from lab import config
+from lab.generator.model import CharLM, CharVocab, load_shakespeare_text
 
 
 def random_batch(data, batch_size, seq_len):
-    """Pick random slices of text. Input = characters 0..n-1, target = characters 1..n."""
     starts = [random.randint(0, len(data) - seq_len - 2) for _ in range(batch_size)]
     x = torch.stack([data[s:s + seq_len] for s in starts])
     y = torch.stack([data[s + 1:s + seq_len + 1] for s in starts])
@@ -30,7 +21,6 @@ def random_batch(data, batch_size, seq_len):
 
 @torch.no_grad()
 def validation_loss(model, data, seq_len, max_chars=50_000):
-    """Average loss on the validation text, read in consecutive chunks."""
     model.eval()
     data = data[:max_chars]
     n_chunks = (len(data) - 1) // seq_len
@@ -41,10 +31,7 @@ def validation_loss(model, data, seq_len, max_chars=50_000):
     return F.cross_entropy(logits.reshape(-1, logits.size(-1)), y.reshape(-1)).item()
 
 
-def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbose=True,
-          hidden=config.GEN_HID_DIM, name=None):
-    """Train one generator and save it as checkpoints/generator_<name>.pt.
-    Returns the training log (list of dicts)."""
+def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, hidden=config.GEN_HID_DIM, name=None):
     name = name or cell
     random.seed(config.SEED)
     torch.manual_seed(config.SEED)
@@ -60,12 +47,10 @@ def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbo
     model = CharLM(**model_args)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.GEN_LEARNING_RATE)
     n_params = sum(p.numel() for p in model.parameters())
-    if verbose:
-        print(f"[{name}] {len(train_text):,} training characters, vocab {len(vocab)}, "
-              f"{n_params / 1e6:.2f} M parameters")
+    print(f"[{name}] {len(train_text):,} training characters, vocab {len(vocab)}, {n_params / 1e6:.2f} M parameters")
 
     os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
-    log, best, start, running = [], float("inf"), time.time(), 0.0
+    log, recent_losses, best, start = [], [], float("inf"), time.time()
     for step in range(1, steps + 1):
         x, y = random_batch(train_data, config.GEN_BATCH_SIZE, config.GEN_SEQ_LEN)
         logits, _, _ = model(x)
@@ -74,25 +59,23 @@ def train(cell="lstm", steps=config.GEN_STEPS, data_dir=config.CORPUS_DIR, verbo
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), config.CLIP)
         optimizer.step()
-        running += loss.item()
+        recent_losses.append(loss.item())
 
         if step % config.GEN_EVAL_EVERY == 0 or step == steps:
-            n = config.GEN_EVAL_EVERY if step % config.GEN_EVAL_EVERY == 0 else step % config.GEN_EVAL_EVERY
-            train_loss, running = running / n, 0.0
+            train_loss = sum(recent_losses) / len(recent_losses)
+            recent_losses = []
             valid = validation_loss(model, valid_data, config.GEN_SEQ_LEN)
-            # bits per character = loss in base 2 (lower is better; ~1.5 is decent for small models)
             entry = {"step": step, "train_loss": train_loss, "valid_loss": valid,
                      "valid_bpc": valid / math.log(2), "minutes": (time.time() - start) / 60}
             log.append(entry)
             saved = ""
             if valid < best:
                 best = valid
-                torch.save({"model_state": model.state_dict(), "model_args": model_args,
-                            "chars": vocab.chars, "log": log}, config.generator_path(name))
+                torch.save({"model_state": model.state_dict(), "model_args": model_args, "chars": vocab.chars},
+                           config.generator_path(name))
                 saved = "  (saved)"
-            if verbose:
-                print(f"[{name}] step {step:5d} | train loss {train_loss:.3f} | "
-                      f"valid bpc {entry['valid_bpc']:.3f} | {entry['minutes']:.1f} min{saved}")
+            print(f"[{name}] step {step:5d} | train loss {train_loss:.3f} | "
+                  f"valid bpc {entry['valid_bpc']:.3f} | {entry['minutes']:.1f} min{saved}")
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(os.path.join(config.RESULTS_DIR, f"generator_{name}_log.csv"), "w", newline="") as f:

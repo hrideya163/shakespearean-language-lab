@@ -1,9 +1,7 @@
-// Research page: headline numbers, the two architectures, and one card per research question.
-import { $ } from "./utils.js";
+import { $ } from "../utils.js";
 import { HEADLINES, QUESTIONS } from "./findings.js";
-import { drawCell } from "./viz/cell.js";
+import { drawCell } from "../viz/cell.js";
 
-// Simple diagram of the translator: encoder -> attention -> decoder -> copy gate.
 function translatorDiagram() {
   const box = (x, y, w, h, title, sub, fill = "#f8f6f1", stroke = "#d6d1c6") =>
     `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}"/>
@@ -76,7 +74,6 @@ export function setupResearch() {
 
   drawCell($("arch-cell"), "lstm", { input: 0.8, forget: 0.7, output: 0.4 }, "a");
 
-  // figure tabs + lightbox
   $("page-research").addEventListener("click", (e) => {
     const tab = e.target.closest(".fig-tabs button");
     if (tab) {

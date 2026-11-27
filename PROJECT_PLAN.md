@@ -62,13 +62,13 @@ colours generated text by the activation of a chosen LSTM cell.
 
 | # | Question | Experiment (script) | Measured by |
 |---|---|---|---|
-| RQ1 | **Why LSTM?** Does the gated cell beat a vanilla RNN and match a GRU? | Train RNN, GRU and LSTM generators with the same hidden size **and** with the same number of weights (`exp_compare_cells.py`) | Validation and **test** bits-per-character, learning curves, **memory curve** (loss vs. context seen), **gradient flow** (the vanishing gradient problem measured directly) |
-| RQ2 | **What does the LSTM learn?** Are there cells that track line position, word boundaries, capital letters or sentence ends? When does it "forget"? | Record gates and cells over validation text and correlate each cell with simple text features (`exp_inside_lstm.py`) | Top cell per feature, forget gate per character type, **gate saturation**, **causal ablation** (switch a cell off and compare with random cells), **2-D map of learned character embeddings** |
-| RQ3 | **How controllable is generation?** What does temperature do to quality and style? | Generate samples at 5 temperatures (`exp_temperature.py`) | % real words, diversity (distinct bigrams), repetition, **Shakespeare-style score** from a style classifier |
-| RQ4 | **Does the copy gate help translation, and is it a faithful trace?** | Train the translator with and without the copy gate (`exp_copy_gate.py`) | BLEU with **95% bootstrap confidence intervals**, kept-word rate, anchors kept, **archaic-word accuracy** per word; copy probability for kept vs. changed words; **attention-as-alignment accuracy** |
-| RQ5 | **Can meaning drift be detected automatically?** | New **drift benchmark**: corrupt correct translations (flip a negation, swap a name, change a number) and test two detectors (`exp_drift.py`) | Guard detection / false alarms; likelihood AUROC with confidence interval; **paired test** ("did the model prefer the correct version?"); failure examples |
+| RQ1 | **Why LSTM?** Does the gated cell beat a vanilla RNN and match a GRU? | Train RNN, GRU and LSTM generators with the same hidden size **and** with the same number of weights (`experiments/rq1_cells.py`) | Validation and **test** bits-per-character, learning curves, **memory curve** (loss vs. context seen), **gradient flow** (the vanishing gradient problem measured directly) |
+| RQ2 | **What does the LSTM learn?** Are there cells that track line position, word boundaries, capital letters or sentence ends? When does it "forget"? | Record gates and cells over validation text and correlate each cell with simple text features (`experiments/rq2_inside_lstm.py`) | Top cell per feature, forget gate per character type, **gate saturation**, **causal ablation** (switch a cell off and compare with random cells), **2-D map of learned character embeddings** |
+| RQ3 | **How controllable is generation?** What does temperature do to quality and style? | Generate samples at 5 temperatures (`experiments/rq3_sampling.py`) | % real words, diversity (distinct bigrams), repetition, **Shakespeare-style score** from a style classifier |
+| RQ4 | **Does the copy gate help translation, and is it a faithful trace?** | Train the translator with and without the copy gate (`experiments/rq4_copy_gate.py`) | BLEU with **95% bootstrap confidence intervals**, kept-word rate, anchors kept, **archaic-word accuracy** per word; copy probability for kept vs. changed words; **attention-as-alignment accuracy** |
+| RQ5 | **Can meaning drift be detected automatically?** | New **drift benchmark**: corrupt correct translations (flip a negation, swap a name, change a number) and test two detectors (`experiments/rq5_drift.py`) | Guard detection / false alarms; likelihood AUROC with confidence interval; **paired test** ("did the model prefer the correct version?"); failure examples |
 
-Plus the **LLM baseline** (`evaluate.py`): the same 200 test lines are translated by an LLM (twice), then
+Plus the **LLM baseline** (`experiments/evaluate.py`): the same 200 test lines are translated by an LLM (twice), then
 compared on BLEU, anchors kept, kept-word rate, consistency, speed and model size.
 
 ### What makes the results interesting (expected findings to check)
@@ -83,59 +83,54 @@ compared on BLEU, anchors kept, kept-word rate, consistency, speed and model siz
 
 | Concept | Where |
 |---|---|
-| Character and word tokenisation, vocabularies | `data.py`, `char_lm.py` |
+| Character and word tokenisation, vocabularies | `lab/data.py`, `lab/generator/model.py` |
 | Embeddings | both models |
-| Vanilla RNN, GRU and LSTM **equations written by hand** | `cells.py` |
-| Vanishing gradients, gates, forget-gate bias trick | `cells.py`, RQ1 |
-| Language modelling, cross-entropy, perplexity, bits-per-character | `char_lm.py`, `train_generator.py` |
-| Sampling and temperature | `generate.py`, RQ3 |
-| Encoder–decoder, bidirectional LSTM, attention, copy mechanism | `translator_model.py` |
-| Teacher forcing, greedy decoding, early stopping, gradient clipping | `train_translator.py`, `translate.py` |
-| Logistic regression on character n-grams (style classifier) | `style_classifier.py` |
-| Evaluation: BLEU, AUROC, ablation studies, baselines | `evaluate.py`, `exp_*.py` |
-| Statistical confidence: bootstrap confidence intervals, held-out test set | `stats.py`, `exp_copy_gate.py`, `exp_drift.py` |
-| Vanishing gradients measured with backpropagation | `exp_compare_cells.py` |
-| Interpretability: correlation, causal ablation, PCA of embeddings | `exp_inside_lstm.py` |
-| Reproducibility: fixed seeds, one-command pipeline | `config.py`, `run_all.py` |
+| Vanilla RNN, GRU and LSTM **equations written by hand** | `lab/generator/cells.py` |
+| Vanishing gradients, gates, forget-gate bias trick | `lab/generator/cells.py`, RQ1 |
+| Language modelling, cross-entropy, perplexity, bits-per-character | `lab/generator/model.py`, `lab/generator/train.py` |
+| Sampling and temperature | `lab/generator/sample.py`, RQ3 |
+| Encoder–decoder, bidirectional LSTM, attention, copy mechanism | `lab/translator/model.py` |
+| Teacher forcing, greedy decoding, early stopping, gradient clipping | `lab/translator/train.py`, `lab/translator/decode.py` |
+| Logistic regression on character n-grams (style classifier) | `lab/style.py` |
+| Evaluation: BLEU, AUROC, ablation studies, baselines | `experiments/` |
+| Statistical confidence: bootstrap confidence intervals, held-out test set | `lab/stats.py`, `experiments/rq4_copy_gate.py`, `experiments/rq5_drift.py` |
+| Vanishing gradients measured with backpropagation | `experiments/rq1_cells.py` |
+| Interpretability: correlation, causal ablation, PCA of embeddings | `experiments/rq2_inside_lstm.py` |
+| Reproducibility: fixed seeds, one-command pipeline | `lab/config.py`, `run_all.py` |
 
 ## 6. Data
 
 - **Parallel corpus** (Jhamtani et al. 2017 / Xu et al. 2012): 18,395 train / 1,218 valid / 1,462 test
   aligned Shakespeare–modern line pairs. Downloaded by `download_data.py`.
 - The **generator** trains on the Shakespeare side only. The **style classifier** learns Shakespeare-vs-modern from both sides.
-- A small **archaic dictionary** (`lexicon.py`) for the glossary, word map labels and the dictionary baseline.
-- The **drift benchmark** is generated automatically from the test set (`exp_drift.py`).
+- A small **archaic dictionary** (`lab/lexicon.py`) for the glossary, word map labels and the dictionary baseline.
+- The **drift benchmark** is generated automatically from the test set (`experiments/rq5_drift.py`).
 
-## 7. Code structure (flat and beginner-friendly)
+## 7. Code structure
 
 ```
-config.py               all settings
-download_data.py        downloads the corpus
-data.py                 word tokeniser, vocabulary, loading pairs
-lexicon.py              archaic dictionary + dictionary baseline
-explain.py              word map, meaning guard, glossary, difficulty
-
-cells.py                hand-written RNN / GRU / LSTM cells (gates exposed)
-char_lm.py              character-level language model + character data
-train_generator.py      trains the generator (choose --cell rnn|gru|lstm)
-generate.py             sampling with temperature + gate recording
-
-translator_model.py     encoder-decoder with attention and copy gate
-train_translator.py     trains the translator (--no_copy for the ablation)
-translate.py            greedy translation + likelihood scoring
-evaluate.py             baseline vs LSTM vs LLM table
-
-style_classifier.py     Shakespeare-vs-modern logistic regression
-stats.py                bootstrap confidence intervals
-run_all.py              reproduces the whole study with one command
-exp_compare_cells.py    RQ1
-exp_inside_lstm.py      RQ2
-exp_temperature.py      RQ3
-exp_copy_gate.py        RQ4
-exp_drift.py            RQ5
-
-server.py               FastAPI backend
-frontend/               Vite + plain JavaScript web app (Generator tab, Translator tab)
+lab/                        the library
+  config.py                 all settings
+  data.py                   word tokeniser, vocabulary, loading pairs
+  lexicon.py                archaic dictionary + dictionary baseline
+  explain.py                word map, meaning guard, glossary, difficulty
+  stats.py                  bootstrap confidence intervals
+  style.py                  Shakespeare-vs-modern logistic regression
+  generator/
+    cells.py                hand-written RNN / GRU / LSTM cells (gates exposed)
+    model.py                character-level language model
+    train.py                training (--cell rnn|gru|lstm, --hidden, --steps)
+    sample.py               temperature sampling + spelling filter
+  translator/
+    model.py                encoder-decoder with attention and copy gate
+    train.py                training (--no_copy, --extended, --dropout 0 for the ablations)
+    decode.py               beam search, repeat blocking, coverage penalty, likelihood scoring
+experiments/                rq1_cells, rq2_inside_lstm, rq3_sampling, rq4_copy_gate,
+                            rq4_decoding, rq5_drift, evaluate
+server.py                   FastAPI backend
+frontend/                   Vite + plain JavaScript web app (Generator, Translator, Research)
+run_all.py                  reproduces the whole study with one command
+download_data.py            downloads the corpus
 ```
 
 ## 8. Timeline (8 weeks)

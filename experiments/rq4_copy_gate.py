@@ -1,28 +1,3 @@
-"""RQ4: Does the copy gate help translation, and is it a faithful explanation?
-
-First train the translators:
-    python train_translator.py                -> checkpoints/translator.pt
-    python train_translator.py --no_copy      -> checkpoints/translator_nocopy.pt
-    python train_translator.py --extended     -> checkpoints/translator_ext.pt
-    python train_translator.py --dropout 0    -> checkpoints/translator_nodropout.pt
-Then run:
-    python exp_copy_gate.py
-
-Part A  ABLATION      compare baseline / no-copy / copy on the test set:
-                      BLEU (with a 95% bootstrap confidence interval), anchors kept,
-                      kept-word rate, style score (lower = more modern)
-Part B  ARCHAIC WORDS for every archaic word in the input (thou, hath, 'tis ...),
-                      was its modern meaning produced? Overall and for the most common words.
-Part C  TRACE         for the copy model:
-                      - average copy probability per word-map label (kept vs changed)
-                      - attention as alignment: for each changed word, does the model's
-                        attention point at the input word it replaced?
-                      - calibration: is the model right as often as its confidence says?
-Part D  LENGTH        BLEU for short vs long sentences
-Part E  OVERFITTING   training vs validation loss with and without dropout
-
-Output: results/rq4_copy_gate.md, results/rq4_calibration.png, results/rq4_overfitting.png
-"""
 import argparse
 import csv
 import os
@@ -33,25 +8,24 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import sacrebleu
 
-import config
-from data import detokenize, read_split, tokenize
-from evaluate import score
-from explain import word_map
-from lexicon import baseline_translate, meaning_of
-from stats import bootstrap_ci
-from style_classifier import shakespeare_score
-from translate import Translator
+from lab import config
+from lab.data import detokenize, read_split, tokenize
+from experiments.evaluate import score
+from lab.explain import word_map
+from lab.lexicon import baseline_translate, meaning_of
+from lab.stats import bootstrap_ci
+from lab.style import shakespeare_score
+from lab.translator.decode import Translator
 
 
 def bleu_ci(outputs, references):
     def metric(idx):
         return sacrebleu.corpus_bleu([" ".join(outputs[i]) for i in idx],
-                                     [[" ".join(references[i]) for i in idx]], tokenize="none").score
+                                     [[" ".join(references[i]) for i in idx]], tokenize="none", force=True).score
     return bootstrap_ci(metric, len(outputs), n_resamples=300)
 
 
 def archaic_hits(sources, outputs):
-    """Per archaic word: [times translated correctly, times seen]."""
     counts = {}
     for src, out in zip(sources, outputs):
         out_set = set(out)
@@ -67,7 +41,6 @@ def archaic_hits(sources, outputs):
 
 
 def attention_alignment(results):
-    """For changed words (swapped / reworded): does attention point at the replaced input word?"""
     correct = total = 0
     for r in results:
         src_lower = [t.lower() for t in r["source_tokens"]]
@@ -83,7 +56,6 @@ def attention_alignment(results):
 
 
 def calibration(results, references, n_bins=5):
-    """Group output words by confidence and measure how often they are correct."""
     edges = [i / n_bins for i in range(n_bins + 1)]
     counts = {(edges[i], edges[i + 1]): [0, 0] for i in range(n_bins)}
     for r, ref in zip(results, references):
@@ -109,7 +81,6 @@ def plot_calibration(bins, path):
 
 
 def plot_overfitting(path):
-    """Training vs validation loss per epoch, for the runs with and without dropout."""
     runs = [("no dropout", "translator_nodropout_log.csv"), ("dropout", "translator_log.csv")]
     plt.figure(figsize=(6, 4))
     found = False
@@ -140,9 +111,6 @@ def main():
     sources = [[t.lower() for t in s] for s in sources_cased]
     references = [tokenize(m) for _, m in pairs]
 
-    # Two simple baselines. "Copy input" outputs the Shakespeare line unchanged: because old and
-    # modern lines share many words, this already gets a surprisingly high BLEU, which tells us
-    # how much of any system's BLEU comes from mere word overlap.
     systems = {"Copy input (no change)": [list(s) for s in sources],
                "Dictionary baseline": [baseline_translate(s) for s in sources]}
     results_by_model = {}
@@ -159,7 +127,6 @@ def main():
         systems[name] = [[w.lower() for w in r["output_tokens"]] for r in results]
         print("translated with", name)
 
-    # ---------------- Part A: ablation table
     rows = {}
     for name, outputs in systems.items():
         rows[name] = score(sources_cased, references, outputs)
@@ -183,7 +150,6 @@ def main():
         cells = [m[c] if isinstance(m.get(c), str) else (f"{m[c]:.2f}" if c in m else "-") for c in cols]
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
 
-    # ---------------- Part B: archaic word accuracy
     hits = {name: archaic_hits(sources, outputs) for name, outputs in systems.items()}
     freq = Counter({w: c[1] for w, c in hits["Dictionary baseline"].items()})
     names = [n for n in systems if n != "Copy input (no change)"]
@@ -202,7 +168,6 @@ def main():
         cells = [f"{100 * hits[name][word][0] / n:.0f}%" for name in names]
         lines.append(f"| {word} -> {meaning_of(word)} ({n}) | " + " | ".join(cells) + " |")
 
-    # ---------------- Part C: is the trace faithful?
     if "LSTM with copy gate" in results_by_model:
         results = results_by_model["LSTM with copy gate"]
         by_type = {}
@@ -226,7 +191,6 @@ def main():
                   f"of the time (a random guess over the input words would be about "
                   f"{100 / (sum(len(s) for s in sources) / len(sources)):.0f}%)."]
 
-        # C3. calibration: are the confidence values honest?
         bins = calibration(results, references)
         lines += ["", "## C3. Confidence calibration", "",
                   "Each output word has a confidence (its softmax probability). We call a word "
@@ -239,7 +203,6 @@ def main():
                 lines.append(f"| {low:.1f} - {high:.1f} | {n} | {correct_pct:.1f} |")
         plot_calibration(bins, os.path.join(config.RESULTS_DIR, "rq4_calibration.png"))
 
-    # ---------------- Part D: does quality drop for long sentences?
     buckets = [(1, 5), (6, 10), (11, 20), (21, 1000)]
     lines += ["", "## D. BLEU by source sentence length (tokens)", "",
               "| system | " + " | ".join(f"{a}-{b}" if b < 1000 else f"{a}+" for a, b in buckets) + " |",
@@ -250,7 +213,7 @@ def main():
             idx = [i for i, s in enumerate(sources) if a <= len(s) <= b]
             bleu = sacrebleu.corpus_bleu([" ".join(outputs[i]) for i in idx],
                                          [[" ".join(references[i]) for i in idx]],
-                                         tokenize="none").score if idx else 0.0
+                                         tokenize="none", force=True).score if idx else 0.0
             cells.append(f"{bleu:.1f} (n={len(idx)})")
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
 

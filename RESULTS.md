@@ -165,9 +165,9 @@ All translators below use the same final decoding (beam search, no repeats, cove
 | **LSTM + copy gate + dropout (final)** | **20.0** (18.1–22.0) | **75** | 0.49 |
 | *human reference* | – | – | *0.29* |
 
-On the full test set (1,462 sentences, `evaluate.py`): copy input 21.6, dictionary 23.9, **our LSTM 23.1**.
+On the full test set (1,462 sentences, `experiments/evaluate.py`): copy input 21.6, dictionary 23.9, **our LSTM 23.1**.
 
-**Decoding study** (`exp_decoding.py`, same trained model, Shakespeare → modern):
+**Decoding study** (`experiments/rq4_decoding.py`, same trained model, Shakespeare → modern):
 
 | decoding | BLEU | outputs stuck in a loop | names/numbers/negations kept |
 |---|---|---|---|

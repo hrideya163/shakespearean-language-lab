@@ -1,25 +1,3 @@
-"""RQ3: How does sampling control the generator?
-
-    python exp_temperature.py
-
-Part A  TEMPERATURE  plain sampling at 5 temperatures.
-Part B  SAMPLING METHODS at the app's temperature (0.7): plain, top-p, spelling filter, both
-        (see generate.py). The spelling filter only allows real words from the training text.
-Part C  MODEL SIZE  the best 256-unit LSTM vs the 512-unit LSTM (if trained), final sampling.
-
-For each temperature we generate several samples and measure:
-    real words %     share of generated words that exist in the training text
-    distinct-2 %     share of different word pairs (higher = more varied)
-    repetition %     share of words that repeat the word 1-3 positions earlier
-    style score      Shakespeare probability from the style classifier (0..1)
-    archaic words %  share of words in the archaic dictionary (thou, hath, 'tis ...)
-    line length      average characters per line
-The same numbers are computed on REAL validation text, so we can see which
-temperature produces text that is statistically closest to real Shakespeare.
-
-Model: lstm_long (the best LSTM, 9000 steps), or lstm if it is missing.
-Outputs: results/rq3_temperature.md and results/rq3_temperature.png
-"""
 import os
 import re
 
@@ -27,11 +5,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-import config
-from char_lm import load_generator, load_shakespeare_text
-from generate import SpellingFilter, generate
-from lexicon import is_archaic
-from style_classifier import shakespeare_score
+from lab import config
+from lab.generator.model import load_generator, load_shakespeare_text
+from lab.generator.sample import SpellingFilter, generate
+from lab.lexicon import is_archaic
+from lab.style import shakespeare_score
 
 TEMPERATURES = [0.2, 0.5, 0.8, 1.0, 1.3]
 PROMPTS = ["\n", "My lord,", "ROMEO:", "I pray thee", "What", "O, ", "Good morrow", "Come, sir"]
@@ -62,7 +40,6 @@ def measure(texts, known_words):
 
 
 def samples(model, vocab, temperature, **options):
-    """LENGTH characters for every prompt, SAMPLES_PER_PROMPT times, with fixed seeds."""
     return [generate(model, vocab, prompt, LENGTH, temperature, seed=100 * p_i + s, **options)[0]
             for p_i, prompt in enumerate(PROMPTS) for s in range(SAMPLES_PER_PROMPT)]
 
@@ -89,7 +66,6 @@ def main():
         examples[temp] = PROMPTS[1] + texts[2]
         print(f"T={temp}: " + ", ".join(f"{k} {v:.2f}" for k, v in results[temp].items()))
 
-    # Part B: sampling methods at the app's temperature
     spelling = SpellingFilter(train_text, vocab)
     methods = {"plain": {}, "top-p 0.9": dict(top_p=0.9), "spelling filter (app)": dict(spelling=spelling),
                "spelling filter + top-p 0.9": dict(spelling=spelling, top_p=0.9)}
@@ -101,7 +77,6 @@ def main():
         print(f"{name}: " + ", ".join(f"{k} {v:.2f}" for k, v in by_method[name].items()))
     by_method["real Shakespeare"] = real
 
-    # Part C: model size, with the app's sampling
     by_model = {}
     for name in ["lstm_long", "lstm_large"]:
         if os.path.exists(config.generator_path(name)):

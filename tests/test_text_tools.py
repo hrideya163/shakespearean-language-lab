@@ -1,17 +1,7 @@
-"""Small tests for the non-ML parts (run with:  python -m pytest tests).
-
-They check that the tools used to MEASURE the models behave as intended,
-so the experiment results can be trusted.
-"""
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from data import Vocab, detokenize, tokenize                      # noqa: E402
-from explain import difficulty, find_anchors, meaning_guard, word_map  # noqa: E402
-from lexicon import baseline_translate, meaning_of                # noqa: E402
-from stats import bootstrap_ci                                    # noqa: E402
+from lab.data import Vocab, detokenize, tokenize
+from lab.explain import difficulty, find_anchors, meaning_guard, word_map
+from lab.lexicon import baseline_translate, meaning_of
+from lab.stats import bootstrap_ci
 
 
 def test_tokenizer_keeps_archaic_contractions():

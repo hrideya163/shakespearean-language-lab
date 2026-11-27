@@ -1,17 +1,7 @@
-"""Download the Shakespeare <-> modern English parallel corpus.
-
-Source: https://github.com/harsh19/Shakespearizing-Modern-English (folder data/)
-Please cite in your report:
-  - Jhamtani et al. (2017) "Shakespearizing Modern Language Using Copy-Enriched
-    Sequence-to-Sequence Models"
-  - Xu et al. (2012) "Paraphrasing for Style"
-
-Run:  python download_data.py
-"""
 import os
 import urllib.request
 
-import config
+from lab import config
 
 BASE_URL = "https://raw.githubusercontent.com/harsh19/Shakespearizing-Modern-English/master/data/"
 FILES = [

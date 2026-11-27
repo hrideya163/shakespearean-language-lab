@@ -1,35 +1,3 @@
-"""RQ2: What does the LSTM learn?  Look for cells that track simple text features.
-
-    python exp_inside_lstm.py
-
-We run the best trained LSTM generator (lstm_long: 9000 steps, falls back to the
-3000-step lstm if it is missing) over validation text, record its cell state
-and forget gate at every character, and compute the correlation between every
-cell (256 of them) and some features we can compute ourselves:
-
-    position_in_line   how far we are into the current line
-    inside_word        1 if the current character is a letter
-    capital_letter     1 if the current character is upper case
-    after_punctuation  1 right after . , ! ? ; :
-    end_of_line        1 if the NEXT character is a newline (needs prediction!)
-
-Then three deeper analyses:
-  GATE SATURATION  how often each gate is almost fully closed (< 0.1) or fully open (> 0.9).
-                   Units whose forget gate is nearly always open act as long-term memory.
-  CAUSAL ABLATION  correlation is not causation. We switch the top cell OFF and measure how
-                   much worse the model predicts the characters linked to its feature,
-                   compared with switching off 10 random cells.
-  EMBEDDING MAP    the 64-number vector the model learned for every character, squashed
-                   to 2-D with PCA. Similar characters (vowels, capitals, punctuation)
-                   should end up close together, even though nobody told the model.
-
-Outputs (in results/):
-    rq2_inside_lstm.md      all tables
-    rq2_inside_lstm.html    validation text coloured by each top cell
-    rq2_gate_saturation.png per-unit gate saturation scatter plots
-    rq2_embeddings.png      2-D map of the character embeddings
-    interesting_units.json  used by the web app's neuron viewer
-"""
 import html
 import json
 import os
@@ -41,14 +9,13 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
 
-import config
-from char_lm import load_generator, load_shakespeare_text
+from lab import config
+from lab.generator.model import load_generator, load_shakespeare_text
 
 N_CHARS = 20_000
 
 
 def text_features(text):
-    """One list of numbers per feature, one number per character."""
     feats = {"position_in_line": [], "inside_word": [], "capital_letter": [],
              "after_punctuation": [], "end_of_line": []}
     pos = 0
@@ -63,7 +30,6 @@ def text_features(text):
 
 
 def correlation(units, feature):
-    """Pearson correlation between every unit (columns of units) and one feature."""
     u = units - units.mean(dim=0)
     f = feature - feature.mean()
     return (u * f[:, None]).sum(0) / (u.norm(dim=0) * f.norm() + 1e-8)
@@ -82,7 +48,6 @@ def char_type(ch):
 
 
 def coloured_html(text, values):
-    """Blue = negative activation, red = positive (like Karpathy et al. 2015)."""
     spans = []
     for ch, v in zip(text, values):
         v = max(-1.0, min(1.0, v))
@@ -92,17 +57,15 @@ def coloured_html(text, values):
     return "".join(spans)
 
 
-# For the ablation: which PREDICTIONS should each feature's cell help with?
-# (a mask over target characters, i.e. the character that comes next)
 def target_mask(name, inputs, targets):
     if name in ("end_of_line", "position_in_line"):
-        return [t == "\n" for t in targets]                    # predicting the line break
+        return [t == "\n" for t in targets]
     if name == "inside_word":
-        return [t.isalpha() for t in targets]                  # continuing a word
+        return [t.isalpha() for t in targets]
     if name == "capital_letter":
-        return [t.isupper() for t in targets]                  # predicting a capital
+        return [t.isupper() for t in targets]
     if name == "after_punctuation":
-        return [i in ".,!?;:" for i in inputs]                 # what follows punctuation
+        return [i in ".,!?;:" for i in inputs]
     raise ValueError(name)
 
 
@@ -111,8 +74,6 @@ CHUNK = 200
 
 @torch.no_grad()
 def masked_loss(model, ids, mask, ablate=None):
-    """Average loss on the masked predictions. For speed the text is cut into
-    200-character chunks that are processed side by side as one batch."""
     n = (ids.size(1) - 1) // CHUNK
     x = ids[0, :n * CHUNK].view(n, CHUNK)
     y = ids[0, 1:n * CHUNK + 1].view(n, CHUNK)
@@ -137,10 +98,9 @@ def ablation_study(model, ids, text, top, n_random=10):
 
 
 def gate_saturation(recorded, gate_names=("input", "forget", "output")):
-    """For every unit: fraction of time the gate is < 0.1 (closed) and > 0.9 (open)."""
     result = {}
     for g in gate_names:
-        values = torch.stack([r[g][0] for r in recorded])         # (T, H)
+        values = torch.stack([r[g][0] for r in recorded])
         result[g] = ((values < 0.1).float().mean(0), (values > 0.9).float().mean(0))
     return result
 
@@ -156,11 +116,10 @@ def char_group(ch):
 
 
 def embedding_map(model, vocab, path):
-    """PCA of the character embeddings to 2-D (via SVD)."""
     weights = model.embedding.weight.detach()
     centred = weights - weights.mean(dim=0)
     _, _, v = torch.linalg.svd(centred, full_matrices=False)
-    points = centred @ v[:2].T                                    # (V, 2)
+    points = centred @ v[:2].T
     colours = {"vowel": "tab:red", "lower-case consonant": "tab:blue",
                "upper-case consonant": "tab:cyan", "space / newline": "tab:green",
                "punctuation / other": "tab:gray"}
@@ -186,13 +145,12 @@ def main():
     print("analysing", MODEL)
     text = load_shakespeare_text("valid")[:N_CHARS]
     ids = torch.tensor([vocab.encode(text)])
-    text = vocab.decode(ids[0].tolist())                 # same characters the model saw
+    text = vocab.decode(ids[0].tolist())
     _, _, recorded = model(ids, record=True)
 
-    cells = torch.tanh(torch.stack([r["cell"][0] for r in recorded]))   # (T, H), squashed to -1..1
-    forget = torch.stack([r["forget"][0] for r in recorded])            # (T, H)
+    cells = torch.tanh(torch.stack([r["cell"][0] for r in recorded]))
+    forget = torch.stack([r["forget"][0] for r in recorded])
 
-    # 1. top unit per feature
     feats = text_features(text)
     top = {}
     for name, feature in feats.items():
@@ -200,13 +158,11 @@ def main():
         unit = int(corr.abs().argmax())
         top[name] = {"unit": unit, "correlation": float(corr[unit])}
 
-    # 2. average forget gate by character type (low value = the cell is being cleared)
     by_type = {}
     mean_forget = forget.mean(dim=1)
     for ch, f in zip(text, mean_forget.tolist()):
         by_type.setdefault(char_type(ch), []).append(f)
 
-    # 3. deeper analyses
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     print("running ablations ...")
     ablations = ablation_study(model, ids, text, top)
@@ -222,7 +178,6 @@ def main():
     plt.tight_layout()
     plt.savefig(os.path.join(config.RESULTS_DIR, "rq2_gate_saturation.png"), dpi=120)
 
-    # 4. write the report
     lines = ["# RQ2: Inside the LSTM generator", "", f"Model: `{MODEL}`.", "",
              f"Analysed {len(text):,} validation characters, {cells.shape[1]} cells.", "",
              "## Cell most correlated with each feature", "",
@@ -259,7 +214,7 @@ def main():
     for name, t in top.items():
         values = cells[snippet, t["unit"]].tolist()
         if t["correlation"] < 0:
-            values = [-v for v in values]                 # flip so red = feature present
+            values = [-v for v in values]
         page.append(f"<h3>{name}: cell #{t['unit']} (r = {t['correlation']:+.2f})</h3>")
         page.append(f"<p>{coloured_html(text[snippet], values)}</p>")
     page.append("</body></html>")

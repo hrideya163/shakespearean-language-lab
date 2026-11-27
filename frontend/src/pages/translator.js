@@ -1,8 +1,7 @@
-// Translator page: calls POST /api/translate and explains every output word.
-import { $, esc, hideTip, pct, postJSON, segmented, sequential, showTip } from "./utils.js";
-import { drawAlignment } from "./viz/alignment.js";
+import { $, esc, hideTip, pct, postJSON, segmented, sequential, showTip } from "../utils.js";
+import { drawAlignment } from "../viz/alignment.js";
 
-const LOW_CONFIDENCE = 0.4; // same value as config.LOW_CONFIDENCE in Python
+const LOW_CONFIDENCE = 0.4;
 
 const EXAMPLES = {
   to_modern: [
@@ -29,7 +28,6 @@ const TYPES = {
 
 let getDirection, getDecoding;
 
-// ---------------------------------------------------------------- word map
 function wordMap(line) {
   let k = 0;
   return line.items
@@ -50,7 +48,6 @@ function wordMap(line) {
     .join("");
 }
 
-// ---------------------------------------------------------------- attention heat map (table)
 function heatmap(line) {
   const head = line.source_tokens.map((w) => `<th class="col">${esc(w)}</th>`).join("");
   const rows = line.output_tokens
@@ -73,7 +70,6 @@ function beams(line) {
   return rows.join("");
 }
 
-// ---------------------------------------------------------------- page
 function renderLine(line, i, decoding) {
   const counts = Object.entries(line.counts).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${k}`).join(" · ");
   const warnings = line.warnings.map((w) => `<p class="warning">⚠ Meaning guard: ${esc(w)}</p>`).join("");
@@ -163,7 +159,6 @@ export function setupTranslator() {
     `<span><span class="w removed" style="padding:0">removed</span></span>
      <span><span class="w unsure" style="padding:0;background:none;border:0">unsure</span></span>`;
 
-  // one tooltip handler for all word-map chips and heat-map cells
   $("tr-results").addEventListener("mousemove", (e) => {
     const el = e.target.closest("[data-tip]");
     if (el) showTip(el.dataset.tip, e);
@@ -171,4 +166,3 @@ export function setupTranslator() {
   });
   $("tr-results").addEventListener("mouseleave", hideTip);
 }
-

@@ -1,38 +1,14 @@
-"""RQ5: Can meaning drift be detected automatically?
-
-    python exp_drift.py
-
-1. BUILD A DRIFT BENCHMARK from the test set. For each (Shakespeare, modern) pair:
-     clean     the correct modern translation                     -> label 0
-     negation  "not" added or removed  (meaning reversed)         -> label 1
-     name      a character name swapped for another name          -> label 1
-     number    a number changed                                   -> label 1
-2. TEST TWO DETECTORS on every (Shakespeare line, candidate translation):
-     meaning guard   rule-based check from explain.py (flag = any warning)
-     LSTM likelihood how probable our translator finds the candidate
-                     (a drifted candidate should look less likely)
-3. REPORT
-     - detection rate / false alarms of the guard
-     - AUROC of the likelihood (0.5 = random guessing, 1.0 = perfect), with a
-       95% bootstrap confidence interval
-     - PAIRED TEST: for each line, did the model give the correct translation a higher
-       likelihood than its corrupted copy? (easy to explain: "the model preferred the
-       right answer X% of the time")
-     - examples where the likelihood was fooled
-
-Outputs: results/rq5_drift.md, results/drift_benchmark.tsv
-"""
 import argparse
 import os
 import random
 
 from sklearn.metrics import roc_auc_score
 
-import config
-from data import detokenize, read_split, tokenize
-from explain import find_anchors, meaning_guard
-from stats import bootstrap_ci
-from translate import Translator
+from lab import config
+from lab.data import detokenize, read_split, tokenize
+from lab.explain import find_anchors, meaning_guard
+from lab.stats import bootstrap_ci
+from lab.translator.decode import Translator
 
 AUXILIARIES = {"is", "are", "am", "was", "were", "will", "would", "can", "could", "shall",
                "should", "do", "does", "did", "have", "has", "had", "must", "may", "might"}
@@ -47,12 +23,12 @@ def flip_negation(tokens):
     for i, t in enumerate(tokens):
         low = t.lower()
         if low in ("not", "never"):
-            return tokens[:i] + tokens[i + 1:]                      # remove the negation
+            return tokens[:i] + tokens[i + 1:]
         if low in CONTRACTIONS:
             return tokens[:i] + [CONTRACTIONS[low]] + tokens[i + 1:]
     for i, t in enumerate(tokens):
         if t.lower() in AUXILIARIES:
-            return tokens[:i + 1] + ["not"] + tokens[i + 1:]        # add a negation
+            return tokens[:i + 1] + ["not"] + tokens[i + 1:]
     return None
 
 
@@ -129,7 +105,6 @@ def main():
             continue
         both = clean + drifted
         labels = [0] * len(clean) + [1] * len(drifted)
-        # lower likelihood = more suspicious, so the drift score is the NEGATIVE log-prob
         auc_avg = roc_auc_score(labels, [-s["avg"] for s in both])
         auc_min = roc_auc_score(labels, [-s["min"] for s in both])
 

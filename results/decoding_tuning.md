@@ -9,4 +9,4 @@
 | 0.4 | 16.56 | 16.51 | 16.53 | 16.38 |
 | 0.8 | 16.47 | 16.41 | 16.48 | 16.40 |
 
-Best: {'coverage_weight': 0.4, 'hint_bonus': 0.0} (BLEU 16.56). Set COVERAGE_WEIGHT and HINT_BONUS in translate.py.
+Best: {'coverage_weight': 0.4, 'hint_bonus': 0.0} (BLEU 16.56). Set COVERAGE_WEIGHT and HINT_BONUS in lab/translator/decode.py.

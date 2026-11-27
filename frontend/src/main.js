@@ -1,9 +1,8 @@
-// Entry point: tab switching and loading which models are available.
 import "./style.css";
 import { $ } from "./utils.js";
-import { setupGenerator } from "./generator.js";
-import { setupTranslator } from "./translator.js";
-import { setupResearch } from "./research.js";
+import { setupGenerator } from "./pages/generator.js";
+import { setupTranslator } from "./pages/translator.js";
+import { setupResearch } from "./pages/research.js";
 
 function showPage(name) {
   document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
@@ -22,7 +21,7 @@ async function start() {
   setupResearch();
   const pageFromUrl = () => (["translator", "research"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "generator");
   showPage(pageFromUrl());
-  window.addEventListener("hashchange", () => showPage(pageFromUrl()));   // back/forward buttons, links
+  window.addEventListener("hashchange", () => showPage(pageFromUrl()));
   try {
     const status = await fetch("/api/status").then((r) => r.json());
     setupGenerator(status.generators);

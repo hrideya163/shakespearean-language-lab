@@ -1,7 +1,3 @@
-// Attention as an alignment diagram: input words on top, output words below, and a curve
-// from each output word to the input words it looked at (thicker = more attention).
-// Under each output word a small bar shows how much of it was COPIED (blue) from the input
-// versus GENERATED (orange) from the vocabulary: the copy gate.
 import { esc, hideTip, pct, showTip } from "../utils.js";
 
 const TYPE_FILL = { kept: "#f3f1ec", swapped: "#e3eefb", reworded: "#fde9e0", added: "#e0f4ec" };
@@ -29,7 +25,6 @@ function layout(words, total) {
   });
 }
 
-// type of each output word (kept / swapped / ...), from the word map
 export function outputTypes(items) {
   return items.filter((it) => it.type !== "removed").flatMap((it) => it.out.map(() => it.type));
 }
@@ -79,7 +74,6 @@ export function drawAlignment(target, line) {
       <span class="muted">· curves = attention · hover a word for details</span>
     </div>`;
 
-  // hover: highlight one word's attention curves
   const svg = target.querySelector("svg");
   const paths = [...svg.querySelectorAll("path")];
   const focus = (attr, idx) => paths.forEach((p) => (p.style.opacity = p.dataset[attr] === String(idx) ? 1 : 0.06));

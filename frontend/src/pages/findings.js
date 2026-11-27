@@ -1,6 +1,3 @@
-// The study's findings, shown on the Research page. Numbers come from RESULTS.md
-// (which is written from the experiment reports in results/). Update both together.
-
 export const HEADLINES = [
   ["0.001%", "of the gradient survives 50 characters back in a plain RNN (vanishing gradient)"],
   ["2.17 bpc", "best LSTM after 9,000 steps: it caught up with the GRU, the RNN stayed stuck"],

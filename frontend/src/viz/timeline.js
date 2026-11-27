@@ -1,5 +1,3 @@
-// Line chart of the average gate values over the generated text (one line per gate),
-// with a cursor at the selected step and a hover tooltip.
 import { hideTip, showChar, showTip } from "../utils.js";
 
 const COLOURS = { input: "#2a78d6", forget: "#eb6834", output: "#1baf7a", update: "#eb6834", reset: "#2a78d6" };
@@ -20,7 +18,7 @@ export function drawTimeline(target, steps, gateNames, text, selected, onSelect)
   const y = (v) => PAD.top + (1 - (v - lo) / Math.max(hi - lo, 1e-6)) * (H - PAD.top - PAD.bottom);
 
   let svg = `<svg width="${width}" height="${H}" style="display:block">`;
-  for (const v of [lo, (lo + hi) / 2, hi]) {        // recessive grid
+  for (const v of [lo, (lo + hi) / 2, hi]) {
     svg += `<line x1="${PAD.left}" x2="${width - PAD.right}" y1="${y(v)}" y2="${y(v)}" stroke="#ebe7de"/>
             <text x="${PAD.left - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#8a857c">${v.toFixed(1)}</text>`;
   }
@@ -30,7 +28,6 @@ export function drawTimeline(target, steps, gateNames, text, selected, onSelect)
     const pts = steps.map((s, i) => `${x(i).toFixed(1)},${y(s.gates[g]).toFixed(1)}`).join(" ");
     svg += `<polyline points="${pts}" fill="none" stroke="${COLOURS[g]}" stroke-width="1.5" stroke-linejoin="round"/>`;
   }
-  // direct labels at the end of each line, pushed apart so they never overlap
   const labels = gateNames.map((g) => ({ g, y: y(steps[n - 1].gates[g]) + 4 })).sort((a, b) => a.y - b.y);
   labels.forEach((l, i) => { if (i > 0) l.y = Math.max(l.y, labels[i - 1].y + 14); });
   for (const l of labels) {

@@ -1,11 +1,6 @@
-"""Tests for the decoding rules and the extended vocabulary (run with:  python -m pytest tests)."""
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from data import EOS, SOS, Vocab, encode_extended, make_example, source_oovs  # noqa: E402
-from translate import blocked_words, split_clauses                         # noqa: E402
+from lab.data import EOS, SOS, Vocab, encode_extended, make_example, source_oovs
+from lab.generator.sample import SpellingFilter, current_word
+from lab.translator.decode import blocked_words, split_clauses
 
 VOCAB = Vocab.build([["you", "are", "why", "?", "art", "thou", "wherefore"]], min_freq=1)
 
@@ -15,7 +10,6 @@ def test_no_immediate_repeat():
 
 
 def test_no_repeated_three_word_phrase():
-    # "agree , agree ," must not continue with "agree": that would repeat "agree , agree"
     agree, comma = 10, 11
     assert agree in blocked_words([agree, comma, agree, comma])
 
@@ -34,7 +28,7 @@ def test_split_long_sentence_at_commas():
               "fourteen fifteen sixteen seventeen .").split()
     pieces = split_clauses(tokens)
     assert len(pieces) > 1
-    assert pieces[0][0] == 0 and pieces[-1][1] == len(tokens)          # nothing lost
+    assert pieces[0][0] == 0 and pieces[-1][1] == len(tokens)
 
 
 def test_unknown_words_get_temporary_ids():
@@ -46,9 +40,9 @@ def test_unknown_words_get_temporary_ids():
 def test_target_can_copy_unknown_source_word():
     src, src_ext, tgt = make_example(["wherefore", "art", "thou", "romeo", "?"],
                                      ["why", "are", "you", "romeo", "?"], "to_modern", VOCAB)
-    assert src[4] == VOCAB.index("<unk>")            # the encoder still sees <unk>
-    assert src_ext[4] == len(VOCAB)                  # but the copy gate can point at "romeo"
-    assert tgt[4] == len(VOCAB)                      # and the target asks for exactly that
+    assert src[4] == VOCAB.index("<unk>")
+    assert src_ext[4] == len(VOCAB)
+    assert tgt[4] == len(VOCAB)
     assert tgt[0] == VOCAB.index(SOS) and tgt[-1] == VOCAB.index(EOS)
 
 
@@ -57,16 +51,14 @@ def test_no_copy_ablation_uses_plain_unk():
     assert max(src_ext) < len(VOCAB) and max(tgt) < len(VOCAB)
 
 
-# ---------------------------------------------------------------- generator spelling filter
-class _CharVocab:
+class TinyCharVocab:
     chars = ["a", "b", "t", " ", "."]
 
 
 def test_spelling_filter_only_allows_real_words():
-    from generate import SpellingFilter, current_word
-    sf = SpellingFilter("bat tab", _CharVocab())
-    allowed = dict(zip(_CharVocab.chars, sf.allowed("ba").tolist()))
-    assert allowed["t"] and not allowed["b"]          # "bat" is a word, "bab..." is not
-    assert not allowed[" "] and not allowed["."]      # "ba" is not a complete word
-    assert dict(zip(_CharVocab.chars, sf.allowed("bat").tolist()))[" "]
+    sf = SpellingFilter("bat tab", TinyCharVocab())
+    allowed = dict(zip(TinyCharVocab.chars, sf.allowed("ba").tolist()))
+    assert allowed["t"] and not allowed["b"]
+    assert not allowed[" "] and not allowed["."]
+    assert dict(zip(TinyCharVocab.chars, sf.allowed("bat").tolist()))[" "]
     assert current_word("My lo") == "lo" and current_word("My lord, ") == ""

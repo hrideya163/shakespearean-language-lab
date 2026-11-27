@@ -1,18 +1,14 @@
-// Generator page: calls POST /api/generate and shows the text plus the model's inner workings
-// at the selected character: cell diagram, next-character prediction, memory heat map, gates.
-import { $, BLUE_TEXT, ORANGE_TEXT, diverging, esc, hideTip, pct, postJSON, scaleLegend, sequential, showChar, showTip } from "./utils.js";
-import { drawCell } from "./viz/cell.js";
-import { drawMemory } from "./viz/memory.js";
-import { drawTimeline } from "./viz/timeline.js";
+import { $, BLUE_TEXT, ORANGE_TEXT, diverging, esc, hideTip, pct, postJSON, scaleLegend, sequential, showChar, showTip } from "../utils.js";
+import { drawCell } from "../viz/cell.js";
+import { drawMemory } from "../viz/memory.js";
+import { drawTimeline } from "../viz/timeline.js";
 
 const PROMPTS = ["My lord, ", "Thou art ", "What light ", "I will not ", "O, "];
 
-let data = null;      // the last /api/generate response
-let selected = null;  // index of the selected character
-let timer = null;     // playback timer
+let data = null;
+let selected = null;
+let timer = null;
 
-// ---------------------------------------------------------------- text + colouring
-// Colour options: how sure the model was, a gate, or one of the cells found in experiment RQ2.
 function colourOptions() {
   const options = [["none", "nothing"], ["confidence", "model confidence"]];
   for (const g of data.gate_names) options.push([`gate:${g}`, `${g} gate`]);
@@ -44,7 +40,6 @@ function colourFn(mode) {
 function renderText() {
   const { fn, legend } = colourFn($("gen-colour").value);
   $("gen-scale").innerHTML = legend;
-  // characters that belong to an invented word (not in Shakespeare) get a red underline
   const invented = new Set();
   for (const m of data.text.matchAll(/[A-Za-z']+/g)) {
     if (data.unknown_words.includes(m[0])) for (let k = 0; k < m[0].length; k++) invented.add(m.index + k);
@@ -59,7 +54,6 @@ function renderText() {
   if (selected !== null) $("gen-text").querySelector(`[data-i="${selected}"]`)?.classList.add("sel");
 }
 
-// share of generated words that the spelling filter knows (the server checks against Shakespeare)
 function realWords() {
   const words = data.text.match(/[A-Za-z']+/g) || [];
   if (!words.length) return 1;
@@ -79,7 +73,6 @@ function renderStats() {
   $("gen-stats").hidden = false;
 }
 
-// ---------------------------------------------------------------- inspector for one step
 function renderPrediction(step, ch) {
   const rows = step.top.map(([c, p, blocked]) => ({ c, p, blocked, chosen: c === ch }));
   if (!rows.some((r) => r.chosen)) rows.push({ c: ch, p: step.p, blocked: false, chosen: true });
@@ -114,7 +107,6 @@ function select(i) {
   drawTimeline($("gate-timeline"), data.steps, data.gate_names, data.text, selected, select);
 }
 
-// ---------------------------------------------------------------- playback
 function stop() {
   clearInterval(timer);
   timer = null;
@@ -128,7 +120,6 @@ function togglePlay() {
   timer = setInterval(() => (selected >= data.steps.length - 1 ? stop() : select(selected + 1)), 90);
 }
 
-// ---------------------------------------------------------------- generate
 async function run() {
   stop();
   const button = $("gen-btn");
