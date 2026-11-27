@@ -44,13 +44,26 @@ function colourFn(mode) {
 function renderText() {
   const { fn, legend } = colourFn($("gen-colour").value);
   $("gen-scale").innerHTML = legend;
+  // characters that belong to an invented word (not in Shakespeare) get a red underline
+  const invented = new Set();
+  for (const m of data.text.matchAll(/[A-Za-z']+/g)) {
+    if (data.unknown_words.includes(m[0])) for (let k = 0; k < m[0].length; k++) invented.add(m.index + k);
+  }
   const spans = [...data.text].map((ch, i) => {
     const shown = ch === "\n" ? '<span class="nl">↵</span>\n' : esc(ch);
     const style = fn ? ` style="background:${fn(i)}"` : "";
-    return `<span class="ch" data-i="${i}"${style}>${shown}</span>`;
+    const cls = invented.has(i) ? "ch invented" : "ch";
+    return `<span class="${cls}" data-i="${i}"${style}>${shown}</span>`;
   });
   $("gen-text").innerHTML = `<span class="prompt">${esc(data.prompt)}</span>${spans.join("")}`;
   if (selected !== null) $("gen-text").querySelector(`[data-i="${selected}"]`)?.classList.add("sel");
+}
+
+// share of generated words that the spelling filter knows (the server checks against Shakespeare)
+function realWords() {
+  const words = data.text.match(/[A-Za-z']+/g) || [];
+  if (!words.length) return 1;
+  return words.filter((w) => !data.unknown_words.includes(w)).length / words.length;
 }
 
 function renderStats() {
@@ -58,6 +71,7 @@ function renderStats() {
   const stats = [
     [data.text.length, "characters"],
     [pct(meanP), "avg. probability of chosen char"],
+    [pct(realWords()), "real words"],
     [data.style_score === null ? "–" : pct(data.style_score), "Shakespeare-style score"],
     [`${data.cell.toUpperCase()} · ${data.hidden_size}`, "cell · memory units"],
   ];
@@ -67,18 +81,22 @@ function renderStats() {
 
 // ---------------------------------------------------------------- inspector for one step
 function renderPrediction(step, ch) {
-  const rows = step.top.map(([c, p]) => [c, p, c === ch]);
-  if (!rows.some((r) => r[2])) rows.push([ch, step.p, true]);
-  const max = Math.max(...rows.map((r) => r[1]));
+  const rows = step.top.map(([c, p, blocked]) => ({ c, p, blocked, chosen: c === ch }));
+  if (!rows.some((r) => r.chosen)) rows.push({ c: ch, p: step.p, blocked: false, chosen: true });
+  const max = Math.max(...rows.map((r) => r.p));
+  const filterNote = step.blocked > 0.001
+    ? ` The spelling filter crossed out characters that would not lead to a real word
+        (<b>${(100 * step.blocked).toFixed(1)}%</b> of the probability).`
+    : "";
   $("prediction").innerHTML =
     rows
-      .map(([c, p, chosen]) => `<div class="pred-row${chosen ? " chosen" : ""}">
-          <span class="c">${esc(showChar(c))}</span>
-          <div class="track"><div class="fill" style="width:${(100 * p) / max}%"></div></div>
-          <span class="p">${(100 * p).toFixed(1)}%</span></div>`)
+      .map((r) => `<div class="pred-row${r.chosen ? " chosen" : ""}${r.blocked ? " blocked" : ""}">
+          <span class="c">${esc(showChar(r.c))}</span>
+          <div class="track"><div class="fill" style="width:${(100 * r.p) / max}%"></div></div>
+          <span class="p">${(100 * r.p).toFixed(1)}%</span></div>`)
       .join("") +
     `<p class="muted" style="margin-top:8px">The model gave the character it wrote (outlined) a probability of
-     <b>${(100 * step.p).toFixed(1)}%</b>. Sampling with temperature ${$("gen-temp").value} picked it.</p>`;
+     <b>${(100 * step.p).toFixed(1)}%</b>; sampling at temperature ${$("gen-temp").value} picked it.${filterNote}</p>`;
 }
 
 function select(i) {
@@ -122,6 +140,7 @@ async function run() {
       temperature: parseFloat($("gen-temp").value),
       length: parseInt($("gen-length").value, 10),
       model: $("gen-model").value,
+      spelling: $("gen-spelling").checked,
     });
     const previous = $("gen-colour").value;
     const options = colourOptions();

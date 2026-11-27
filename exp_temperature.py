@@ -1,6 +1,11 @@
-"""RQ3: How does temperature control the generator?
+"""RQ3: How does sampling control the generator?
 
     python exp_temperature.py
+
+Part A  TEMPERATURE  plain sampling at 5 temperatures.
+Part B  SAMPLING METHODS at the app's temperature (0.7): plain, top-p, spelling filter, both
+        (see generate.py). The spelling filter only allows real words from the training text.
+Part C  MODEL SIZE  the best 256-unit LSTM vs the 512-unit LSTM (if trained), final sampling.
 
 For each temperature we generate several samples and measure:
     real words %     share of generated words that exist in the training text
@@ -12,6 +17,7 @@ For each temperature we generate several samples and measure:
 The same numbers are computed on REAL validation text, so we can see which
 temperature produces text that is statistically closest to real Shakespeare.
 
+Model: lstm_long (the best LSTM, 9000 steps), or lstm if it is missing.
 Outputs: results/rq3_temperature.md and results/rq3_temperature.png
 """
 import os
@@ -23,7 +29,7 @@ import matplotlib.pyplot as plt
 
 import config
 from char_lm import load_generator, load_shakespeare_text
-from generate import generate
+from generate import SpellingFilter, generate
 from lexicon import is_archaic
 from style_classifier import shakespeare_score
 
@@ -31,6 +37,8 @@ TEMPERATURES = [0.2, 0.5, 0.8, 1.0, 1.3]
 PROMPTS = ["\n", "My lord,", "ROMEO:", "I pray thee", "What", "O, ", "Good morrow", "Come, sir"]
 SAMPLES_PER_PROMPT = 2
 LENGTH = 300
+APP_TEMPERATURE = 0.7
+MODEL = "lstm_long" if os.path.exists(config.generator_path("lstm_long")) else "lstm"
 
 
 def words(text):
@@ -53,32 +61,71 @@ def measure(texts, known_words):
     }
 
 
+def samples(model, vocab, temperature, **options):
+    """LENGTH characters for every prompt, SAMPLES_PER_PROMPT times, with fixed seeds."""
+    return [generate(model, vocab, prompt, LENGTH, temperature, seed=100 * p_i + s, **options)[0]
+            for p_i, prompt in enumerate(PROMPTS) for s in range(SAMPLES_PER_PROMPT)]
+
+
+def table(title, rows, cols):
+    lines = [f"| {title} | " + " | ".join(cols) + " |", "|---" * (len(cols) + 1) + "|"]
+    for name, m in rows.items():
+        bold = "**" if name == "real Shakespeare" else ""
+        lines.append(f"| {bold}{name}{bold} | " + " | ".join(f"{bold}{m[c]:.2f}{bold}" for c in cols) + " |")
+    return lines
+
+
 def main():
-    model, vocab = load_generator("lstm")
-    known_words = set(words(load_shakespeare_text("train")))
+    model, vocab = load_generator(MODEL)
+    train_text = load_shakespeare_text("train")
+    known_words = set(words(train_text))
     results, examples = {}, {}
     valid_text = load_shakespeare_text("valid")
     n_texts = len(PROMPTS) * SAMPLES_PER_PROMPT
     real = measure([valid_text[i * LENGTH:(i + 1) * LENGTH] for i in range(n_texts)], known_words)
     for temp in TEMPERATURES:
-        texts = []
-        for p_i, prompt in enumerate(PROMPTS):
-            for s in range(SAMPLES_PER_PROMPT):
-                text, _ = generate(model, vocab, prompt, LENGTH, temp, seed=100 * p_i + s)
-                texts.append(text)
+        texts = samples(model, vocab, temp)
         results[temp] = measure(texts, known_words)
         examples[temp] = PROMPTS[1] + texts[2]
         print(f"T={temp}: " + ", ".join(f"{k} {v:.2f}" for k, v in results[temp].items()))
 
+    # Part B: sampling methods at the app's temperature
+    spelling = SpellingFilter(train_text, vocab)
+    methods = {"plain": {}, "top-p 0.9": dict(top_p=0.9), "spelling filter (app)": dict(spelling=spelling),
+               "spelling filter + top-p 0.9": dict(spelling=spelling, top_p=0.9)}
+    by_method, method_examples = {}, {}
+    for name, options in methods.items():
+        texts = samples(model, vocab, APP_TEMPERATURE, **options)
+        by_method[name] = measure(texts, known_words)
+        method_examples[name] = PROMPTS[1] + texts[2]
+        print(f"{name}: " + ", ".join(f"{k} {v:.2f}" for k, v in by_method[name].items()))
+    by_method["real Shakespeare"] = real
+
+    # Part C: model size, with the app's sampling
+    by_model = {}
+    for name in ["lstm_long", "lstm_large"]:
+        if os.path.exists(config.generator_path(name)):
+            m, v = load_generator(name)
+            texts = samples(m, v, APP_TEMPERATURE, spelling=SpellingFilter(train_text, v))
+            by_model[f"{name} ({m.cell.hidden_dim} units)"] = measure(texts, known_words)
+    by_model["real Shakespeare"] = real
+
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     cols = list(next(iter(results.values())).keys())
-    lines = ["# RQ3: Effect of temperature on the LSTM generator", "",
-             f"{len(PROMPTS) * SAMPLES_PER_PROMPT} samples of {LENGTH} characters per temperature.", "",
-             "| temperature | " + " | ".join(cols) + " |", "|---" * (len(cols) + 1) + "|"]
-    for temp, m in results.items():
-        lines.append(f"| {temp} | " + " | ".join(f"{m[c]:.2f}" for c in cols) + " |")
-    lines.append("| **real Shakespeare** | " + " | ".join(f"**{real[c]:.2f}**" for c in cols) + " |")
-    lines += ["", "## Examples", ""]
+    rows = {str(t): m for t, m in results.items()}
+    rows["real Shakespeare"] = real
+    lines = [f"# RQ3: Sampling from the LSTM generator (`{MODEL}`)", "",
+             f"{len(PROMPTS) * SAMPLES_PER_PROMPT} samples of {LENGTH} characters per row.", "",
+             "## A. Temperature (plain sampling)", "", *table("temperature", rows, cols), "",
+             f"## B. Sampling methods (temperature {APP_TEMPERATURE})", "",
+             "The spelling filter only lets the model continue a word towards a real word from the "
+             "training text, so every word is real. Top-p drops the unlikely tail of characters.", "",
+             *table("method", by_method, cols), "",
+             f"## C. Model size (temperature {APP_TEMPERATURE}, spelling filter)", "",
+             *table("model", by_model, cols), "", "## Examples (B)", ""]
+    for name, text in method_examples.items():
+        lines += [f"### {name}", "```", text.strip(), "```", ""]
+    lines += ["## Examples (A)", ""]
     for temp, text in examples.items():
         lines += [f"### T = {temp}", "```", text.strip(), "```", ""]
     with open(os.path.join(config.RESULTS_DIR, "rq3_temperature.md"), "w", encoding="utf-8") as f:

@@ -24,6 +24,8 @@ TRAINING = [
     ["train_generator.py", "--cell", "lstm", "--steps", "9000", "--name", "lstm_long"],
     ["train_generator.py", "--cell", "rnn", "--hidden", "542", "--steps", "9000", "--name", "rnn_matched_long"],
     ["train_generator.py", "--cell", "gru", "--hidden", "300", "--steps", "9000", "--name", "gru_matched_long"],
+    # the largest LSTM (512 units), used by the web app (RQ3 part C)
+    ["train_generator.py", "--cell", "lstm", "--hidden", "512", "--steps", "9000", "--name", "lstm_large"],
     ["train_translator.py"],
     ["train_translator.py", "--no_copy"],
     ["train_translator.py", "--extended"],      # pointer-generator extended vocabulary (RQ4 ablation)

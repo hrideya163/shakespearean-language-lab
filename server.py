@@ -11,6 +11,7 @@ Endpoints used by the frontend (frontend/ folder):
 """
 import json
 import os
+import re
 
 import torch
 from fastapi import FastAPI, HTTPException
@@ -19,11 +20,11 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import config
-from char_lm import load_generator
+from char_lm import load_generator, load_shakespeare_text
 from data import detokenize, tokenize
 from explain import (change_summary, difficulty, glossary, meaning_guard,
                      restore_name_capitals, word_map)
-from generate import generate
+from generate import SpellingFilter, generate
 from lexicon import baseline_translate
 from style_classifier import shakespeare_score
 
@@ -43,7 +44,8 @@ except FileNotFoundError as error:
 
 # Generators offered in the app, best first (name of the checkpoint -> label)
 GENERATORS = {
-    "lstm_long": "LSTM · 9k steps (best)",
+    "lstm_large": "LSTM · 512 units (largest)",
+    "lstm_long": "LSTM · 256 units, 9k steps",
     "gru_matched_long": "GRU · 9k steps",
     "rnn_matched_long": "Vanilla RNN · 9k steps",
     "lstm": "LSTM · 3k steps",
@@ -51,7 +53,7 @@ GENERATORS = {
     "rnn": "Vanilla RNN · 3k steps",
 }
 MAX_UNITS = 256            # memory units sent to the visualizer (enough for the heat map)
-generators = {}            # loaded on first use: {"lstm_long": (model, vocab), ...}
+generators = {}            # loaded on first use: {"lstm_long": (model, vocab, spelling filter), ...}
 
 
 def get_generator(name):
@@ -59,9 +61,10 @@ def get_generator(name):
         raise HTTPException(status_code=404, detail=f"unknown model {name}")
     if name not in generators:
         try:
-            generators[name] = load_generator(name)
+            model, vocab = load_generator(name)
         except FileNotFoundError as error:
             raise HTTPException(status_code=404, detail=str(error))
+        generators[name] = (model, vocab, SpellingFilter(load_shakespeare_text("train"), vocab))
     return generators[name]
 
 
@@ -96,14 +99,15 @@ class GenerateRequest(BaseModel):
     prompt: str = "ROMEO:"
     length: int = Field(300, ge=10, le=800)
     temperature: float = Field(0.7, gt=0, le=2.0)
-    model: str = "lstm_long"
+    model: str = "lstm_large"
+    spelling: bool = True               # only allow real words (see generate.py)
 
 
 @app.post("/api/generate")
 def generate_text(request: GenerateRequest):
-    model, vocab = get_generator(request.model)
-    text, recorded = generate(model, vocab, request.prompt, request.length,
-                              request.temperature, record=True)
+    model, vocab, spelling = get_generator(request.model)
+    text, recorded = generate(model, vocab, request.prompt, request.length, request.temperature,
+                              record=True, spelling=spelling if request.spelling else None)
     cell = type(model.cell).__name__.replace("Cell", "").lower()       # "lstm", "gru" or "rnn"
     gate_names = [g for g in ("input", "forget", "output", "update", "reset") if g in recorded[0]]
 
@@ -111,8 +115,11 @@ def generate_text(request: GenerateRequest):
     for ch, r in zip(text, recorded):
         top = r["probs"].topk(8)
         steps.append({
-            "p": round(float(r["probs"][vocab.index[ch]]), 4),          # probability of the chosen char
-            "top": [[vocab.chars[i], round(p, 4)] for p, i in zip(top.values.tolist(), top.indices.tolist())],
+            "p": round(float(r["probs"][vocab.index[ch]]), 4),          # model's probability of the chosen char
+            # top guesses: [character, probability, blocked by the spelling filter?]
+            "top": [[vocab.chars[i], round(p, 4), bool(r["blocked"][i])]
+                    for p, i in zip(top.values.tolist(), top.indices.tolist())],
+            "blocked": round(float(r["probs"][r["blocked"]].sum()), 4),  # probability mass removed
             "gates": {g: round(float(r[g].mean()), 3) for g in gate_names},
         })
 
@@ -123,6 +130,8 @@ def generate_text(request: GenerateRequest):
     neurons = {label: [m[unit] for m in memory] for label, unit in interesting_units(request.model).items()
                if unit < MAX_UNITS}
 
+    finished = re.sub(r"[A-Za-z']+$", "", text)           # the last word may be cut off by the length limit
+    unknown = sorted({w for w in re.findall(r"[A-Za-z']+", finished) if w not in spelling.words})  # invented words
     lines = [line for line in text.split("\n") if len(line.strip()) > 10]
     style = shakespeare_score(lines) if lines else []
     return {
@@ -136,6 +145,7 @@ def generate_text(request: GenerateRequest):
         "memory": memory,                  # (characters x units), values -1..1
         "neurons": neurons,                # {name: one value per character} for the neuron viewer
         "style_score": sum(style) / len(style) if style else None,
+        "unknown_words": unknown,          # generated words that do not exist in Shakespeare
     }
 
 

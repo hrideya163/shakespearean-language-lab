@@ -39,7 +39,8 @@ python train_translator.py --dropout 0     # no regularisation, to show overfitt
 Quick checks:
 
 ```powershell
-python generate.py --prompt "My lord, " --temperature 0.7
+python generate.py --cell lstm_large --prompt "My lord, " --temperature 0.7
+python generate.py --no_filter          # raw model, without the spelling filter
 python translate.py "Wherefore art thou Romeo?"
 python translate.py --greedy "Wherefore art thou Romeo?"   # old decoding, for comparison
 ```
@@ -53,7 +54,7 @@ Everything (training + experiments) in one go: `python run_all.py`
 |---|---|---|
 | `python exp_compare_cells.py` | RQ1: RNN vs GRU vs LSTM | `rq1_compare_cells.md`, learning-curve + memory-curve plots |
 | `python exp_inside_lstm.py` | RQ2: what do LSTM cells track? | `rq2_inside_lstm.md`, `rq2_inside_lstm.html` |
-| `python exp_temperature.py` | RQ3: temperature vs quality and style | `rq3_temperature.md`, plot |
+| `python exp_temperature.py` | RQ3: temperature, spelling filter vs top-p, model size | `rq3_temperature.md`, plot |
 | `python exp_copy_gate.py` | RQ4: copy gate and extended vocabulary ablation; is the trace faithful? | `rq4_copy_gate.md`, calibration + overfitting plots |
 | `python exp_decoding.py` | RQ4: greedy vs beam search, repeat blocking, coverage | `decoding.md`, `decoding.png` |
 | `python exp_drift.py` | RQ5: can meaning drift be detected? | `rq5_drift.md`, `drift_benchmark.tsv` |
@@ -99,7 +100,8 @@ cd frontend; npm run dev
 
 Open http://localhost:5173. The app has three pages:
 
-- **Generator:** write text with the LSTM, GRU or RNN, then step through it character by character
+- **Generator:** write text with the LSTM, GRU or RNN (an "Only real words" switch turns the spelling
+  filter on or off; invented words are underlined), then step through it character by character
   (click, arrow keys or ▶ Play). For each character the **visualizer** shows a live diagram of the cell
   with its gate values, the next-character probabilities the model sampled from, a heat map of the whole
   memory over time, and the gates over time. The text can be coloured by confidence, a gate, or one of

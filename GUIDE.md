@@ -59,6 +59,15 @@ Lower is better.
 Before sampling we divide the scores by T. T < 1 makes the model confident and repetitive. T > 1 makes it
 adventurous and error-prone. (`generate.py`)
 
+### Spelling filter
+A character-level model spells one letter at a time, so it can invent words ("knowshorting"). The
+spelling filter knows every word of the training text and every beginning of a word. At each step it
+crosses out letters that cannot lead to a real word, and only lets a word end (space, punctuation) when it
+is a complete real word. The LSTM still makes every choice among the letters that remain. In RQ3 this
+raised real words from 95% to 99.7% without making the text less varied. We also tried **top-p**
+sampling (drop the unlikely tail); it made the text more repetitive, so it is off. (`SpellingFilter` in
+`generate.py`. The app's "Only real words" switch shows the raw model when unticked.)
+
 ### Encoder–decoder with attention
 - **Encoder**: a bidirectional LSTM reads the whole input sentence.
 - **Decoder**: an LSTM writes the output word by word.
@@ -115,7 +124,7 @@ For a detector that gives a score: the probability that a random *bad* example g
 |---|---|---|
 | RQ1 | "We measured the vanishing gradient directly: 50 characters back the plain RNN keeps 0.001 % of its gradient. With the same number of weights the GRU learns fastest. With 3× more training the LSTM catches up with it, while the RNN gets stuck." | gradient-flow plot, long-budget plot, test bpc table (incl. size-matched models) |
 | RQ2 | "Individual LSTM cells learn interpretable jobs, like tracking the position in the line or capital letters, and switching some of them off specifically hurts the related predictions. The same cells keep their jobs as training continues." | correlation table, coloured-text HTML, ablation table, embedding map |
-| RQ3 | "Temperature trades correctness for diversity. Around T = 0.8 the generated text's statistics best match real Shakespeare, but the model under-uses rare archaic words." | temperature table and plot |
+| RQ3 | "Temperature trades correctness for diversity. A character model invents words, but a spelling filter makes 99.7% of words real without losing variety. A bigger LSTM is better but overfits quickly." | temperature, sampling-method and model-size tables, plot |
 | RQ4 | "The copy gate is the most important part of the translator and a faithful explanation: kept words have high copy probability, changed words low. How we decode matters as much: blocking repeats and a coverage penalty took loops from 14.6% to 0.6%." | ablation table with CIs, copy-probability table, alignment %, decoding study, calibration plot |
 | RQ5 | "Rule-based and model-based drift detectors complement each other. The guard catches name swaps that the model can't see (rare names are unknown words), and the model's likelihood catches some negation flips." | drift table, paired test, failure examples |
 

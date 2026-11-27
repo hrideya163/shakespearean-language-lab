@@ -55,3 +55,18 @@ def test_target_can_copy_unknown_source_word():
 def test_no_copy_ablation_uses_plain_unk():
     _, src_ext, tgt = make_example(["romeo"], ["romeo"], "to_modern", VOCAB, extended=False)
     assert max(src_ext) < len(VOCAB) and max(tgt) < len(VOCAB)
+
+
+# ---------------------------------------------------------------- generator spelling filter
+class _CharVocab:
+    chars = ["a", "b", "t", " ", "."]
+
+
+def test_spelling_filter_only_allows_real_words():
+    from generate import SpellingFilter, current_word
+    sf = SpellingFilter("bat tab", _CharVocab())
+    allowed = dict(zip(_CharVocab.chars, sf.allowed("ba").tolist()))
+    assert allowed["t"] and not allowed["b"]          # "bat" is a word, "bab..." is not
+    assert not allowed[" "] and not allowed["."]      # "ba" is not a complete word
+    assert dict(zip(_CharVocab.chars, sf.allowed("bat").tolist()))[" "]
+    assert current_word("My lo") == "lo" and current_word("My lord, ") == ""

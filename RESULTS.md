@@ -90,26 +90,63 @@ Analysed on the best LSTM (`lstm_long`, 9,000 steps). It was trained with the sa
 
 ---
 
-## RQ3: Temperature and generation quality
+## RQ3: Sampling: temperature, spelling filter and model size
+
+Model: the 9,000-step LSTM (`lstm_long`). 16 samples of 300 characters per row.
+
+**A. Temperature (plain sampling)**
 
 | temperature | real words % | distinct-2 % | repetition % | style score | archaic words % |
 |---|---|---|---|---|---|
-| 0.2 | 99.2 | 29.4 | 26.0 | 0.82 | 0.4 |
-| 0.5 | 96.8 | 73.4 | 7.6 | 0.77 | 1.2 |
-| **0.8** | 89.3 | **91.9** | **2.8** | **0.76** | 2.6 |
-| 1.0 | 80.5 | 94.6 | 1.2 | 0.71 | 1.8 |
-| 1.3 | 64.9 | 99.2 | 0.5 | 0.68 | 1.9 |
+| 0.2 | 98.5 | 31.0 | 25.6 | 0.84 | 0.6 |
+| 0.5 | 98.4 | 75.2 | 7.5 | 0.77 | 1.6 |
+| **0.8** | 92.8 | **92.4** | **3.2** | **0.78** | **3.8** |
+| 1.0 | 86.3 | 95.9 | 1.9 | 0.74 | 3.2 |
+| 1.3 | 69.7 | 98.3 | 0.6 | 0.66 | 3.1 |
 | *real Shakespeare* | *94.7* | *90.5* | *2.2* | *0.75* | *6.6* |
+
+**B. Sampling method (temperature 0.7, the app's default)**
+
+| method | real words % | distinct-2 % | repetition % | style score |
+|---|---|---|---|---|
+| plain | 94.9 | 88.0 | 3.6 | 0.78 |
+| top-p 0.9 | 97.0 | 83.5 | 4.0 | 0.76 |
+| **spelling filter (app)** | **99.7** | **87.9** | **3.4** | 0.73 |
+| spelling filter + top-p 0.9 | 99.7 | 82.4 | 4.9 | 0.76 |
+
+**C. Model size (temperature 0.7, spelling filter)**
+
+| model | test bpc | real words % | distinct-2 % | repetition % | archaic words % |
+|---|---|---|---|---|---|
+| LSTM, 256 units (9,000 steps) | 2.166 | 99.7 | 87.9 | 3.4 | 3.1 |
+| **LSTM, 512 units (best checkpoint, step 2,250)** | **2.131** | 99.3 | **88.8** | **2.9** | 2.2 |
 
 **Findings**
 
-1. **Temperature trades correctness for diversity**, monotonically, in every metric.
-2. **T ≈ 0.8 matches real Shakespeare best** in diversity, repetition and style score. Lower
-   temperatures sound *more* Shakespearean to the classifier than real Shakespeare (0.82 vs 0.75), because
-   they repeat the most typical phrases ("my lord", "the world").
-3. **Rare words are under-used.** Even at the best temperature the model produces archaic words at less
-   than half the real rate (2.6 % vs 6.6 %). A small model learns frequent patterns first. The same
-   effect shows up in the translator (RQ4 B).
+1. **Temperature trades correctness for diversity**, monotonically, in every metric. T ≈ 0.8 matches
+   real Shakespeare best in diversity, repetition and style score. Low temperatures sound *more*
+   Shakespearean to the classifier than real Shakespeare (0.84 vs 0.75), because they repeat the most
+   typical phrases ("my lord", "the world").
+2. **A character model invents words, and a simple filter fixes that.** Plain sampling makes up about 1
+   word in 20 ("knowshorting", "cideation"), which is what makes the output read as gibberish. The
+   **spelling filter** only lets the model continue a word towards a real word from the training text.
+   It reaches 99.7 % real words *without* making the text less varied or more repetitive. (The remaining
+   0.3 % are spelling variants the simple word counter splits differently.)
+3. **Top-p sampling is not a free win here.** Cutting the unlikely tail removes some invented words, but
+   makes the text more repetitive and less varied, further from real Shakespeare. So the app uses the
+   spelling filter only.
+4. **Bigger helps, but overfits quickly.** The 512-unit LSTM reaches the best test score (2.131 bpc)
+   after only 2,250 steps. After that its training loss keeps falling (1.33 → 1.10) while validation gets
+   worse (2.04 → 2.17): with ~940 k characters of text there is not enough data for a model this size.
+   Keeping the best checkpoint (early stopping) is essential. Its text is a little more varied and less
+   repetitive, so the app uses it by default.
+5. **Rare words are under-used.** At every setting the model produces archaic words at about half the
+   real rate (2–4 % vs 6.6 %). A small model learns frequent patterns first. The same effect shows up in
+   the translator (RQ4).
+6. **The honest limit:** the filter guarantees real words and the LSTM produces plausible short phrases
+   ("Is it not the tyrant of your house."), but sentences don't carry meaning over many words. That needs
+   far more data and parameters than a laptop CPU allows: it is the gap between a character-level LSTM and
+   a large language model.
 
 ---
 
@@ -212,6 +249,8 @@ The guard raises false alarms on 17.2 % of clean translations.
 - **Gating matters, and you can see why:** we measured the vanishing gradient directly. Given time,
   both gated cells reach the same quality, while the plain RNN stays stuck with the same number of weights.
   The GRU gets there 3× faster.
+- **Small sampling choices change how good a model looks:** a spelling filter turns "Shakespearean
+  gibberish" into real words without retraining, and the translator's loops disappear with a decoding rule.
 - **LSTMs are inspectable:** single cells have identifiable, causal jobs. Gates behave in interpretable
   ways (forgetting at sentence ends, writing freely, revealing little).
 - **Architecture choices are explanations:** the copy gate improves quality *and* gives a faithful
